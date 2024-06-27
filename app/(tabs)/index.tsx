@@ -1,70 +1,86 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+} from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function HomeScreen() {
+  const [nome, setNome] = useState("");
+  const [genero, setGenero] = useState("");
+  const [idade, setIdade] = useState("");
+  const lista:any = [];
+
+  const data = [
+    { label: "homem", value: "homem" },
+    { label: "mulher", value: "mulher" },
+    { label: "outro", value: "outro" },
+  ];
+
+  const submitForm = () => {
+    lista.push({ Nome: nome, Gênero: genero, Idade: idade });
+    setNome("");
+    setGenero("");
+    setIdade("");
+    console.log(lista);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <ScrollView contentContainerStyle={styles.container}>
+      <View>
+        <Text style={styles.inputLabel}>Nome</Text>
+        <TextInput
+          style={styles.input}
+          value={nome}
+          onChangeText={(e) => setNome(e)}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+      <View>
+        <Text style={styles.inputLabel}>Gênero</Text>
+        <Dropdown
+          style={styles.input}
+          data={data}
+          labelField={"label"}
+          valueField={"value"}
+          value={genero}
+          onChange={(e) => setGenero(e.value)}
+        />
+      </View>
+      <View>
+        <Text style={styles.inputLabel}>Idade</Text>
+        <TextInput
+          style={styles.input}
+          value={idade}
+          onChangeText={(e) => setIdade(e)}
+          maxLength={2}
+          inputMode="numeric"
+        />
+        <Button title="Submit" onPress={submitForm}/>
+      </View>
+      <View></View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000000",
+    color: "#ffffff",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  inputLabel: {
+    color: "#ffffff",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  input: {
+    height: 30,
+    backgroundColor: "#ffffff",
+    color: "#000000",
+    width: 200,
   },
 });

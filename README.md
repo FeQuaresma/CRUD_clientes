@@ -16,6 +16,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
+   or (in case of WSL2)
+   access [Expo QR code on Windows Subsystem for Linux (WSL2)](https://www.linkedin.com/pulse/expo-qr-code-windows-subsystem-linux-wsl2-alexandre-gomes-6xxxe/) for more information
+
+   ```bash
+    npm run start:wsl
+   ```
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)

@@ -93,4 +93,3 @@ export default function CreateForm(formParam: any) {
     </View>
   );
 }
-.

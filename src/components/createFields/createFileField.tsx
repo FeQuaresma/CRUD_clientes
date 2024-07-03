@@ -1,0 +1,25 @@
+import { Text, Pressable } from "react-native";
+import { useEffect, useState } from "react";
+import { styles } from "../../constants/styles";
+import * as DocumentPicker from "expo-document-picker";
+
+export default function CreateFileField({ onFileChange }: any) {
+  const pickSomething = async () => {
+    try {
+      const docRes = await DocumentPicker.getDocumentAsync({
+        type: "*/*",
+      });
+
+      console.log(docRes.assets && docRes.assets[0]);
+      onFileChange(docRes.assets && docRes.assets[0].name);
+    } catch (error) {
+      console.log("Error while selecting file: ", error);
+    }
+  };
+
+  return (
+    <Pressable style={styles.buttonFile} onPress={pickSomething}>
+      <Text style={styles.buttonTextFile}>Pick Something</Text>
+    </Pressable>
+  );
+}

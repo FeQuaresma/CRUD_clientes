@@ -34,8 +34,28 @@ export const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center"
   },
   buttonText: {
+    color: "#ffffff",
+    fontSize: fontsize,
+    fontWeight: "bold",
+  }, dropdown: {
+    fontSize: fontsize
+  }, createFormView: {
+  }, dropdownMulti: {
+    fontSize: fontsize/2,
+    flexDirection: "column"
+  },  buttonFile: {
+    backgroundColor: "#d80000",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  buttonTextFile: {
     color: "#ffffff",
     fontSize: fontsize,
     fontWeight: "bold",

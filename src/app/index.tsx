@@ -4,6 +4,7 @@ import { FormParam } from "../constants/FormParam";
 import { styles } from "../constants/styles";
 
 export default function Index() {
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {createForm(FormParam)}

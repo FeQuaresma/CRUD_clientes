@@ -1,13 +1,15 @@
 export const FormParam: any = {
-  field1: {
+  cep: {
     label: "CEP",
     inputType: "input",
     inputMode: "numeric",
+    placeholder: "CEP",
     maxLength: 8,
     value: "",
     link: {
       paramBeginning: "https://viacep.com.br/ws/",
       paramEnd: "/json/",
+      correspondKey: ["logradouro"]
     },
   },
   field2: {
@@ -40,35 +42,36 @@ export const FormParam: any = {
     value: "",
   },
   field6: {
-    label: "Anexar um arquivo",
-    inputType: "file",
-    value: "",
-  },
-  field7: {
     label: "Cores",
-    inputType: "selectMulti",
+    inputType: "dropdownMulti",
     options: [
       { label: "Vermelho", value: "vermelho" },
       { label: "Verde", value: "verde" },
       { label: "Azul", value: "azul" },
+      { label: "Amarelo", value: "amarelo" }
     ],
     value: "",
   },
-  field9: {
-    label: "Já é cliente",
-    inputType: "checkBox",
-    options: [{ label: "Sim", value: "sim" }],
-    value: "",
+  field7: {
+    label: "Já é cliente?",
+    inputType: "switch",
+    value: false,
   },
-  field10: {
+  field8: {
     label: "Baixar Pdf",
     inputType: "action",
+    value: null,
     dataType:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
     action:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
   },
-  // field11: {
+  field9: {
+    label: "Anexar um arquivo",
+    inputType: "file",
+    value: {},
+  },
+  // field10: {
   //   label: "Data de Compra",
   //   inputType: "date",
   //   value: "",

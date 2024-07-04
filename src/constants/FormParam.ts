@@ -4,12 +4,12 @@ export const FormParam: any = {
     inputType: "input",
     inputMode: "numeric",
     placeholder: "CEP",
-    maxLength: 8,
+    // maxLength: 8,
     value: "",
     link: {
       paramBeginning: "https://viacep.com.br/ws/",
       paramEnd: "/json/",
-      correspondKey: ["logradouro"]
+      correspondKey: ["logradouro"],
     },
   },
   field2: {
@@ -21,7 +21,7 @@ export const FormParam: any = {
   },
   field3: {
     label: "Contribuinte ICMS",
-    inputType: "dropdown",
+    inputType: "select",
     options: [
       { label: "Contribuinte", value: "contribuinte" },
       { label: "Isento", value: "isento" },
@@ -43,34 +43,42 @@ export const FormParam: any = {
   },
   field6: {
     label: "Cores",
-    inputType: "dropdownMulti",
+    inputType: "multiSelect",
     options: [
       { label: "Vermelho", value: "vermelho" },
       { label: "Verde", value: "verde" },
       { label: "Azul", value: "azul" },
-      { label: "Amarelo", value: "amarelo" }
+      { label: "Amarelo", value: "amarelo" },
     ],
     value: "",
   },
   field7: {
     label: "Já é cliente?",
-    inputType: "switch",
+    inputType: "boolean",
     value: false,
   },
-  field8: {
-    label: "Baixar Pdf",
-    inputType: "action",
-    value: null,
-    dataType:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
-    action:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
-  },
+  // field8: {
+  //   label: "Baixar Pdf",
+  //   inputType: "action",
+  //   value: null,
+  //   dataType:
+  //     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
+  //   action:
+  //     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
+  // },
   field9: {
-    label: "Anexar um arquivo",
+    buttonText: "Anexar um arquivo",
     inputType: "file",
     value: {},
   },
+  // Grade: {
+  //   label: "Grade",
+  //   inputType: "grid",
+  //   gridSize: 12,
+  //   maxLength: 3,
+  //   customStyle: { maxWidth: 66,borderColor: "black"},
+  //   value: [],
+  // },
   // field10: {
   //   label: "Data de Compra",
   //   inputType: "date",

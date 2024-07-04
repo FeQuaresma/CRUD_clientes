@@ -2,18 +2,24 @@ import { useState } from "react";
 import {
   Text,
   View,
-  TextInput,
   Pressable,
-  Switch,
   Modal,
-  StyleSheet,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
-import { Dropdown, MultiSelect } from "react-native-element-dropdown";
-import CreateDateField from "./createFields/createDateField";
-import CreateFileField from "./createFields/createFileField";
-import { styles } from "../constants/styles";
+import {
+  Date,
+  Select,
+  File,
+  Input,
+  MultiSelect,
+  Boolean,
+  TextBox,
+  Grid,
+} from "./createFields";
+import { styles, stylesModal } from "../constants/styles";
 
-export default function CreateForm(formParam: any) {
+export default function CreateForm({ formParam }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
 
@@ -27,100 +33,64 @@ export default function CreateForm(formParam: any) {
     }));
   };
 
-  const callAPI = async (link: any, value: any) => {
-    if (value.toString().length === 8) {
-      let linkURL = `${link.paramBeginning}${value}${link.paramEnd}`;
-      console.log(linkURL);
-      try {
-        const response = await fetch(linkURL);
-        const data = await response.json();
-        console.log(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
   return (
-    <View style={styles.createFormView}>
+    <ScrollView>
+      {/* <KeyboardAvoidingView
+      style={styles.createFormView}
+      keyboardVerticalOffset={30}
+      behavior={"height"}
+    > */}
       {Object.keys(form).map((field) => (
         <View key={field}>
           {form[field].label && (
             <Text style={styles.inputLabel}>{form[field].label}</Text>
           )}
           {form[field].inputType === "input" && (
-            <TextInput
-            placeholder={form[field].placeholder}
-              style={styles.input}
-              value={form[field].value}
-              inputMode={form[field].inputMode}
-              maxLength={form[field].maxLength}
-              onChangeText={(e) => {
-                handleInputChange(e, field);
-                {
-                  form[field].link && callAPI(form[field].link, e);
-                }
-              }}
+            <Input
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
-          {form[field].inputType === "dropdown" && (
-            <Dropdown
-              itemTextStyle={styles.dropdown}
-              selectedTextStyle={styles.dropdown}
-              placeholderStyle={styles.dropdown}
-              style={styles.input}
-              data={form[field].options}
-              placeholder="Selecione"
-              labelField="label"
-              valueField="value"
-              value={form[field].value}
-              onChange={(e) => handleInputChange(e.value, field)}
-              mode="modal"
+          {form[field].inputType === "select" && (
+            <Select
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
-          {form[field].inputType === "dropdownMulti" && (
+          {form[field].inputType === "multiSelect" && (
             <MultiSelect
-              itemTextStyle={styles.dropdown}
-              selectedTextStyle={styles.dropdownMulti}
-              placeholderStyle={styles.dropdown}
-              style={styles.input}
-              data={form[field].options}
-              placeholder="Selecione"
-              labelField="label"
-              valueField="value"
-              value={form[field].value}
-              onChange={(e) => handleInputChange(e, field)}
-              mode="modal"
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
-          {form[field].inputType === "switch" && (
-            <Switch
-              trackColor={{ false: "#767577", true: "#81b0ff" }}
-              thumbColor={form[field].value ? "#f5dd4b" : "#f4f3f4"}
-              ios_backgroundColor="#3e3e3e"
-              value={form[field].value}
-              onValueChange={(e) => handleInputChange(e, field)}
+          {form[field].inputType === "boolean" && (
+            <Boolean
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
           {form[field].inputType === "textBox" && (
-            <TextInput
-              multiline
-              style={styles.inputBox}
-              value={form[field] ? form[field].value : null}
-              inputMode={form[field].inputMode}
-              maxLength={form[field].maxLength}
-              onChangeText={(e) => handleInputChange(e, field)}
+            <TextBox
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
           {form[field].inputType === "date" && (
-            <CreateDateField
-              dateField={form[field].value}
-              onDateChange={(e: any) => handleInputChange(e, field)}
+            <Date
+              field={form[field].value}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
           {form[field].inputType === "file" && (
-            <CreateFileField
-              onFileChange={(e: any) => handleInputChange(e, field)}
+            <File
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
+            />
+          )}
+          {form[field].inputType === "grid" && (
+            <Grid
+              field={form[field]}
+              onValueChange={(e: any) => handleInputChange(e, field)}
             />
           )}
         </View>
@@ -130,7 +100,7 @@ export default function CreateForm(formParam: any) {
       </Pressable>
 
       <Modal
-        animationType="fade"
+        animationType="none"
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
@@ -155,52 +125,7 @@ export default function CreateForm(formParam: any) {
           </View>
         </View>
       </Modal>
-    </View>
+      {/* </KeyboardAvoidingView> */}
+    </ScrollView>
   );
 }
-
-// form[item].label, ": ", JSON.stringify(form[item].value)
-
-const stylesModal = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 22,
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: "#F194FF",
-  },
-  buttonClose: {
-    backgroundColor: "#2196F3",
-  },
-  textStyle: {
-    color: "white",
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: "center",
-  },
-});

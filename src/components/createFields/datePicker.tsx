@@ -3,10 +3,10 @@ import { View, TextInput, Pressable, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "../../constants/styles";
 
-export default function CreateDateField({ dateField, onDateChange }: any) {
+export default function DatePicker({ field, onValueChange }: any) {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState(new Date());
-  const [dateValue, setDateValue] = useState(dateField);
+  const [dateValue, setDateValue] = useState(field);
 
   const toggleDatePicker = () => {
     setShowPicker(!showPicker);
@@ -21,7 +21,7 @@ export default function CreateDateField({ dateField, onDateChange }: any) {
         toggleDatePicker();
         const formatedDate = formatDate(currentDate);
         setDateValue(formatedDate);
-        onDateChange(formatedDate);
+        onValueChange(formatedDate);
       }
     } else {
       toggleDatePicker();
@@ -59,7 +59,6 @@ export default function CreateDateField({ dateField, onDateChange }: any) {
           value={dateValue}
           onChangeText={(e) => {
             setDateValue(e);
-            dateField = e;
           }}
           keyboardType="numeric"
           onPressIn={toggleDatePicker}

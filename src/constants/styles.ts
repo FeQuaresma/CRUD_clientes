@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
-const fontsize = 20;
+const fontSizeDefault = 20;
+const widthDefault = 250;
 
 export const styles = StyleSheet.create({
   container: {
@@ -11,23 +12,23 @@ export const styles = StyleSheet.create({
     color: "#ffffff",
   },
   inputLabel: {
-    fontSize: fontsize,
+    fontSize: fontSizeDefault,
     color: "#ffffff",
   },
   input: {
-    fontSize: fontsize,
+    fontSize: fontSizeDefault,
     height: 30,
     backgroundColor: "#ffffff",
     color: "#000000",
-    width: 200,
+    width: widthDefault,
   },
   inputBox: {
-    fontSize: fontsize,
+    fontSize: fontSizeDefault,
     height: 60,
     textAlignVertical: "top",
     backgroundColor: "#ffffff",
     color: "#000000",
-    width: 200,
+    width: widthDefault,
   },
   button: {
     backgroundColor: "#007aff",
@@ -39,13 +40,13 @@ export const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#ffffff",
-    fontSize: fontsize,
+    fontSize: fontSizeDefault,
     fontWeight: "bold",
   }, dropdown: {
-    fontSize: fontsize
+    fontSize: fontSizeDefault
   }, createFormView: {
   }, dropdownMulti: {
-    fontSize: fontsize/2,
+    fontSize: fontSizeDefault/2,
     flexDirection: "column"
   },  buttonFile: {
     backgroundColor: "#d80000",
@@ -57,7 +58,7 @@ export const styles = StyleSheet.create({
   },
   buttonTextFile: {
     color: "#ffffff",
-    fontSize: fontsize,
+    fontSize: fontSizeDefault,
     fontWeight: "bold",
   },
 });

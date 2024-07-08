@@ -36,30 +36,36 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   buttonText: {
     color: "#ffffff",
     fontSize: fontSizeDefault,
     fontWeight: "bold",
-  }, dropdown: {
-    fontSize: fontSizeDefault
-  }, createFormView: {
-  }, dropdownMulti: {
-    fontSize: fontSizeDefault/2,
-    flexDirection: "column"
-  },  buttonFile: {
+  },
+  dropdown: {
+    fontSize: fontSizeDefault,
+  },
+  dropdownMulti: {
+    fontSize: fontSizeDefault / 2,
+    flexDirection: "column",
+  },
+  buttonFile: {
     backgroundColor: "#d80000",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
   },
   buttonTextFile: {
     color: "#ffffff",
     fontSize: fontSizeDefault,
     fontWeight: "bold",
+  },
+  errorMsg: {
+    color: "red",
+    fontSize: 15,
   },
 });
 

@@ -1,4 +1,4 @@
-export const FormParam: any = {
+export const FormParam: {} = {
   cep: {
     label: "CEP",
     inputType: "input",
@@ -10,8 +10,8 @@ export const FormParam: any = {
     maxLength: 9,
     link: {
       paramBeginning: "https://viacep.com.br/ws/",
+      paramSize: 8,
       paramEnd: "/json/",
-      correspondKey: ["logradouro"],
     },
   },
   telefone: {
@@ -33,6 +33,9 @@ export const FormParam: any = {
     value: "",
     valueMasked: "",
     maxLength: 18,
+    function: ["validateCPF"],
+    errorMsg: "CPF inválido",
+
   },
   field2: {
     label: "Razão Social",

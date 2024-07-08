@@ -1,4 +1,4 @@
-function validateCPF(cpf) {
+export default function validateCPF(cpf: string) {
   //valida se o cpf tem 11 digitos
   if (cpf.length != 11) {
     return false;
@@ -25,4 +25,3 @@ function validateCPF(cpf) {
     }
   }
 }
-console.log(validateCPF("12345678909"));

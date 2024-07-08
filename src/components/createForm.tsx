@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Text, View, Pressable, Modal } from "react-native";
+import { Text, View, Pressable, Modal, ScrollView } from "react-native";
 import {
   Date,
   Select,
@@ -16,31 +16,69 @@ export default function CreateForm({ formParam }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
 
-  const handleInputChange = (e: any, field: any, apiData?: any) => {
-    const mask = (value: any, masks: Array<string>) => {
-      let v = value.replace(/\D/g, "");
-      let pattern = "";
-
-      for (let i = 0; i < masks.length; i++) {
-        let maskOn = masks[i].replace(/[^0-9#]/g, "").length;
-        // console.log("maskOn: ", maskOn, " / v.Lenght: ", v.length);
-        if (v.length === maskOn) {
-          pattern = masks[i];
-          // console.log("pattern: ", pattern);
-          break;
-        }
+  const setErrorMsg = () => {
+    Object.keys(form).map((field: any) => {
+      if (form[field].value === "" && form[field].required) {
+        setForm((prevForm: any) => ({
+          ...prevForm,
+          [field]: {
+            ...prevForm[field],
+            errorMsg: "Campo obrigatório",
+          },
+        }));
+      } else {
+        setForm((prevForm: any) => ({
+          ...prevForm,
+          [field]: {
+            ...prevForm[field],
+            errorMsg: "",
+          },
+        }));
       }
+    });
+  };
 
-      if (pattern === "") {
-        return v;
+  const handleModal = () => {
+    for (const field of Object.keys(form)) {
+      console.log(form[field].errorMsg);
+      if (form[field].errorMsg != "") {
+        console.log("return false");
+        return false;
       }
-
-      let i = 0;
-      const maskedValue = pattern.replace(/#/g, () => v[i++] || "");
-      return maskedValue;
     };
+    return true;
+  };
 
+  const handleInputChange = (
+    e: any,
+    field: any,
+    apiData?: any,
+    errorMsg?: any
+  ) => {
     if (form[field].masks) {
+      const mask = (value: any, masks: Array<string>) => {
+        let v = value.replace(/\D/g, "");
+        let pattern = "";
+
+        for (let i = 0; i < masks.length; i++) {
+          let maskOn = masks[i].replace(/[^0-9#]/g, "").length;
+          // console.log("maskOn: ", maskOn, " / v.Lenght: ", v.length);
+          if (v.length === maskOn) {
+            pattern = masks[i];
+            // console.log("pattern: ", pattern);
+            break;
+          }
+        }
+
+        if (pattern === "") {
+          return v;
+        }
+
+        let i = 0;
+        const maskedValue = pattern.replace(/#/g, () => v[i++] || "");
+        return maskedValue;
+      };
+
       let eMasked = mask(e, form[field].masks);
       setForm((prevForm: any) => ({
         ...prevForm,
@@ -51,7 +89,7 @@ export default function CreateForm({ formParam }: any) {
       }));
       e = e.replace(/\D/g, "");
     }
-    
+
     setForm((prevForm: any) => ({
       ...prevForm,
       [field]: {
@@ -59,9 +97,7 @@ export default function CreateForm({ formParam }: any) {
         value: e,
       },
     }));
-    // console.log('createForm ln62: ',apiReturn)
 
-    // preenche campos automaticamente com API
     if (apiData) {
       Object.keys(apiData).map((formField) => {
         if (form[formField]) {
@@ -75,21 +111,34 @@ export default function CreateForm({ formParam }: any) {
         }
       });
     }
+
+    if (form[field].errorMsg != undefined) {
+      setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          errorMsg: errorMsg,
+        },
+      }));
+    }
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: "center" }}>
+    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: "center" }}>
       <View>
         {Object.keys(form).map((field) => (
           <View key={field}>
             {form[field].label && (
               <Text style={styles.inputLabel}>{form[field].label}</Text>
             )}
+            {form[field].errorMsg && (
+              <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
+            )}
             {form[field].inputType === "input" && (
               <Input
                 field={form[field]}
-                onValueChange={(e: any, apiData: any) =>
-                  handleInputChange(e, field, apiData)
+                onValueChange={(e: any, apiData: any, errorMsg: any) =>
+                  handleInputChange(e, field, apiData, errorMsg)
                 }
               />
             )}
@@ -137,7 +186,14 @@ export default function CreateForm({ formParam }: any) {
             )}
           </View>
         ))}
-        <Pressable style={styles.button} onPress={() => setModalVisible(true)}>
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            setErrorMsg();
+            console.log(handleModal());
+            handleModal() && setModalVisible(true);
+          }}
+        >
           <Text style={styles.buttonText}>Enviar Formulário</Text>
         </Pressable>
 
@@ -167,8 +223,7 @@ export default function CreateForm({ formParam }: any) {
             </View>
           </View>
         </Modal>
-        {/* </KeyboardAvoidingView> */}
       </View>
-    </View>
+    </ScrollView>
   );
 }

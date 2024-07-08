@@ -1,8 +1,10 @@
 import { styles } from "@/src/constants/styles";
-import callAPI from "@/src/functions/callAPI";
+import { callAPI, validateCPF } from "@/src/functions";
 import { TextInput } from "react-native";
 
-export default function Input({ field, onValueChange, apiData }: any) {
+export default function Input({ field, onValueChange }: any) {
+  let errorMsg: any;
+
   return (
     <TextInput
       placeholder={field.placeholder}
@@ -11,9 +13,14 @@ export default function Input({ field, onValueChange, apiData }: any) {
       inputMode={field.inputMode}
       maxLength={field.maxLength}
       onChangeText={async (e) => {
-        apiData = field.link && e.length === 8 ? await callAPI(field.link, e) : null;
-        //console.log('input ln15: ', apiData)
-        onValueChange(e, apiData);
+        const apiData =
+          field.link && e.length === field.link.paramSize
+            ? await callAPI(field.link, e)
+            : null;
+        if (field.function && field.function.includes("validateCPF")) {
+          !validateCPF(e) ? (errorMsg = "CPF inválido") : (errorMsg = "");
+        }
+        onValueChange(e, apiData, errorMsg);
       }}
     />
   );

@@ -1,6 +1,21 @@
 export const FormParam: {} = {
+  cpfCnpj: {
+    label: "CPF/CNPJ",
+    errorMsg: "",
+    required: true,
+    inputType: "input",
+    inputMode: "numeric",
+    placeholder: "CPF ou CNPJ",
+    masks: ["###.###.###-##", "##.###.###/####-##"],
+    value: "",
+    valueMasked: "",
+    maxLength: 18,
+    function: ["validateCPF"],
+  },
   cep: {
     label: "CEP",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     inputMode: "numeric",
     placeholder: "00000-000",
@@ -10,12 +25,14 @@ export const FormParam: {} = {
     maxLength: 9,
     link: {
       paramBeginning: "https://viacep.com.br/ws/",
+      paramSize: 8,
       paramEnd: "/json/",
-      correspondKey: ["logradouro"],
     },
   },
   logradouro: {
     label: "Logradouro",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     placeholder: "Rua/Av...",
     value: "",
@@ -23,6 +40,8 @@ export const FormParam: {} = {
   },
   numero: {
     label: "Número",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     placeholder: "0000",
     value: "",
@@ -30,6 +49,7 @@ export const FormParam: {} = {
   },
   complemento: {
     label: "Complemento",
+    errorMsg: "",
     inputType: "input",
     placeholder: "Apto./Bloco...",
     value: "",
@@ -37,6 +57,8 @@ export const FormParam: {} = {
   },
   bairro: {
     label: "Bairro",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     placeholder: "Bairro...",
     value: "",
@@ -44,6 +66,8 @@ export const FormParam: {} = {
   },
   localidade: {
     label: "Cidade",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     placeholder: "Cidade...",
     value: "",
@@ -51,6 +75,8 @@ export const FormParam: {} = {
   },
   uf: {
     label: "UF",
+    errorMsg: "",
+    required: true,
     inputType: "input",
     placeholder: "UF...",
     value: "",

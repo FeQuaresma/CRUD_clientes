@@ -1,0 +1,4 @@
+{
+  "doSum": "(a,b)=>{if(a<b){return(a+b);}else{return(a-b);}};",
+  "doMinus": "(a:number,b:number)=>a-b;"
+}

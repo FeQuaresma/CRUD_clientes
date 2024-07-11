@@ -66,6 +66,7 @@ export default function CreateForm({ formParam }: any) {
     fillForm?: any,
     errorMsg?: any
   ) => {
+    // Máscara de input
     if (form[field].masks) {
       const mask = (value: any, masks: Array<string>) => {
         let v = value.replace(/\D/g, "");

@@ -34,7 +34,7 @@ export const FormParam: any = {
       value: "",
       valueMasked: "",
       maxLength: 18,
-      function: ["validateCPF"],
+      functions: ["validateCPF"],
       errorMsg: "CPF inválido",
     },
     field2: {
@@ -136,7 +136,7 @@ export const FormParam: any = {
       value: "",
       valueMasked: "",
       maxLength: 18,
-      function: {validateCPF: "errorMsg"},
+      functions: {validateCPF: "errorMsg"},
     },
     cep: {
       label: "CEP",
@@ -149,7 +149,7 @@ export const FormParam: any = {
       value: "",
       valueMasked: "",
       maxLength: 9,
-      function: {callAPI: "fillForm"},
+      functions: {callAPI: "fillForm"},
       link: {
         paramBeginning: "https://viacep.com.br/ws/",
         paramSize: 8,

@@ -1,14 +1,18 @@
-const math = ([a, b]) => {
-  return a + b;
+const doSum = (a, b) => {
+  a = Number(a);
+  b = Number(b);
+  console.log(typeof a, typeof b);
+  console.log(a, b);
+  console.log(isNaN(b));
+  if (isNaN(a) || isNaN(b)) {
+    throw new Error("Não é um número");
+  }
+  let sum = a + b;
+  return sum;
 };
 
-let funcName = "math"
-let param = [15, 20];
-
-const dynamicFunc = new Function(funcName, param, `return ${funcName}(${param});`);
-console.log(dynamicFunc())
-
-// const result = dynamicFunc();
-// //const result = math(param)
-
-// console.log(result)
+try {
+  console.log(doSum("20","g"))
+} catch (e) {
+  console.error(e.message)
+}

@@ -1,62 +1,121 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, TextInput } from "react-native";
 import { styles } from "../constants/styles";
 
 import functionsConfig from "../constants/functionsConfig";
 import { loadFunctions } from "../functions/loadFunctions";
 import { useEffect, useState } from "react";
 
-type FunctionName = keyof typeof functionsConfig;
-type ParamType = [number, number];
+const url = "https://www.caae.org.br/teste/functions.json?teste="+Math.floor(Math.random() * 9999);
 
 export default function DynamicFunc() {
-  const [loadedFunctions, setLoadedFunctions] = useState<((...args: any[]) => any) | null>(null);
-  const numberParam: ParamType = [10, 5,];
-  const url = "https://www.caae.org.br/teste/functions.json?teste=2";
-  const funcName = "doMinus";
+  const [loadedFunctions, setLoadedFunctions] = useState<any>();
+  const [numberParam, setNumberParam] = useState({
+    number1: "",
+    number2: "",
+  });
+  const [result, setResult] = useState<string>();
 
+
+  
   useEffect(() => {
     loadFunctions(url).then((funcs) => {
-      //console.log("tsx ln 19: " + funcs[funcName].toString());
-      //const dataFunc = eval(funcs[funcName]);
-      // console.log(dataFunc(20, 30));
-      setLoadedFunctions(() => eval(funcs[funcName]));
+      setLoadedFunctions(funcs);
+      console.log("Funções carregadas!")
     });
   }, []);
 
-  const handleFunctions = (funcName: FunctionName, params: ParamType) => {
-    if (loadedFunctions && loadedFunctions) {
-      console.log("tsx ln 28: "+loadedFunctions.toString());
-      const result = loadedFunctions(...params);
-      console.log("tsx ln 30: "+result);
-    } else {
-      console.error("loadedFunctions is not defined");
+  
+  const handleFunctions = (funcName: any) => {
+    try {
+    if (loadedFunctions) {
+      switch (funcName) {
+        case "doMinus":
+          if (loadedFunctions[funcName])
+            setResult(
+              String(
+                loadedFunctions.doMinus(
+                  numberParam.number1,
+                  numberParam.number2
+                )
+              )
+            );
+          break;
+        case "doSum":
+          if (loadedFunctions[funcName])
+            setResult(
+              String(
+                loadedFunctions.doSum(
+                  numberParam.number1,
+                  numberParam.number2
+                )
+              )
+            );
+          break;
+        case "doMulti":
+          if (loadedFunctions[funcName])
+            setResult(
+              String(
+                loadedFunctions.doMulti(
+                  numberParam.number1,
+                  numberParam.number2
+                )
+              )
+            );
+          break;
+        case "doDiv":
+          if (loadedFunctions[funcName])
+            setResult(
+              String(
+                loadedFunctions.doDiv(
+                  numberParam.number1,
+                  numberParam.number2
+                )
+              )
+            );
+          break;
+      }
     }
-
-    // if (functionsConfig[funcName]) {
-    //   const dynamicFunctionName = functionsConfig[funcName]
-    //     .function as keyof typeof functions;
-    //   if (functions[dynamicFunctionName]) {
-    //     const result = functions[dynamicFunctionName](...params); // segredo ta aqui
-    //     console.log(result);
-    //   } else {
-    //     console.error("func not found");
-    //   }
-    // }
-    return null;
+    
+  } catch (error) {
+    console.error("ln 79 ",error)
+  }
   };
 
   return (
     <View>
+      <TextInput
+        style={styles.input}
+        value={numberParam.number1}
+        onChangeText={(text) =>
+          setNumberParam((prevState: any) => ({ ...prevState, number1: text }))
+        }
+        placeholder="Enter number 1"
+      />
+      <TextInput
+        style={styles.input}
+        value={numberParam.number2}
+        onChangeText={(text) =>
+          setNumberParam((prevState: any) => ({ ...prevState, number2: text }))
+        }
+        placeholder="Enter number 2"
+      />
       {Object.keys(functionsConfig).map((func) => (
         <View key={func}>
           <Pressable
             style={styles.button}
-            onPress={() => handleFunctions(func, numberParam)}
+            onPress={() => {
+              handleFunctions(functionsConfig[func].function);
+            }}
           >
             <Text style={styles.buttonText}>{functionsConfig[func].label}</Text>
           </Pressable>
         </View>
       ))}
+      {result && (
+        <Text style={{ ...styles.inputLabel, alignSelf: "center" }}>
+          {result}
+        </Text>
+      )}
     </View>
   );
 }

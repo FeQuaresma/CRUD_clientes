@@ -1,16 +1,21 @@
-import { Stack } from "expo-router";
+import * as React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Index from ".";
+import MyDrawer from "./(tabs)/_layout";
 
-export default function RootLayout() {
+const Stack = createNativeStackNavigator();
+
+function MyStack() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerShown: false,
-          statusBarHidden: true,
-          navigationBarHidden: true,
-        }}
-      />
-    </Stack>
+    <Stack.Navigator>
+      <Stack.Screen name="index" component={Index} options={{headerShown: false}}/>
+      <Stack.Screen name="(tabs)" component={MyDrawer} options={{headerShown: false}}/>
+    </Stack.Navigator>
+  );
+}
+
+export default function App() {
+  return (
+      <MyStack />
   );
 }

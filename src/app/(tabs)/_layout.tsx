@@ -2,13 +2,22 @@ import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from ".";
 import Calculator from "./calc";
-import Enderecos from "./enderecos";
+import CreateForm from "../../components/createForm";
+import { modulesParam } from "@/src/constants/moduleParam";
 
 const Drawer = createDrawerNavigator();
 
+const formArray:any = {}
+
+Object.keys(modulesParam).map((form:string)=>{
+  formArray[form] = () => <CreateForm key={form} formParam={modulesParam[form].formParam} />
+})
+
 export default function MyDrawer() {
+  
   return (
     <Drawer.Navigator>
+
       <Drawer.Screen
         name="Home"
         component={Home}
@@ -16,8 +25,8 @@ export default function MyDrawer() {
           title: "home",
           headerShown: false,
         }}
-        
       />
+
       <Drawer.Screen
         name="Calculadora"
         component={Calculator}
@@ -26,14 +35,19 @@ export default function MyDrawer() {
           headerShown: false,
         }}
       />
+
+      {Object.keys(formArray).map((form)=> 
       <Drawer.Screen
-        name="Enderecos"
-        component={Enderecos}
-        options={{
-          title: "enderecos",
-          headerShown: false,
-        }}
+      key={form}
+      name={form}
+      component={formArray[form]}
+      options={{
+        title: form,
+        headerShown: false,
+      }}
       />
+    )}
+
     </Drawer.Navigator>
   );
 }

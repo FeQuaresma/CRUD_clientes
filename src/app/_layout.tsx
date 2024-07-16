@@ -5,17 +5,11 @@ import MyDrawer from "./(tabs)/_layout";
 
 const Stack = createNativeStackNavigator();
 
-function MyStack() {
+export default function App() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="index" component={Index} options={{headerShown: false}}/>
       <Stack.Screen name="(tabs)" component={MyDrawer} options={{headerShown: false}}/>
     </Stack.Navigator>
-  );
-}
-
-export default function App() {
-  return (
-      <MyStack />
   );
 }

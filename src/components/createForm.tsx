@@ -11,11 +11,13 @@ import {
   Grid,
 } from "./createFields";
 import { styles, stylesModal } from "../constants/styles";
+import { Param, FormParam } from "../constants/params";
 
-export default function CreateForm({ formParam }: any) {
+export default function CreateForm(formParam: FormParam) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
   const [errorCheckComplete, setErrorCheckComplete] = useState(false)
+  
 
   useEffect(() => {
     if (errorCheckComplete) {
@@ -27,7 +29,7 @@ export default function CreateForm({ formParam }: any) {
   }, [errorCheckComplete, form]);
 
   const setErrorMsg = () => {
-    Object.keys(form).map((field: any) => {
+    Object.keys(form).map((field: string) => {
       if (form[field].value === "" && form[field].required) {
         setForm((prevForm: any) => ({
           ...prevForm,
@@ -138,9 +140,10 @@ export default function CreateForm({ formParam }: any) {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flex: 1, justifyContent: "center" }}>
+    <ScrollView contentContainerStyle={styles.container}>
       {Object.keys(form).map((field) => (
         <View key={field}>
+          {console.log(form["cep"].label)}
           {form[field].label && (
             <Text style={styles.inputLabel}>{form[field].label}{form[field].required && "*"}</Text>
           )}

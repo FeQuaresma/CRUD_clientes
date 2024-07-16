@@ -91,24 +91,24 @@ export const FormParam: any = {
     //   action:
     //     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/833px-PDF_file_icon.svg.png",
     // },
-    field9: {
-      buttonText: "Anexar um arquivo",
-      inputType: "file",
-      value: {},
-    },
-    Grade: {
-      label: "Grade",
-      inputType: "grid",
-      gridSize: 12,
-      maxLength: 3,
-      customStyle: { maxWidth: 66, borderColor: "black" },
-      value: [],
-    },
-    field10: {
-      label: "Data de Compra",
-      inputType: "date",
-      value: "",
-    },
+    // field9: {
+    //   buttonText: "Anexar um arquivo",
+    //   inputType: "file",
+    //   value: {},
+    // },
+    // Grade: {
+    //   label: "Grade",
+    //   inputType: "grid",
+    //   gridSize: 12,
+    //   maxLength: 3,
+    //   customStyle: { maxWidth: 66, borderColor: "black" },
+    //   value: [],
+    // },
+    // field10: {
+    //   label: "Data de Compra",
+    //   inputType: "date",
+    //   value: "",
+    // },
   },
   cnpj: {
     cpfCnpj: {

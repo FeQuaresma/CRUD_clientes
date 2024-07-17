@@ -29,7 +29,7 @@ export const modulesParam: ModuleParam = {
       enderecoestado: params.enderecoestado,
       enderecocidade: params.enderecocidade,
       enderecopais: params.enderecopais,
-      contatonome: params.contato,
+      contatonome: params.contatonome,
       contatotelefone: params.contatotelefone,
       contatotelefone2: params.contatotelefone2,
       contatoemail: params.contatoemail,
@@ -50,7 +50,7 @@ export const modulesParam: ModuleParam = {
       enderecobairro: params.enderecobairro,
       enderecoestado: params.enderecoestado,
       enderecocidade: params.enderecocidade,
-      contatonome: params.contato,
+      contatonome: params.contatonome,
       contatotelefone: params.contatotelefone,
       contatotelefone2: params.contatotelefone2,
       contatoemail: params.contatoemail,
@@ -58,7 +58,12 @@ export const modulesParam: ModuleParam = {
       enderecouf: params.enderecouf,
       rntc: params.rntc,
       modalidadefrete: params.modalidadefrete,
-      obeservacoes: params.obeservacoes,
+      obeservacoes: params.observacoes,
+    },
+  }, pedido: {
+    moduleName: "Pedido",
+    formParam: {
+      contatonome: params.contatonome,
     },
   },
 };

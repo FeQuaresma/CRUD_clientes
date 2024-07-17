@@ -4,12 +4,16 @@ const fontSizeDefault = 20;
 const widthDefault = 250;
 
 export const styles = StyleSheet.create({
-  container: {
+  containerView: {
     flex: 1,
+    paddingTop: 50,
+    backgroundColor:"black"
+  },
+  containerScrollView: {
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000000",
-    color: "#ffffff",
+    backgroundColor: "black",
   },
   inputLabel: {
     fontSize: fontSizeDefault,

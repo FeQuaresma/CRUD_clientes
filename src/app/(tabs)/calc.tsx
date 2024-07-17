@@ -1,11 +1,17 @@
-import { ScrollView } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 import { styles } from "../../constants/styles";
 import DynamicFunc from "../../components/dynamicFunc";
+import { useNavigationState } from '@react-navigation/native';
 
-export default function Calculator() {
+export default function Calculator({ navigation }:any) {
+
+  const routes = useNavigationState(state => state.routes);
+  
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={styles.containerScrollView}>
       <DynamicFunc />
+      <Pressable style={styles.button} onPress={()=> console.log(routes)}><Text style={styles.buttonText}>Push</Text></Pressable>
     </ScrollView>
   );
 }

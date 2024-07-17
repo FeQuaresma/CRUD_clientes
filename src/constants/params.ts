@@ -138,7 +138,6 @@ export const params: Param = {
     isEditable: true,
   },
   endereconome: {
-    label: "",
     inputType: "input",
     inputMode: "text",
     value: "",
@@ -249,7 +248,7 @@ export const params: Param = {
     label: "Bairro",
     inputType: "input",
     inputMode: "text",
-    value: "Brasil",
+    value: "",
     maxLength: 60,
     isRequired: true,
     isEditable: true,
@@ -284,7 +283,7 @@ export const params: Param = {
     value: "",
     valueMasked: "",
     maxLength: 15,
-    isRequired: true,
+    isRequired: false,
     isEditable: false,
   },
   contatonome: {

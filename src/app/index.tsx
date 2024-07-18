@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Pressable, TextInput, View, Text, ScrollView } from "react-native";
 import { styles } from "../constants/styles";
+import { useNavigationState } from "@react-navigation/native";
 
 export default function Index({ navigation }: any) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  
+  const routes = useNavigationState(state => state.routes);
+  
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
       <Text style={styles.inputLabel}>Login</Text>
@@ -26,6 +30,12 @@ export default function Index({ navigation }: any) {
         onPress={() => navigation.push("(tabs)")}
       >
         <Text style={styles.buttonText}>Entrar</Text>
+      </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => console.log(routes)}
+      >
+        <Text style={styles.buttonText}>Rotas</Text>
       </Pressable>
     </ScrollView>
   );

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from ".";
 import Calculator from "./calc";
@@ -6,6 +6,7 @@ import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
 import ModuleList from "@/src/components/moduleList";
+import RootStack from '@react-navigation/native';
 
 const Drawer = createDrawerNavigator();
 const moduleArray: any = {};
@@ -61,8 +62,15 @@ Object.keys(modulesParam).map((moduleObject) => {
 });
 
 export default function MyDrawer() {
+  const navigationRef = useRef<any>(null);
+
+  function goToRoute(routeName:any) {
+    navigationRef.current?.navigate(routeName);
+  }
+
+
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator backBehavior="history">
       <Drawer.Screen
         name="Home"
         component={Home}

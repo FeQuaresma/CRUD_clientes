@@ -12,7 +12,7 @@ export default function ModuleIndex({ moduleName }:any) {
   const [info, setInfo] = useState("");
   const navigation:any = useNavigation();
 
-  const routes = useNavigationState(state => state.routes);
+  const routes = useNavigationState(state => state);
 
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>

@@ -36,7 +36,7 @@ export const params: Param = {
     maxLength: 18,
     isRequired: true,
     isEditable: false,
-    customCSS: {},
+    customCSS: {color: "black"},
     function: ["validateCPF", "validateCNPJ"],
   },
   insc: {

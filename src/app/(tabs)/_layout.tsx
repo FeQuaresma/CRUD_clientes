@@ -13,11 +13,11 @@ const moduleArray: any = {};
 Object.keys(modulesParam).map((moduleObject) => {
   const ModuleIndexComponent = () => (
     // <ModuleIndex />
-    <ModuleIndex moduleName={modulesParam[moduleObject].moduleName} />
+    <ModuleIndex moduleName={modulesParam[moduleObject].moduleName} style={{color: "black"}}/>
   );
   const ModuleListComponent = () => (
-    // <ModuleList />
-    <ModuleList moduleName={modulesParam[moduleObject].moduleName} />
+    <ModuleList />
+    // <ModuleList moduleName={modulesParam[moduleObject].moduleName} />
   );
   const ModuleFormComponent = () => (
     <ModuleForm formParam={modulesParam[moduleObject].formParam} />
@@ -29,7 +29,7 @@ Object.keys(modulesParam).map((moduleObject) => {
         component={ModuleIndexComponent}
         options={{
           title: `${moduleObject}Home`,
-          headerShown: false,
+          // headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -37,7 +37,7 @@ Object.keys(modulesParam).map((moduleObject) => {
         component={ModuleIndexComponent}
         options={{
           title: `${moduleObject}Home2`,
-          headerShown: false,
+          // headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -45,7 +45,7 @@ Object.keys(modulesParam).map((moduleObject) => {
         component={ModuleListComponent}
         options={{
           title: `${moduleObject}List`,
-          headerShown: false,
+          // headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -53,7 +53,7 @@ Object.keys(modulesParam).map((moduleObject) => {
         component={ModuleFormComponent}
         options={{
           title: `${moduleObject}Form`,
-          headerShown: false,
+          // headerShown: false,
         }}
       />
     </Drawer.Navigator>
@@ -69,7 +69,7 @@ export default function MyDrawer() {
         component={Home}
         options={{
           title: "home",
-          headerShown: false,
+          // headerShown: false,
         }}
       />
       <Drawer.Screen
@@ -77,7 +77,7 @@ export default function MyDrawer() {
         component={Calculator}
         options={{
           title: "calculator",
-          headerShown: false,
+          // headerShown: false,
         }}
       />
       {Object.keys(moduleArray).map((moduleObject) => (
@@ -87,7 +87,7 @@ export default function MyDrawer() {
           component={moduleArray[moduleObject]}
           options={{
             title: modulesParam[moduleObject].moduleName,
-            headerShown: false,
+            // headerShown: false,
           }}
         />
       ))}

@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black",
+    backgroundColor: "black"
   },
   inputLabel: {
     fontSize: fontSizeDefault,

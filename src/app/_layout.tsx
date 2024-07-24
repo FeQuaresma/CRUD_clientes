@@ -4,6 +4,7 @@ import Index from ".";
 import MyDrawer from "./(tabs)/_layout";
 import Teste from "./teste";
 import ModuleList from "../components/moduleList";
+import TableTest from "./tableTest";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,15 @@ export default function App() {
       <Stack.Screen
         name="teste"
         component={ModuleList}
+        options={{
+          // headerShown: false,
+          statusBarStyle: "light",
+          statusBarTranslucent: true,
+        }}
+      />
+      <Stack.Screen
+        name="tableTest"
+        component={TableTest}
         options={{
           // headerShown: false,
           statusBarStyle: "light",

@@ -1,86 +1,88 @@
-import * as React from "react";
-import { ScrollView, Text } from "react-native";
-import { styles } from "../constants/styles";
-import { DataTable, PaperProvider } from "react-native-paper";
+// import * as React from "react";
+// import { ScrollView, Text } from "react-native";
+// import { styles } from "../constants/styles";
+// import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-reanimated-table';
 
-export default function ModuleList ({moduleName}:any) {
-  return (
-    <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <Text style={styles.inputLabel}>Listagem {moduleName}</Text>
-    </ScrollView>
-  )
-}
+// export default function ModuleList ({moduleName}:any) {
+//   return (
+//     <ScrollView contentContainerStyle={styles.containerScrollView}>
+//       <Text style={styles.inputLabel}>Listagem {moduleName}</Text>
+//     </ScrollView>
+//   )
+// }
 
-export default function ModuleList() {
-  const [page, setPage] = React.useState<number>(0);
-  const [numberOfItemsPerPageList] = React.useState([2, 3, 4]);
-  const [itemsPerPage, onItemsPerPageChange] = React.useState(
-    numberOfItemsPerPageList[0]
-  );
+import React, { Component } from "react";
+import { View, ScrollView } from "react-native";
+import { Table, Row } from "react-native-reanimated-table";
+import { styles, stylesTable } from "../constants/styles";
+import { modulesParam } from "../constants/moduleParam";
 
-  const [items] = React.useState([
-    {
-      key: 1,
-      name: "Cupcake",
-      calories: 356,
-      fat: 16,
-    },
-    {
-      key: 2,
-      name: "Eclair",
-      calories: 262,
-      fat: 16,
-    },
-    {
-      key: 3,
-      name: "Frozen yogurt",
-      calories: 159,
-      fat: 6,
-    },
-    {
-      key: 4,
-      name: "Gingerbread",
-      calories: 305,
-      fat: 3.7,
-    },
-  ]);
+export default class ExampleThree extends Component {
+  constructor(props: any) {
+    const tableHead: any = [];
+    const widthArr: any = [];
+    Object.keys(modulesParam["cliente"].formParam).map((moduleObject) => {
+      modulesParam["cliente"].formParam[moduleObject].label &&
+        tableHead.push(modulesParam["cliente"].formParam[moduleObject].label) &&
+        widthArr.push(100);
+    });
+    console.log(tableHead);
 
-  const from = page * itemsPerPage;
-  const to = Math.min((page + 1) * itemsPerPage, items.length);
+    super(props);
+    this.state = {
+      tableHead: tableHead,
+      widthArr: widthArr,
+    };
+  }
 
-  React.useEffect(() => {
-    setPage(0);
-  }, [itemsPerPage]);
+  render() {
+    const state: any = this.state;
+    const tableData = [];
+    for (let i = 0; i < 30; i += 1) {
+      const rowData = [];
+      for (let j = 0; j < 20; j += 1) {
+        rowData.push(`${i}${j}`);
+      }
+      tableData.push(rowData);
+    }
 
-  return (
-    <PaperProvider>
-      <DataTable>
-        <DataTable.Header>
-          <DataTable.Title>Dessert</DataTable.Title>
-          <DataTable.Title numeric>Calories</DataTable.Title>
-          {/* <DataTable.Title numeric>Fat</DataTable.Title> */}
-        </DataTable.Header>
-
-        {items.slice(from, to).map((item) => (
-          <DataTable.Row key={item.key}>
-            <DataTable.Cell>{item.name}</DataTable.Cell>
-            <DataTable.Cell numeric>{item.calories}</DataTable.Cell>
-            <DataTable.Cell numeric>{item.fat}</DataTable.Cell>
-          </DataTable.Row>
-        ))}
-
-        <DataTable.Pagination
-          page={page}
-          numberOfPages={Math.ceil(items.length / itemsPerPage)}
-          onPageChange={(page) => setPage(page)}
-          label={`${from + 1}-${to} of ${items.length}`}
-          numberOfItemsPerPageList={numberOfItemsPerPageList}
-          numberOfItemsPerPage={itemsPerPage}
-          onItemsPerPageChange={onItemsPerPageChange}
-          showFastPaginationControls
-          selectPageDropdownLabel={"Rows per page"}
-        />
-      </DataTable>
-    </PaperProvider>
-  );
+    return (
+      <View
+        style={{
+          ...styles.containerScrollView,
+          paddingTop: 30,
+        }}
+      >
+        <ScrollView horizontal={true}>
+          <View>
+            <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+              <Row
+                data={state.tableHead}
+                widthArr={state.widthArr}
+                style={stylesTable.header}
+                textStyle={stylesTable.headerText}
+              />
+            </Table>
+            <ScrollView style={stylesTable.dataWrapper}>
+              <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+                {tableData.map((rowData, index) => {
+                  let oddRow = false;
+                  index % 2 && (oddRow = true);
+                  return (
+                    <Row
+                      key={index}
+                      data={rowData}
+                      widthArr={state.widthArr}
+                      style={oddRow ? stylesTable.rowOdd : stylesTable.row}
+                      textStyle={stylesTable.text}
+                    />
+                  );
+                })}
+              </Table>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
 }

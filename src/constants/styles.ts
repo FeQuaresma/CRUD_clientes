@@ -7,13 +7,13 @@ export const styles = StyleSheet.create({
   containerView: {
     flex: 1,
     paddingTop: 50,
-    backgroundColor:"black"
+    backgroundColor: "black",
   },
   containerScrollView: {
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "black"
+    backgroundColor: "black",
   },
   inputLabel: {
     fontSize: fontSizeDefault,
@@ -115,4 +115,13 @@ export const stylesModal = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+});
+
+export const stylesTable = StyleSheet.create({
+  header: { height: 50, backgroundColor: "#3279ca" },
+  headerText: { textAlign: "center", fontWeight: "400", color: "white" },
+  text: { textAlign: "center", fontWeight: "200" },
+  dataWrapper: { marginTop: -1 },
+  row: { height: 40, backgroundColor: "#c5c5c5" },
+  rowOdd: { height: 40, backgroundColor: "#f5f5f5" },
 });

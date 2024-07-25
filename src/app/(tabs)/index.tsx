@@ -8,9 +8,6 @@ export default function Home({ navigationRef }:any){
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
       <Text style={styles.inputLabel}>Home</Text>
-      <Pressable style={styles.button} onPress={() => navigationRef.navigate("NavigationRef")}>
-        <Text>NavigationRef</Text>
-      </Pressable>
       <Pressable style={styles.button} onPress={() => console.log(routes.routeNames)}>
         <Text>NavigationRef</Text>
       </Pressable>

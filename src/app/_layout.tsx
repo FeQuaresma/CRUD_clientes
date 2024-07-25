@@ -42,7 +42,7 @@ export default function App() {
         name="tableTest"
         component={TableTest}
         options={{
-          // headerShown: false,
+          headerShown: false,
           statusBarStyle: "light",
           statusBarTranslucent: true,
         }}

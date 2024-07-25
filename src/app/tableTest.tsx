@@ -1,68 +1,69 @@
 import React, { Component, useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Cell, Row, Rows, Table, TableWrapper } from "react-native-reanimated-table";
+import {
+  Cell,
+  Row,
+  Rows,
+  Table,
+  TableWrapper,
+} from "react-native-reanimated-table";
 import { stylesTable } from "../constants/styles";
+import { modulesParam } from "../constants/moduleParam";
+
+type ColumnKey = `appTableCol${number | string}`;
+
+type ColumnStyle = {
+  display?: "none";
+};
+
+type StateTable = {
+  tableHead: string[];
+  tableData: [string[]];
+  tableWidth?: [];
+};
+
+type Columns = Record<ColumnKey, ColumnStyle>;
 
 export default function TableTest() {
-  const state = {
-    tableHead: ["Head1", "Head2", "Head3", "Head4"],
-    tableData: [
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-      ["01", "02", "03", "04"],
-      ["11", "12", "13", "14"],
-      ["21", "22", "23", "24"],
-      ["31", "32", "33", "34"],
-    ],
+  const state: StateTable = {
+    tableHead: [],
+    tableData: [[]],
+    tableWidth: [],
   };
 
-  const [header, setHeader] = useState(state.tableHead);
-  const [data, setData] = useState(state.tableData);
-  const [filter, setFilter] = useState([]);
+  Object.keys(modulesParam.cliente.formParam).map((param: string) => {
+    modulesParam.cliente.formParam[param].label &&
+      state.tableHead.push(modulesParam.cliente.formParam[param].label);
+  });
+
+  for (let i = 0; i < 30; i++) {
+    state.tableData[i] = [];
+    for (let n = 0; n < state.tableHead.length; n++) {
+      state.tableData[i][n] = `${i}${n}`;
+    }
+  }
+
+  const [filter, setFilter] = useState<string[]>([]);
+  const [lock, setLock] = useState<boolean>(false);
 
   useEffect(() => {
-    let updatedHeader = state.tableHead;
-    let updatedData = state.tableData;
-
-    filter.forEach((element) => {
-      let index = filter.indexOf(element);
-      updatedHeader = updatedHeader.filter((head) => head !== filter[index]);
-      data.forEach((row) => {
-        updatedData = updatedData.filter((item) => item[index] !== row[index]);
-      });
+    state.tableHead.map((col, index) => {
+      let newStyleName: ColumnKey = `appTableCol${index}`;
+      colums[newStyleName] = {};
     });
+  }, []);
 
-    setHeader(updatedHeader);
-    setData(updatedData);
-  }, [filter]);
+  function handleFilter(col: ColumnKey) {
+    if (colums[col] === colums.appTableCol0 && lock === true) {
+      console.log("error");
+      console.log(lock);
+      return;
+    }
 
-  function handleFilter(col: string) {
+    colums[col].display !== "none"
+      ? (colums[col] = { display: "none" })
+      : (colums[col] = {});
+
     if (!filter.includes(col)) {
       setFilter([...filter, col]);
     } else {
@@ -70,56 +71,132 @@ export default function TableTest() {
     }
   }
 
+  function handleLock() {
+    console.log(colums.appTableColLock.display);
+    if (!colums.appTableCol0.display || lock) {
+      if (colums.appTableColLock.display !== "none") {
+        colums.appTableColLock = { display: "none" };
+        colums.appTableCol0 = {};
+        setLock(false);
+      } else {
+        colums.appTableColLock = {};
+        colums.appTableCol0 = { display: "none" };
+        setLock(true);
+      }
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Hellow World!</Text>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Pressable style={styles.button} onPress={() => handleFilter("Head1")}>
-          <Text style={styles.buttonText}>Head1</Text>
-        </Pressable>
-        <Pressable style={{...styles.button}} onPress={() => handleFilter("Head2")}>
-          <Text style={styles.buttonText}>Head2</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => handleFilter("Head3")}>
-          <Text style={styles.buttonText}>Head3</Text>
-        </Pressable>
-        <Pressable style={styles.button} onPress={() => handleFilter("Head4")}>
-          <Text style={styles.buttonText}>Head4</Text>
-        </Pressable>
-      </View>
+    <View style={{ ...styles.container, backgroundColor: "grey" }}>
+      <Text>Hello World!</Text>
+
+      <Pressable style={styles.button} onPress={() => handleLock()}>
+        <Text style={styles.buttonText}>Lock</Text>
+      </Pressable>
+
+      <ScrollView
+        horizontal={true}
+        contentContainerStyle={{
+          flexDirection: "row",
+        }}
+      >
+        {state.tableHead.map((colHeadData, colHeadIndex) => (
+          <Pressable
+            key={colHeadIndex}
+            style={styles.button}
+            onPress={() => handleFilter(`appTableCol${colHeadIndex}`)}
+          >
+            <Text style={styles.buttonText}>{colHeadData}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+
       <View style={{ flexDirection: "row" }}>
-        {filter.map((item) => (
-          <Text>{item}</Text>
+        {filter.map((item, index) => (
+          <Text key={index}>{item} </Text>
         ))}
       </View>
-      <TableWrapper>
-        <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-          <Row data={header} style={styles.head} textStyle={styles.text} />
-        </Table>
-        <ScrollView style={stylesTable.dataWrapper}>
+
+      {/* <View style={styles.row}> */}
+      <ScrollView contentContainerStyle={styles.row} nestedScrollEnabled={true}>
+        <TableWrapper style={colums.appTableColLock}>
           <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-            {
-            state.tableData.map((rowData,index)=>(
-              <TableWrapper key={index} style={styles.row}>
-                {
-                  rowData.map((cellData, cellIndex)=>(
-                    <Cell key={cellIndex} data={cellData} textStyle={styles.text} style={cellIndex === 3 && {display: "none"}}/>
-                  ))
-                }
-              </TableWrapper>
-            ))
-            }
-            {/* <Rows data={data} textStyle={styles.text} /> */}
+            <TableWrapper style={{ ...styles.row, ...styles.head }}>
+              <Cell
+                key={"lockedCol"}
+                data={state.tableHead[0]}
+                textStyle={styles.text}
+                style={{ width: 70 }}
+              />
+            </TableWrapper>
           </Table>
+          <ScrollView style={stylesTable.dataWrapper}>
+            <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
+              {state.tableData.map((rowData, index) => (
+                <TableWrapper key={index} style={styles.row}>
+                  <Cell
+                    key={index}
+                    data={rowData[0]}
+                    textStyle={styles.text}
+                    style={{
+                      width: 70,
+                    }}
+                  />
+                </TableWrapper>
+              ))}
+            </Table>
+          </ScrollView>
+        </TableWrapper>
+
+        <ScrollView horizontal={true}>
+          <TableWrapper>
+            <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
+              <TableWrapper style={{ ...styles.row, ...styles.head }}>
+                {state.tableHead.map((cellData, cellIndex) => (
+                  <Cell
+                    key={cellIndex}
+                    data={cellData}
+                    textStyle={styles.text}
+                    style={{ ...colums[`appTableCol${cellIndex}`], width: 70 }}
+                  />
+                ))}
+              </TableWrapper>
+            </Table>
+
+            <ScrollView style={stylesTable.dataWrapper}>
+              <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
+                {state.tableData.map((rowData, index) => (
+                  <TableWrapper key={index} style={styles.row}>
+                    {rowData.map((cellData, cellIndex) => (
+                      <Cell
+                        key={cellIndex}
+                        data={cellData}
+                        textStyle={styles.text}
+                        style={{
+                          ...colums[`appTableCol${cellIndex}`],
+                          width: 70,
+                        }}
+                      />
+                    ))}
+                  </TableWrapper>
+                ))}
+              </Table>
+            </ScrollView>
+          </TableWrapper>
         </ScrollView>
-      </TableWrapper>
+      </ScrollView>
+      {/* </View> */}
     </View>
   );
 }
 
+const colums: Columns = StyleSheet.create({
+  ["appTableColLock"]: { display: "none" },
+});
+
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, paddingTop: 30, backgroundColor: "#fff" },
-  head: { height: 40, backgroundColor: "#f1f8ff" },
+  container: { padding: 16, paddingTop: 30, backgroundColor: "#fff" },
+  head: { height: 60, backgroundColor: "#f1f8ff" },
   text: { margin: 6 },
   button: {
     alignItems: "center",
@@ -132,6 +209,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "black",
-  }, 
-  row: { flexDirection: 'row', backgroundColor: '#FFF1C1' },
+  },
+  row: { flexDirection: "row", backgroundColor: "#FFF1C1" },
 });

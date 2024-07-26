@@ -1,14 +1,20 @@
-import React, { Component, useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import {
-  Cell,
-  Row,
-  Rows,
-  Table,
-  TableWrapper,
-} from "react-native-reanimated-table";
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
 import { stylesTable } from "../constants/styles";
 import { modulesParam } from "../constants/moduleParam";
+import {
+  SyncedScrollViewContext,
+  syncedScrollViewState,
+} from "../context/SyncedScrollViewContext";
+import { SyncedScrollView } from "../components/SyncedScrollView";
 
 type ColumnKey = `appTableCol${number | string}`;
 
@@ -19,32 +25,50 @@ type ColumnStyle = {
 type StateTable = {
   tableHead: string[];
   tableData: [string[]];
+  tableDataBackup: [string[]];
   tableWidth?: [];
 };
 
 type Columns = Record<ColumnKey, ColumnStyle>;
 
 export default function TableTest() {
-  const state: StateTable = {
-    tableHead: [],
-    tableData: [[]],
-    tableWidth: [],
-  };
-
-  Object.keys(modulesParam.cliente.formParam).map((param: string) => {
-    modulesParam.cliente.formParam[param].label &&
-      state.tableHead.push(modulesParam.cliente.formParam[param].label);
-  });
-
-  for (let i = 0; i < 30; i++) {
-    state.tableData[i] = [];
-    for (let n = 0; n < state.tableHead.length; n++) {
-      state.tableData[i][n] = `${i}${n}`;
-    }
-  }
-
+  const [lock, setLock] = useState(false);
   const [filter, setFilter] = useState<string[]>([]);
-  const [lock, setLock] = useState<boolean>(false);
+  const [filterWord, setFilterWord] = useState("");
+  const [globalFilterWord, setGlobalFilterWord] = useState("");
+  const [tableHead, setTableHead] = useState<string[]>([]);
+  const [tableData, setTableData] = useState<string[][]>([]);
+  const [tableHeadBackup, setTableHeadBackup] = useState<string[][]>([]);
+  const [tableWidth, setTableWidth] = useState();
+
+  // const state: StateTable = {
+  //   tableHead: [],
+  //   tableData: [[]],
+  //   tableDataBackup: [[]],
+  //   tableWidth: [],
+  // };
+
+  function renderHead() {
+    let head: string[] = [];
+    Object.keys(modulesParam.pedido.formParam).map((param: string) => {
+      modulesParam.pedido.formParam[param].label &&
+        head.push(modulesParam.pedido.formParam[param].label);
+    });
+    setTableHead(head);
+  }
+  renderHead();
+
+  function renderTable() {
+    let data: string[][] = [[]]
+    for (let i = 0; i < 30; i++) {
+      data[i] = [];
+      for (let n = 0; n < tableHead.length; n++) {
+        data[i][n] = `${i}${n}`;
+      }
+    }
+    setTableData(data);
+    setTableHeadBackup(data);
+  }
 
   useEffect(() => {
     state.tableHead.map((col, index) => {
@@ -52,6 +76,13 @@ export default function TableTest() {
       colums[newStyleName] = {};
     });
   }, []);
+
+  useEffect(() => {
+    if (globalFilterWord !== "") {
+      handleFilterWord();
+    }
+    console.log(state.tableData);
+  }, [globalFilterWord]);
 
   function handleFilter(col: ColumnKey) {
     if (colums[col] === colums.appTableCol0 && lock === true) {
@@ -86,107 +117,160 @@ export default function TableTest() {
     }
   }
 
+  function handleFilterWord() {
+    if (filterWord != "") {
+      state.tableData = [[]];
+      let index = 0;
+      let filterWordLower = filterWord.toLowerCase();
+      state.tableDataBackup.forEach((row) => {
+        let rowString = row.join("").toLowerCase();
+        console.log(rowString);
+        if (rowString.includes(filterWordLower)) {
+          state.tableData[index] = row;
+          index += 1;
+        } else {
+          return;
+        }
+      });
+    }
+  }
+
   return (
-    <View style={{ ...styles.container, backgroundColor: "grey" }}>
-      <Text>Hello World!</Text>
+    <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
+      <View style={{ ...styles.container, backgroundColor: "grey" }}>
+        <Pressable
+          style={{ ...styles.buttonSrc, backgroundColor: "red" }}
+          onPress={() => {
+            console.log("pressed");
+            renderTable();
+          }}
+        >
+          <Text style={{ color: "white" }}>Render Table</Text>
+        </Pressable>
 
-      <Pressable style={styles.button} onPress={() => handleLock()}>
-        <Text style={styles.buttonText}>Lock</Text>
-      </Pressable>
-
-      <ScrollView
-        horizontal={true}
-        contentContainerStyle={{
-          flexDirection: "row",
-        }}
-      >
-        {state.tableHead.map((colHeadData, colHeadIndex) => (
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            style={styles.input}
+            value={filterWord}
+            onChangeText={(e) => {
+              setFilterWord(e);
+            }}
+          />
           <Pressable
-            key={colHeadIndex}
-            style={styles.button}
-            onPress={() => handleFilter(`appTableCol${colHeadIndex}`)}
+            style={styles.buttonSrc}
+            onPress={() => setGlobalFilterWord(filterWord)}
           >
-            <Text style={styles.buttonText}>{colHeadData}</Text>
+            <Text style={{ color: "white" }}>Pesq</Text>
           </Pressable>
-        ))}
-      </ScrollView>
+        </View>
 
-      <View style={{ flexDirection: "row" }}>
-        {filter.map((item, index) => (
-          <Text key={index}>{item} </Text>
-        ))}
-      </View>
+        <Pressable style={styles.button} onPress={() => handleLock()}>
+          <Text style={styles.buttonText}>Lock</Text>
+        </Pressable>
 
-      {/* <View style={styles.row}> */}
-      <ScrollView contentContainerStyle={styles.row} nestedScrollEnabled={true}>
-        <TableWrapper style={colums.appTableColLock}>
-          <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-            <TableWrapper style={{ ...styles.row, ...styles.head }}>
-              <Cell
-                key={"lockedCol"}
-                data={state.tableHead[0]}
-                textStyle={styles.text}
-                style={{ width: 70 }}
-              />
-            </TableWrapper>
-          </Table>
-          <ScrollView style={stylesTable.dataWrapper}>
-            <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-              {state.tableData.map((rowData, index) => (
-                <TableWrapper key={index} style={styles.row}>
-                  <Cell
-                    key={index}
-                    data={rowData[0]}
-                    textStyle={styles.text}
-                    style={{
-                      width: 70,
-                    }}
-                  />
-                </TableWrapper>
-              ))}
-            </Table>
+        <View>
+          <ScrollView
+            horizontal={true}
+            contentContainerStyle={{
+              flexDirection: "row",
+            }}
+          >
+            {state.tableHead.map((colHeadData, colHeadIndex) => (
+              <Pressable
+                key={colHeadIndex}
+                style={styles.button}
+                onPress={() => handleFilter(`appTableCol${colHeadIndex}`)}
+              >
+                <Text style={styles.buttonText}>{colHeadData}</Text>
+              </Pressable>
+            ))}
           </ScrollView>
-        </TableWrapper>
+        </View>
 
-        <ScrollView horizontal={true}>
-          <TableWrapper>
+        <View style={{ flexDirection: "row" }}>
+          {filter.map((item, index) => (
+            <Text key={index}>{item} </Text>
+          ))}
+        </View>
+
+        <View style={{ height: "70%", flexDirection: "row" }}>
+          {/* <ScrollView contentContainerStyle={styles.row} nestedScrollEnabled={true}> */}
+
+          <TableWrapper style={colums.appTableColLock}>
             <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
               <TableWrapper style={{ ...styles.row, ...styles.head }}>
-                {state.tableHead.map((cellData, cellIndex) => (
-                  <Cell
-                    key={cellIndex}
-                    data={cellData}
-                    textStyle={styles.text}
-                    style={{ ...colums[`appTableCol${cellIndex}`], width: 70 }}
-                  />
-                ))}
+                <Cell
+                  key={"lockedCol"}
+                  data={state.tableHead[0]}
+                  textStyle={styles.text}
+                  style={{ width: 70 }}
+                />
               </TableWrapper>
             </Table>
-
-            <ScrollView style={stylesTable.dataWrapper}>
+            <SyncedScrollView scrollViewId={0} style={stylesTable.dataWrapper}>
               <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
                 {state.tableData.map((rowData, index) => (
                   <TableWrapper key={index} style={styles.row}>
-                    {rowData.map((cellData, cellIndex) => (
-                      <Cell
-                        key={cellIndex}
-                        data={cellData}
-                        textStyle={styles.text}
-                        style={{
-                          ...colums[`appTableCol${cellIndex}`],
-                          width: 70,
-                        }}
-                      />
-                    ))}
+                    <Cell
+                      key={index}
+                      data={rowData[0]}
+                      textStyle={styles.text}
+                      style={{
+                        width: 70,
+                      }}
+                    />
                   </TableWrapper>
                 ))}
               </Table>
-            </ScrollView>
+            </SyncedScrollView>
           </TableWrapper>
-        </ScrollView>
-      </ScrollView>
-      {/* </View> */}
-    </View>
+
+          <ScrollView horizontal={true}>
+            <TableWrapper>
+              <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
+                <TableWrapper style={{ ...styles.row, ...styles.head }}>
+                  {state.tableHead.map((cellData, cellIndex) => (
+                    <Cell
+                      key={cellIndex}
+                      data={cellData}
+                      textStyle={styles.text}
+                      style={{
+                        ...colums[`appTableCol${cellIndex}`],
+                        width: 70,
+                      }}
+                    />
+                  ))}
+                </TableWrapper>
+              </Table>
+
+              <SyncedScrollView
+                scrollViewId={1}
+                style={stylesTable.dataWrapper}
+              >
+                <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
+                  {state.tableData.map((rowData, index) => (
+                    <TableWrapper key={index} style={styles.row}>
+                      {rowData.map((cellData, cellIndex) => (
+                        <Cell
+                          key={cellIndex}
+                          data={cellData}
+                          textStyle={styles.text}
+                          style={{
+                            ...colums[`appTableCol${cellIndex}`],
+                            width: 70,
+                          }}
+                        />
+                      ))}
+                    </TableWrapper>
+                  ))}
+                </Table>
+              </SyncedScrollView>
+            </TableWrapper>
+          </ScrollView>
+          {/* </ScrollView> */}
+        </View>
+      </View>
+    </SyncedScrollViewContext.Provider>
   );
 }
 
@@ -195,7 +279,7 @@ const colums: Columns = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingTop: 30, backgroundColor: "#fff" },
+  container: { padding: 16, paddingTop: 30, backgroundColor: "#fff", flex: 1 },
   head: { height: 60, backgroundColor: "#f1f8ff" },
   text: { margin: 6 },
   button: {
@@ -211,4 +295,21 @@ const styles = StyleSheet.create({
     color: "black",
   },
   row: { flexDirection: "row", backgroundColor: "#FFF1C1" },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    flex: 3,
+  },
+  buttonSrc: {
+    backgroundColor: "blue",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 40,
+
+    margin: 12,
+    padding: 10,
+  },
 });

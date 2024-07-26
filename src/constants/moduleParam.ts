@@ -38,7 +38,7 @@ export const modulesParam: ModuleParam = {
   transportadora: {
     moduleName: "Transportadora",
     formParam: {
-      cnpjcep: params.cnpjcpf,
+      cnpjcpf: params.cnpjcpf,
       insc: params.insc,
       nomefantasia: params.nomefantasia,
       razaosocial: params.razaosocial,
@@ -64,6 +64,8 @@ export const modulesParam: ModuleParam = {
     moduleName: "Pedido",
     formParam: {
       contatonome: params.contatonome,
+      cnpjcep: params.cnpjcpf,
+      valor: params.valor
     },
   },
 };

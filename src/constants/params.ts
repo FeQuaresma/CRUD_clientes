@@ -345,4 +345,12 @@ export const params: Param = {
     isRequired: false,
     isEditable: true,
   },
+  valor: {
+    label: "Valor",
+    inputType: "input",
+    inputMode: "numeric",
+    value: "",
+    isRequired: false,
+    isEditable: true,
+  },
 };

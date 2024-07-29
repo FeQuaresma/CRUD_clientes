@@ -22,65 +22,50 @@ type ColumnStyle = {
   display?: "none";
 };
 
-type StateTable = {
-  tableHead: string[];
-  tableData: [string[]];
-  tableDataBackup: [string[]];
-  tableWidth?: [];
-};
-
 type Columns = Record<ColumnKey, ColumnStyle>;
 
-export default function TableTest() {
+export default function UseStateTable() {
+
   const [lock, setLock] = useState(false);
   const [filter, setFilter] = useState<string[]>([]);
+
   const [filterWord, setFilterWord] = useState("");
   const [globalFilterWord, setGlobalFilterWord] = useState("");
-  // const [tableHead, setTableHead] = useState<string[]>([]);
-  // const [tableData, setTableData] = useState<string[][]>([]);
-  // const [tableHeadBackup, setTableHeadBackup] = useState<string[][]>([]);
-  // const [tableWidth, setTableWidth] = useState();
+  
+  const [tableData, setTableData] = useState<string[][]>([]);
+  const [tableHead, setTableHead] = useState<string[]>([]);
+  const [tableDataBackup, setTableDataBackup] = useState<string[][]>([]);
+  
+  const colums: Columns = StyleSheet.create({
+    ["appTableColLock"]: { display: "none" },
+  });
 
-  const state: StateTable = {
-    tableHead: [],
-    tableData: [[]],
-    tableDataBackup: [[]],
-    tableWidth: [],
-  };
-
-  function renderHead() {
-    let head: string[] = [];
+  useEffect(() => {
+    const head: string[] = [];
     Object.keys(modulesParam.pedido.formParam).map((param: string) => {
       modulesParam.pedido.formParam[param].label &&
         head.push(modulesParam.pedido.formParam[param].label);
     });
-    state.tableHead = head;
-  }
-  renderHead();
 
-  function renderTable() {
+    setTableHead(head);
+
+    const data: string[][] = [];
     for (let i = 0; i < 30; i++) {
-      state.tableData[i] = [];
-      for (let n = 0; n < state.tableHead.length; n++) {
-        state.tableData[i][n] = `${i}${n}`;
+      const row: string[] = [];
+      for (let n = 0; n < head.length; n++) {
+        row.push(`${i}${n}`);
       }
+      data.push(row);
     }
-    state.tableDataBackup = state.tableData;
-  }
-  renderTable()
-
-  useEffect(() => {
-    state.tableHead.map((col, index) => {
-      let newStyleName: ColumnKey = `appTableCol${index}`;
-      colums[newStyleName] = {};
-    });
+    setTableData(data);
+    setTableDataBackup(data);
   }, []);
 
   useEffect(() => {
+    // Handle global filter when it changes
     if (globalFilterWord !== "") {
       handleFilterWord();
     }
-    console.log(state.tableData);
   }, [globalFilterWord]);
 
   function handleFilter(col: ColumnKey) {
@@ -118,19 +103,19 @@ export default function TableTest() {
 
   function handleFilterWord() {
     if (filterWord != "") {
-      state.tableData = [[]];
-      let index = 0;
-      let filterWordLower = filterWord.toLowerCase();
-      state.tableDataBackup.forEach((row) => {
-        let rowString = row.join("").toLowerCase();
-        console.log(rowString);
-        if (rowString.includes(filterWordLower)) {
-          state.tableData[index] = row;
-          index += 1;
-        } else {
-          return;
+      const filteredData: string[][] = [];
+      tableDataBackup.forEach((row) => {
+        const filteredRow = row.filter((word) =>
+          word.toLowerCase().includes(filterWord.toLowerCase())
+        );
+
+        if (filteredRow.length !== 0) {
+          filteredData.push(row);
         }
       });
+      setTableData(filteredData);
+    } else {
+      setTableData(tableDataBackup);
     }
   }
 
@@ -141,7 +126,17 @@ export default function TableTest() {
           style={{ ...styles.buttonSrc, backgroundColor: "red" }}
           onPress={() => {
             console.log("pressed");
-            renderTable();
+            // Avoid calling renderTable directly as it could cause re-renders
+            const data: string[][] = [];
+            for (let i = 0; i < 30; i++) {
+              const row: string[] = [];
+              for (let n = 0; n < tableHead.length; n++) {
+                row.push(`${i}${n}`);
+              }
+              data.push(row);
+            }
+            setTableData(data);
+            setTableDataBackup(data);
           }}
         >
           <Text style={{ color: "white" }}>Render Table</Text>
@@ -174,7 +169,7 @@ export default function TableTest() {
               flexDirection: "row",
             }}
           >
-            {state.tableHead.map((colHeadData, colHeadIndex) => (
+            {tableHead.map((colHeadData, colHeadIndex) => (
               <Pressable
                 key={colHeadIndex}
                 style={styles.button}
@@ -193,14 +188,12 @@ export default function TableTest() {
         </View>
 
         <View style={{ height: "70%", flexDirection: "row" }}>
-          {/* <ScrollView contentContainerStyle={styles.row} nestedScrollEnabled={true}> */}
-
           <TableWrapper style={colums.appTableColLock}>
             <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
               <TableWrapper style={{ ...styles.row, ...styles.head }}>
                 <Cell
                   key={"lockedCol"}
-                  data={state.tableHead[0]}
+                  data={tableHead[0]}
                   textStyle={styles.text}
                   style={{ width: 70 }}
                 />
@@ -208,18 +201,19 @@ export default function TableTest() {
             </Table>
             <SyncedScrollView scrollViewId={0} style={stylesTable.dataWrapper}>
               <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-                {state.tableData.map((rowData, index) => (
-                  <TableWrapper key={index} style={styles.row}>
-                    <Cell
-                      key={index}
-                      data={rowData[0]}
-                      textStyle={styles.text}
-                      style={{
-                        width: 70,
-                      }}
-                    />
-                  </TableWrapper>
-                ))}
+                {tableData &&
+                  tableData.map((rowData, index) => (
+                    <TableWrapper key={index} style={styles.row}>
+                      <Cell
+                        key={index}
+                        data={rowData[0]}
+                        textStyle={styles.text}
+                        style={{
+                          width: 70,
+                        }}
+                      />
+                    </TableWrapper>
+                  ))}
               </Table>
             </SyncedScrollView>
           </TableWrapper>
@@ -228,7 +222,7 @@ export default function TableTest() {
             <TableWrapper>
               <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
                 <TableWrapper style={{ ...styles.row, ...styles.head }}>
-                  {state.tableHead.map((cellData, cellIndex) => (
+                  {tableHead.map((cellData, cellIndex) => (
                     <Cell
                       key={cellIndex}
                       data={cellData}
@@ -247,7 +241,7 @@ export default function TableTest() {
                 style={stylesTable.dataWrapper}
               >
                 <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-                  {state.tableData.map((rowData, index) => (
+                  {tableData.map((rowData, index) => (
                     <TableWrapper key={index} style={styles.row}>
                       {rowData.map((cellData, cellIndex) => (
                         <Cell
@@ -266,16 +260,11 @@ export default function TableTest() {
               </SyncedScrollView>
             </TableWrapper>
           </ScrollView>
-          {/* </ScrollView> */}
         </View>
       </View>
     </SyncedScrollViewContext.Provider>
   );
 }
-
-const colums: Columns = StyleSheet.create({
-  ["appTableColLock"]: { display: "none" },
-});
 
 const styles = StyleSheet.create({
   container: { padding: 16, paddingTop: 30, backgroundColor: "#fff", flex: 1 },
@@ -307,7 +296,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 40,
-
     margin: 12,
     padding: 10,
   },

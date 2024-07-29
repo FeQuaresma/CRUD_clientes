@@ -18,7 +18,7 @@ export interface FormParam {
     paramEnd: string;
     type: "fillform" | "errorMsg" | null;
   };
-}
+};
 
 export type Param = {
   [key: string]: FormParam;

@@ -1,57 +1,79 @@
-# Welcome to your Expo app 👋
+# Criando uma aplicação Mobile Dinâmica
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Esse repositório foi criado para estudo em relação a uma aplicação feita em React Native.
+A princial proposta do estudo, é criar um aplicativo que possa rendezar os componentes dinâmicamente através de um Json. Veja um exemplo de Json [aqui](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/constants/moduleParam.ts).
 
-## Get started
+Ou seja, toda uma estrutura de CRUD em modulos, que são buscados da web, e futuramente, criado no armazenamento do celular para manter as informações sem precisar fazer um fetch toda vez.
 
-1. Install dependencies
+## iniciando o projeto
+
+1. Instale as dependêcias
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. Inicie o aplicativo
 
    ```bash
     npx expo start
    ```
 
-   or (in case of WSL2)
-   access [Expo QR code on Windows Subsystem for Linux (WSL2)](https://www.linkedin.com/pulse/expo-qr-code-windows-subsystem-linux-wsl2-alexandre-gomes-6xxxe/) for more information
+   ou caso esteja usando o WSL2 acesse [Expo QR code on Windows Subsystem for Linux (WSL2)](https://www.linkedin.com/pulse/expo-qr-code-windows-subsystem-linux-wsl2-alexandre-gomes-6xxxe/) para saber como fazer o sdk rodar no seu pc
 
    ```bash
     npm run start:wsl
    ```
 
-In the output, you'll find options to open the app in a
+3. Abra o aplicativo da Expo no seu celular e escaneio o QR que aparece no terminal
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+# Componentes
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Formulário
 
-## Get a fresh project
+Os formulários são criados automaticamente atrás do Json ModuleParam.[Module Name].formParam, onde carrega todos os campos e suas particularidades.
+Atualmente os paramêtros estão em conjunto com outro objeto chamado [params.ts](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/constants/params.ts), que carrega um lote com todos os tipos de campo prédefinidos.
 
-When you're ready, run:
+1. [Parâmetros](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/constants/params.ts)
 
 ```bash
-npm run reset-project
+interface FormParam {
+label?: string; # Título do campo
+inputType: string; # Tipo de campo, ex.: text box, select, input, boolean
+inputMode?: string; # Informa o tipo de teclado que aparece
+value: string; # Valor inicial do campo
+placeholder?: string; # Valor de pré-prenchimento 
+masks?: string[]; # Mascara para campo, ex.: Telefone (##) #####-####, CPF ###.###.###-##
+valueMasked?: string; # Valor incial do campo com mascara inclusa 
+maxLength?: number; # Tamanho maximo de caracteres (contabiliza as mascaras)
+isRequired: boolean; # Se é obrigatório o preenchimento para enviar o formulário
+isEditable: boolean; # Se é um campo que permite edição
+customCSS?: object; # Caso o campo precise de algum CSS a mais que outros campos
+function?: string[]; # WIP
+options?: { label: string; value: string }[]; # Opções quando o inputType é Select
+link?: { # Link para realizar alguma busca de API online
+ paramBeginning: string; # Inicio da URL
+ paramSize: number; #tamanho do parâmetro enviado na URL (desconsiderando a mascara)
+ paramEnd?: string; # Final da URL caso tenha
+ type: "fillform" | "errorMsg" | null; # tipo de ação que vai ser realizada com o fetch
+  };
+};
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. [Criador de formulários](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/components/moduleForm.tsx)
 
-## Learn more
+Nesse componente, é feito um map em cada um dos modulos do [ModuleParam](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/constants/moduleParam.ts), e renderiza cada input de acordo com os valores fornecidos no formParam, e realiza as funções basicas como aplicar a mascara, verificar se o campo é obrigatório, enviar o formulário, etc.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Funções
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Navegação
 
-## Join the community
+1. Biblioteca [React-navigation](https://reactnavigation.org/)
 
-Join our community of developers creating universal apps.
+A escolha do React Navigation ao invés do sistema mais atualizado do expo navigation, foi feito por conta da criação dinâmica de rotas que é disponibilizado, onde no expo navigation mesmo sendo mais simples a navegação, ela é feita com o uso de file routing, ou seja, o caminho precisa existir para ser acasso, enquanto o React Navigation permite passar um componente dentro da **Screen**, permitindo a criação de modulos e de navegadores.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+2. [Navegador de modulos](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/app/(tabs)/_layout.tsx)
+
+
+
+## Tabela

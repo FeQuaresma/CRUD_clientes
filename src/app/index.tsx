@@ -46,6 +46,12 @@ export default function Index({ navigation }: any) {
       >
         <Text style={styles.buttonText}>Table Test</Text>
       </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("useStateTable")}
+      >
+        <Text style={styles.buttonText}>useStateTable</Text>
+      </Pressable>
     </ScrollView>
   );
 }

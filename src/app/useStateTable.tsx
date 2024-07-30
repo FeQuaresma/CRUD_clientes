@@ -25,30 +25,35 @@ type ColumnStyle = {
 type Columns = Record<ColumnKey, ColumnStyle>;
 
 export default function UseStateTable() {
-
   const [lock, setLock] = useState(false);
   const [filter, setFilter] = useState<string[]>([]);
 
   const [filterWord, setFilterWord] = useState("");
   const [globalFilterWord, setGlobalFilterWord] = useState("");
-  
+
   const [tableData, setTableData] = useState<string[][]>([]);
   const [tableHead, setTableHead] = useState<string[]>([]);
   const [tableDataBackup, setTableDataBackup] = useState<string[][]>([]);
-  
-  const colums: Columns = StyleSheet.create({
-    ["appTableColLock"]: { display: "none" },
+  const [colums, setColums] = useState<Columns>({
+    appTableColLock: { display: "none" },
   });
 
   useEffect(() => {
+
     const head: string[] = [];
     Object.keys(modulesParam.pedido.formParam).map((param: string) => {
       modulesParam.pedido.formParam[param].label &&
         head.push(modulesParam.pedido.formParam[param].label);
     });
 
+    
     setTableHead(head);
-
+    tableHead.map((_, index) => {
+      let newStyleName: ColumnKey = `appTableCol${index}`;
+      console.log(newStyleName)
+      setColums((prev) => ({ ...prev, [newStyleName]: {} }));
+    });
+    
     const data: string[][] = [];
     for (let i = 0; i < 30; i++) {
       const row: string[] = [];
@@ -65,6 +70,8 @@ export default function UseStateTable() {
     // Handle global filter when it changes
     if (globalFilterWord !== "") {
       handleFilterWord();
+    } else {
+      setTableData(tableDataBackup);
     }
   }, [globalFilterWord]);
 
@@ -74,7 +81,7 @@ export default function UseStateTable() {
       console.log(lock);
       return;
     }
-
+    console.log(colums);
     colums[col].display !== "none"
       ? (colums[col] = { display: "none" })
       : (colums[col] = {});
@@ -178,7 +185,8 @@ export default function UseStateTable() {
                 <Text style={styles.buttonText}>{colHeadData}</Text>
               </Pressable>
             ))}
-          </ScrollView>
+            
+                      </ScrollView>
         </View>
 
         <View style={{ flexDirection: "row" }}>
@@ -187,7 +195,7 @@ export default function UseStateTable() {
           ))}
         </View>
 
-        <View style={{ height: "70%", flexDirection: "row" }}>
+        <View style={{ height: "60%", flexDirection: "row" }}>
           <TableWrapper style={colums.appTableColLock}>
             <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
               <TableWrapper style={{ ...styles.row, ...styles.head }}>
@@ -218,8 +226,13 @@ export default function UseStateTable() {
             </SyncedScrollView>
           </TableWrapper>
 
+
+
           <ScrollView horizontal={true}>
             <TableWrapper>
+
+
+
               <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
                 <TableWrapper style={{ ...styles.row, ...styles.head }}>
                   {tableHead.map((cellData, cellIndex) => (
@@ -235,6 +248,7 @@ export default function UseStateTable() {
                   ))}
                 </TableWrapper>
               </Table>
+
 
               <SyncedScrollView
                 scrollViewId={1}
@@ -259,6 +273,9 @@ export default function UseStateTable() {
                 </Table>
               </SyncedScrollView>
             </TableWrapper>
+
+
+
           </ScrollView>
         </View>
       </View>

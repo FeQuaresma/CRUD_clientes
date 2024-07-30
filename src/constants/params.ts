@@ -138,6 +138,7 @@ export const params: Param = {
     isEditable: true,
   },
   endereconome: {
+    label: "Logradouro",
     inputType: "input",
     inputMode: "text",
     value: "",

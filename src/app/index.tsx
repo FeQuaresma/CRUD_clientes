@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, TextInput, View, Text, ScrollView } from "react-native";
 import { styles } from "../constants/styles";
 import { useNavigationState } from "@react-navigation/native";
@@ -51,6 +51,12 @@ export default function Index({ navigation }: any) {
         onPress={() => navigation.navigate("useStateTable")}
       >
         <Text style={styles.buttonText}>useStateTable</Text>
+      </Pressable>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("finalTable")}
+      >
+        <Text style={styles.buttonText}>finalTable</Text>
       </Pressable>
     </ScrollView>
   );

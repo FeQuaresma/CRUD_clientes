@@ -6,6 +6,7 @@ import Teste from "./teste";
 import ModuleList from "../components/moduleList";
 import TableTest from "./tableTest";
 import UseStateTable from "./useStateTable";
+import FinalTable from "./finalTable";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,6 +52,15 @@ export default function App() {
       <Stack.Screen
         name="useStateTable"
         component={UseStateTable}
+        options={{
+          headerShown: false,
+          statusBarStyle: "light",
+          statusBarTranslucent: true,
+        }}
+      />
+      <Stack.Screen
+        name="finalTable"
+        component={FinalTable}
         options={{
           headerShown: false,
           statusBarStyle: "light",

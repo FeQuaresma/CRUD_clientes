@@ -70,7 +70,7 @@ export default function TableTest() {
   renderTable()
 
   useEffect(() => {
-    state.tableHead.map((col, index) => {
+    state.tableHead.map((_, index) => {
       let newStyleName: ColumnKey = `appTableCol${index}`;
       colums[newStyleName] = {};
     });

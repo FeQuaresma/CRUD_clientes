@@ -27,6 +27,19 @@ Ou seja, toda uma estrutura de CRUD em modulos, que são buscados da web, e futu
 
 3. Abra o aplicativo da Expo no seu celular e escaneio o QR que aparece no terminal
 
+# Ferramentas
+
+- Linguagem:
+   Typescript
+
+- Framework:
+   React Native c/ Expo
+
+- Bibliotecas:
+   @react-native-community/datetimepicker
+   @react-navigation
+   react-native-reanimated-table
+
 # Componentes
 
 ## Formulário
@@ -66,6 +79,10 @@ Nesse componente, é feito um map em cada um dos modulos do [ModuleParam](https:
 
 ## Funções
 
+1. Funções Dinâmicas
+
+**[WIP](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/components/dynamicFunc.tsx)**
+
 ## Navegação
 
 1. Biblioteca [React-navigation](https://reactnavigation.org/)
@@ -74,6 +91,59 @@ A escolha do React Navigation ao invés do sistema mais atualizado do expo navig
 
 2. [Navegador de modulos](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/app/(tabs)/_layout.tsx)
 
+A navegação é criada em forma de cascata com **Navigators** que acomodam **Screens**.
 
+As Tags **Screens** carregam a propriedade **component**, que podem ser carregadas novos React.Component, inclusive novos **Navigators**.
+
+3. Tipos de Navegadores
+
+- Stack: Funciona como um navegador, tendo apenas a opção de ir e voltar
+- Drawer: Abre uma gaveta na lateral do celular, liberando todas as screens dentro da mesma
+- Tabs: Um menu de icones na parte inferior(padrão) que libera acesso a todas as screens
+
+4. Estrutura (simplificada)
+```bash
+   <Stack.Navigator> # Navegador pai
+      <Stack.Screen # Tela de login
+      component={Login}>
+      <Stack.Screen # Aplicativo que carrega os modulos
+      component={
+         <Drawer.Navigator> # Navegador de Modulos
+            <Drawer.Screen # Pagina inicial de todos os Modulos
+            component={HomeAplicativo}>
+            <Drawer.Screen # Gerador de Modulo
+            component={
+               <Drawer.Navigator> # Navegador do Modulo
+                  <Drawer.Screen
+                  component={Index}> # Pagina inicial do modulo
+                  <Drawer.Screen
+                  component={Cadastro}> # Cadastro de novo item do modulo
+                  <Drawer.Screen
+                  component={Lista}> # Listagem de itens cadastrados
+                  ... # Cria paginas de modulo conforme necessário
+               <Drawer.Navigator>
+            }>
+         <Drawer.Navigator>
+         ... # Crie novos modulos conforme necessário
+      }>
+   <Stack.Navigador>
+```
 
 ## Tabela
+
+1. Biblioteca [react-native-reanimated-table](https://github.com/dohooo/react-native-reanimated-table)
+
+Essa biblioteca foi escolhida por conta da customização e da simplicidade para criar tabelas, o unico problema é a falta de funcionalidades nativas como paginação e busca.
+
+2. [Estrutura](https://github.com/FeQuaresma/CRUD_clientes/blob/main/src/app/useStateTable.tsx)
+
+A tabela foi construida para adaptar o uso de travas e scrolls em pontos especificos, como travar os headers para mover a coluna na vertical, mas na horizontal o header acompanha.
+Isso é realizado atráves de um agrupamento de ScrollViews(Tag nativa do React Native) que fazer o ScrollView apenas na direção necessária.
+
+Além disso, é possível travar uma coluna para que a mesma não acompanhe o scroll horizontal, mas o vertical sim, isso foi realizado com a ajuda [desse vídeo no youtube](https://www.youtube.com/watch?v=9tE32G7WGj4). Esse vídeo demonstra uma forma de realizar um link entre duas scrollviews para se moverem ao mesmo tempo sem a necessidade de um ScrollView pai, que movimentaria os headers junto.
+
+3. Esconder Colunas
+
+
+
+4. Filtro/Pesquisa

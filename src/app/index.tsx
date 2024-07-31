@@ -5,6 +5,8 @@ import { useNavigationState } from "@react-navigation/native";
 import Teste from "./teste";
 
 export default function Index({ navigation }: any) {
+
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -12,13 +14,13 @@ export default function Index({ navigation }: any) {
 
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <Text style={styles.inputLabel}>Login</Text>
+      <Text style={styles.inputLabel}>{orientation}</Text>
       <TextInput
         style={styles.input}
         value={username}
         onChangeText={(e) => setUsername(e)}
       />
-      <Text style={{ ...styles.inputLabel, color: "black" }}>Senha</Text>
+      <Text style={styles.inputLabel}>Senha</Text>
       <TextInput
         style={styles.input}
         value={password}

@@ -9,6 +9,7 @@ export interface FormParam {
   maxLength?: number;
   isRequired: boolean;
   isEditable: boolean;
+  isLocked?: boolean;
   customCSS?: object;
   function?: string[];
   options?: { label: string; value: string }[];
@@ -18,7 +19,7 @@ export interface FormParam {
     paramEnd: string;
     type: "fillform" | "errorMsg" | null;
   };
-};
+}
 
 export type Param = {
   [key: string]: FormParam;
@@ -36,7 +37,7 @@ export const params: Param = {
     maxLength: 18,
     isRequired: true,
     isEditable: false,
-    customCSS: {color: "black"},
+    customCSS: { color: "black" },
     function: ["validateCPF", "validateCNPJ"],
   },
   insc: {
@@ -353,5 +354,57 @@ export const params: Param = {
     value: "",
     isRequired: false,
     isEditable: true,
+  },
+  clienteProduto: {
+    label: "Cliente",
+    inputType: "input",
+    inputMode: "text",
+    isRequired: true,
+    isEditable: false,
+    value: "",
+    placeholder: "Digite o nome do cliente"
+  },
+  produto: {
+    label: "Produto",
+    inputType: "input",
+    inputMode: "text",
+    isRequired: true,
+    isEditable: false,
+    value: "",
+    placeholder: "Digite o código do produto"
+  },
+  quantidadeProduto: {
+    label: "Quantidade",
+    inputType: "input",
+    inputMode: "numeric",
+    isRequired: true,
+    isEditable: true,
+    value: "",
+  }, 
+  precoProduto: {
+    label: "Preço Unitário",
+    inputType: "input",
+    inputMode: "numeric",
+    isRequired: true,
+    isEditable: true,
+    value: "",
+  },
+  
+  descontoProduto: {
+    label: "Desconto",
+    inputType: "input",
+    inputMode: "numeric",
+    isRequired: true,
+    isEditable: true,
+    value: "",
+  }, 
+  precoTotalProduto: {
+    label: "Quantidade",
+    inputType: "input",
+    inputMode: "numeric",
+    isRequired: true,
+    isEditable: true,
+    value: "",
+    isLocked: true,
   },
 };

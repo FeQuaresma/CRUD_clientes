@@ -20,6 +20,7 @@ export default function App() {
           // headerShown: false,
           statusBarStyle: "light",
           statusBarTranslucent: true,
+          orientation: "all"
         }}
       />
       <Stack.Screen

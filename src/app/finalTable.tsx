@@ -8,148 +8,209 @@ import {
   View,
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
 import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
 import { modulesParam } from "../constants/moduleParam";
+import {
+  SyncedScrollViewContext,
+  syncedScrollViewState,
+} from "../context/SyncedScrollViewContext";
+import { SyncedScrollView } from "../components/SyncedScrollView";
+
 
 type ColumnKey = `appTableCol${number | string}`;
 
 export default function FinalTable() {
-  const myset = new Set([0]);
+  const lockedSet = new Set<number>();
   const params = Object.keys(modulesParam.pedido.formParam).map(
     (label) => modulesParam.pedido.formParam[label].label
   );
+  const tableWidth = modulesParam.pedido.tableWidth;
+  const [dataJson, setDataJson] = useState();
   const [data, setData] = useState(modulesParam.pedido.data);
   const [search, setSearch] = useState("");
-  const [lockedCol, setLockedCol] = useState(myset);
+  const [lockedTable, setLockedTable] = useState(lockedSet);
 
-  useEffect(() => console.log(lockedCol), [lockedCol]);
+  function loadData() {
+    return fetch("https://www.caae.org.br/teste/teste.json")
+      .then(response => response.json())
+      .catch(error => console.log(error));
+  }
+  
+  loadData().then(data => setDataJson(data));
 
-  function handleLockedCol(colIndex: number) {
-    let lockedColTemp = new Set(lockedCol);
-    if (lockedColTemp.has(colIndex)) {
-      lockedColTemp.delete(colIndex);
+
+  function handleLockedTable(colIndex: number) {
+    let lockedTableTemp = new Set(lockedTable);
+    if (lockedTableTemp.has(colIndex)) {
+      lockedTableTemp.delete(colIndex);
     } else {
-      lockedColTemp.add(colIndex);
+      lockedTableTemp.add(colIndex);
     }
-    console.log(lockedColTemp);
-    setLockedCol(lockedColTemp);
+    console.log(lockedTableTemp);
+
+    setLockedTable(lockedTableTemp);
+  }
+
+  function handleSizeLockedTable() {
+    if (Array.from(lockedTable).length <= 0) {
+      return 0;
+    }
+    if (tableWidth && tableWidth[Array.from(lockedTable)[0]] < 200) {
+      return tableWidth[Array.from(lockedTable)[0]];
+    }
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.serchBar}>
-        <TextInput
-          style={styles.input}
-          placeholder="Pesquise..."
-          value={search}
-          onChangeText={(e) => setSearch(e)}
-        />
-        <Pressable
-          style={styles.searchIcon}
-          onPress={() => console.log(params)}
-        >
-          <FontAwesome name="search" size={24} color="white" />
-        </Pressable>
-        <Pressable
-          style={styles.filterIcon}
-          onPress={() => console.log("Abre o modal de filtros")}
-        >
-          <FontAwesome name="filter" size={24} color="white" />
-        </Pressable>
-      </View>
-      <Text style={styles.text}>Tabela de Pedidos</Text>
+    <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
+      <View style={styles.container}>
+        <View style={styles.serchBar}>
+          <TextInput
+            style={styles.input}
+            placeholder="Pesquise..."
+            value={search}
+            onChangeText={(e) => setSearch(e)}
+          />
+          <Pressable
+            style={styles.searchIcon}
+            onPress={() => console.log(dataJson)}
+          >
+            <FontAwesome name="search" size={24} color="white" />
+          </Pressable>
+          <Pressable
+            style={styles.filterIcon}
+            onPress={() => console.log("Abre o modal de filtros")}
+          >
+            <FontAwesome name="filter" size={24} color="white" />
+          </Pressable>
+        </View>
+        <Text style={styles.text}>Tabela de Pedidos</Text>
 
-      <View style={styles.tabela}>
-        <ScrollView horizontal={true}>
-          <Table>
-            <TableWrapper style={styles.header}>
-              {params.map((colData, colIndex) =>
-                lockedCol.has(colIndex) ? (
+        <View style={styles.table}>
+          <ScrollView
+            horizontal={true}
+            style={{ minWidth: handleSizeLockedTable() }}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Table>
+              <TableWrapper style={styles.header}>
+                {Array.from(lockedTable).map((colData, colIndex) => (
                   <Pressable
                     key={colIndex}
-                    onPress={() => handleLockedCol(colIndex)}
+                    onPress={() => handleLockedTable(colData)}
                   >
                     <Cell
                       key={colIndex}
-                      data={colData}
+                      data={params[colData]}
                       style={styles.cellHead}
                       textStyle={styles.cellHeadText}
+                      width={tableWidth && tableWidth[colData]}
                     />
                   </Pressable>
-                ) : (
-                  <View key={colIndex}></View>
-                )
-              )}
-            </TableWrapper>
-            <ScrollView>
-              {data?.map((rowData, rowIndex) => (
-                <TableWrapper key={rowIndex} style={styles.header}>
-                  {rowData.map((colData, colIndex) => (
-                    lockedCol.has(colIndex) ? (
-                    <Cell
+                ))}
+
+                {/* {params.map((colData, colIndex) =>
+                  lockedTable.has(colIndex) ? (
+                    <Pressable
                       key={colIndex}
-                      data={colData}
-                      style={styles.cellData}
-                    />
+                      onPress={() => handleLockedTable(colIndex)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={colData}
+                        style={styles.cellHead}
+                        textStyle={styles.cellHeadText}
+                        width={tableWidth && tableWidth[colIndex]}
+                      />
+                    </Pressable>
                   ) : (
                     <View key={colIndex}></View>
                   )
-                  ))}
+                )} */}
+              </TableWrapper>
+              <SyncedScrollView
+                scrollViewId={0}
+                showsVerticalScrollIndicator={false}
+              >
+                {data?.map((rowData, rowIndex) => (
+                  <TableWrapper key={rowIndex} style={styles.header}>
+                    {Array.from(lockedTable).map((colData, colIndex) => (
+                      <Cell
+                        key={colIndex}
+                        data={rowData[colData]}
+                        style={styles.cellData}
+                        width={tableWidth && tableWidth[colData]}
+                      />
+                    ))}
+                    {/* {rowData.map((colData, colIndex) =>
+                      lockedTable.has(colIndex) ? (
+                        <Cell
+                          key={colIndex}
+                          data={colData}
+                          style={styles.cellData}
+                          width={tableWidth && tableWidth[colIndex]}
+                        />
+                      ) : (
+                        <View key={colIndex}></View>
+                      )
+                    )} */}
+                  </TableWrapper>
+                ))}
+              </SyncedScrollView>
+            </Table>
+          </ScrollView>
 
-                </TableWrapper>
-              ))}
-            </ScrollView>
-          </Table>
-        </ScrollView>
-
-        <ScrollView horizontal={true}>
-          <Table>
-            <TableWrapper style={styles.header}>
-            {params.map((colData, colIndex) =>
-                !lockedCol.has(colIndex) ? (
-                  <Pressable
-                    key={colIndex}
-                    onPress={() => handleLockedCol(colIndex)}
-                  >
-                    <Cell
+          <ScrollView
+            horizontal={true}
+            style={{ minWidth: "50%" }}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Table>
+              <TableWrapper style={styles.header}>
+                {params.map((colData, colIndex) =>
+                  !lockedTable.has(colIndex) ? (
+                    <Pressable
                       key={colIndex}
-                      data={colData}
-                      style={styles.cellHead}
-                      textStyle={styles.cellHeadText}
-                    />
-                  </Pressable>
-                ) : (
-                  <View key={colIndex}></View>
-                )
-              )}
-            </TableWrapper>
-            <ScrollView>
-              {data?.map((rowData, rowIndex) => (
-                <TableWrapper key={rowIndex} style={styles.header}>
-                  {rowData.map((colData, colIndex) => (
-                    !lockedCol.has(colIndex) ? (
-                    <Cell
-                      key={colIndex}
-                      data={colData}
-                      style={styles.cellData}
-                    />
+                      onPress={() => handleLockedTable(colIndex)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={colData}
+                        style={styles.cellHead}
+                        textStyle={styles.cellHeadText}
+                        width={tableWidth && tableWidth[colIndex]}
+                      />
+                    </Pressable>
                   ) : (
                     <View key={colIndex}></View>
                   )
-                  ))}
-
-                </TableWrapper>
-              ))}
-            </ScrollView>
-          </Table>
-        </ScrollView>
+                )}
+              </TableWrapper>
+              <SyncedScrollView
+                scrollViewId={1}
+                showsVerticalScrollIndicator={false}
+              >
+                {data?.map((rowData, rowIndex) => (
+                  <TableWrapper key={rowIndex} style={styles.header}>
+                    {rowData.map((colData, colIndex) =>
+                      !lockedTable.has(colIndex) ? (
+                        <Cell
+                          key={colIndex}
+                          data={colData}
+                          style={styles.cellData}
+                          width={tableWidth && tableWidth[colIndex]}
+                        />
+                      ) : (
+                        <View key={colIndex}></View>
+                      )
+                    )}
+                  </TableWrapper>
+                ))}
+              </SyncedScrollView>
+            </Table>
+          </ScrollView>
+        </View>
       </View>
-    </View>
+    </SyncedScrollViewContext.Provider>
   );
 }
 
@@ -194,7 +255,7 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: "#fff",
   },
-  tabela: {
+  table: {
     flexDirection: "row",
     width: "95%",
     height: "75%",
@@ -205,7 +266,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     padding: 10,
-    width: 100,
     height: 60,
   },
   cellHeadText: {
@@ -216,9 +276,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "black",
     padding: 10,
-    width: 100,
   },
   header: {
     flexDirection: "row",
   },
+  tableLeft: {},
+  tableRight: {},
 });

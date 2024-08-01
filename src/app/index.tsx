@@ -14,7 +14,7 @@ export default function Index({ navigation }: any) {
 
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <Text style={styles.inputLabel}>{orientation}</Text>
+      <Text style={styles.inputLabel}>Login</Text>
       <TextInput
         style={styles.input}
         value={username}

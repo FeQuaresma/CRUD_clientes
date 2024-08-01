@@ -374,7 +374,7 @@ export const params: Param = {
     placeholder: "Digite o código do produto"
   },
   quantidadeProduto: {
-    label: "Quantidade",
+    label: "Qtd.",
     inputType: "input",
     inputMode: "numeric",
     isRequired: true,
@@ -391,7 +391,7 @@ export const params: Param = {
   },
   
   descontoProduto: {
-    label: "Desconto",
+    label: "Desc",
     inputType: "input",
     inputMode: "numeric",
     isRequired: true,
@@ -399,9 +399,18 @@ export const params: Param = {
     value: "",
   }, 
   precoTotalProduto: {
-    label: "Quantidade",
+    label: "Preço Total",
     inputType: "input",
     inputMode: "numeric",
+    isRequired: true,
+    isEditable: true,
+    value: "",
+    isLocked: true,
+  },
+  descricaoProduto: {
+    label: "Descrição",
+    inputType: "input",
+    inputMode: "text",
     isRequired: true,
     isEditable: true,
     value: "",

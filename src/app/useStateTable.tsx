@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -7,9 +7,9 @@ import {
   TextInput,
   View,
 } from "react-native";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
-import { stylesTable } from "../constants/styles";
-import { modulesParam } from "../constants/moduleParam";
+import { modulesParam } from "../constants/moduleParamBackup";
 import {
   SyncedScrollViewContext,
   syncedScrollViewState,
@@ -18,264 +18,196 @@ import { SyncedScrollView } from "../components/SyncedScrollView";
 
 type ColumnKey = `appTableCol${number | string}`;
 
-type ColumnStyle = {
-  display?: "none";
-};
-
-type Columns = Record<ColumnKey, ColumnStyle>;
-
-export default function UseStateTable() {
-  const [lock, setLock] = useState(false);
-  const [filter, setFilter] = useState<string[]>([]);
-
-  const [filterWord, setFilterWord] = useState("");
-  const [globalFilterWord, setGlobalFilterWord] = useState("");
-
-  const [tableData, setTableData] = useState<string[][]>([]);
-  const [tableHead, setTableHead] = useState<string[]>([]);
-  const [tableDataBackup, setTableDataBackup] = useState<string[][]>([]);
-  const [colums, setColums] = useState<Columns>({
-    appTableColLock: { display: "none" },
-  });
+export default function FinalTable() {
+  const lockedSet = new Set<number>();
+  const params = Object.keys(modulesParam.pedido.formParam).map(
+    (label) => modulesParam.pedido.formParam[label].label
+  );
+  const tableWidth = modulesParam.pedido.tableWidth;
+  const [dataJson, setDataJson] = useState([]);
+  const [data, setData] = useState(modulesParam.pedido.data);
+  const [search, setSearch] = useState("");
+  const [lockedTable, setLockedTable] = useState(lockedSet);
 
   useEffect(() => {
-
-    const head: string[] = [];
-    Object.keys(modulesParam.pedido.formParam).map((param: string) => {
-      modulesParam.pedido.formParam[param].label &&
-        head.push(modulesParam.pedido.formParam[param].label);
-    });
-
-    
-    setTableHead(head);
-    tableHead.map((_, index) => {
-      let newStyleName: ColumnKey = `appTableCol${index}`;
-      console.log(newStyleName)
-      setColums((prev) => ({ ...prev, [newStyleName]: {} }));
-    });
-    
-    const data: string[][] = [];
-    for (let i = 0; i < 30; i++) {
-      const row: string[] = [];
-      for (let n = 0; n < head.length; n++) {
-        row.push(`${i}${n}`);
-      }
-      data.push(row);
-    }
-    setTableData(data);
-    setTableDataBackup(data);
+    loadData().then((dataOnline) => setDataJson(dataOnline));
+    console.log("Data loaded!")
   }, []);
 
-  useEffect(() => {
-    // Handle global filter when it changes
-    if (globalFilterWord !== "") {
-      handleFilterWord();
-    } else {
-      setTableData(tableDataBackup);
-    }
-  }, [globalFilterWord]);
-
-  function handleFilter(col: ColumnKey) {
-    if (colums[col] === colums.appTableCol0 && lock === true) {
-      console.log("error");
-      console.log(lock);
-      return;
-    }
-    console.log(colums);
-    colums[col].display !== "none"
-      ? (colums[col] = { display: "none" })
-      : (colums[col] = {});
-
-    if (!filter.includes(col)) {
-      setFilter([...filter, col]);
-    } else {
-      setFilter(filter.filter((item) => item !== col));
-    }
+  function loadData() {
+    return fetch("https://www.caae.org.br/teste/teste.json")
+      .then((response) => response.json())
+      .catch((error) => console.log(error));
   }
 
-  function handleLock() {
-    console.log(colums.appTableColLock.display);
-    if (!colums.appTableCol0.display || lock) {
-      if (colums.appTableColLock.display !== "none") {
-        colums.appTableColLock = { display: "none" };
-        colums.appTableCol0 = {};
-        setLock(false);
-      } else {
-        colums.appTableColLock = {};
-        colums.appTableCol0 = { display: "none" };
-        setLock(true);
-      }
+  function handleLockedTable(colIndex: number) {
+    let lockedTableTemp = new Set(lockedTable);
+    if (lockedTableTemp.has(colIndex)) {
+      lockedTableTemp.delete(colIndex);
+    } else {
+      lockedTableTemp.add(colIndex);
     }
+    console.log(lockedTableTemp);
+
+    setLockedTable(lockedTableTemp);
   }
 
-  function handleFilterWord() {
-    if (filterWord != "") {
-      const filteredData: string[][] = [];
-      tableDataBackup.forEach((row) => {
-        const filteredRow = row.filter((word) =>
-          word.toLowerCase().includes(filterWord.toLowerCase())
-        );
-
-        if (filteredRow.length !== 0) {
-          filteredData.push(row);
-        }
-      });
-      setTableData(filteredData);
-    } else {
-      setTableData(tableDataBackup);
+  function handleSizeLockedTable() {
+    if (Array.from(lockedTable).length <= 0) {
+      return 0;
+    }
+    if (tableWidth && tableWidth[Array.from(lockedTable)[0]] < 200) {
+      return tableWidth[Array.from(lockedTable)[0]];
     }
   }
 
   return (
     <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
-      <View style={{ ...styles.container, backgroundColor: "grey" }}>
-        <Pressable
-          style={{ ...styles.buttonSrc, backgroundColor: "red" }}
-          onPress={() => {
-            console.log("pressed");
-            // Avoid calling renderTable directly as it could cause re-renders
-            const data: string[][] = [];
-            for (let i = 0; i < 30; i++) {
-              const row: string[] = [];
-              for (let n = 0; n < tableHead.length; n++) {
-                row.push(`${i}${n}`);
-              }
-              data.push(row);
-            }
-            setTableData(data);
-            setTableDataBackup(data);
-          }}
-        >
-          <Text style={{ color: "white" }}>Render Table</Text>
-        </Pressable>
-
-        <View style={{ flexDirection: "row" }}>
+      <View style={styles.container}>
+        <View style={styles.serchBar}>
           <TextInput
             style={styles.input}
-            value={filterWord}
-            onChangeText={(e) => {
-              setFilterWord(e);
-            }}
+            placeholder="Pesquise..."
+            value={search}
+            onChangeText={(e) => setSearch(e)}
           />
           <Pressable
-            style={styles.buttonSrc}
-            onPress={() => setGlobalFilterWord(filterWord)}
+            style={styles.searchIcon}
+            onPress={() => console.log(dataJson[0])}
           >
-            <Text style={{ color: "white" }}>Pesq</Text>
+            <FontAwesome name="search" size={24} color="white" />
+          </Pressable>
+          <Pressable
+            style={styles.filterIcon}
+            onPress={() => console.log("Abre o modal de filtros")}
+          >
+            <FontAwesome name="filter" size={24} color="white" />
           </Pressable>
         </View>
+        <Text style={styles.text}>Tabela de Pedidos</Text>
 
-        <Pressable style={styles.button} onPress={() => handleLock()}>
-          <Text style={styles.buttonText}>Lock</Text>
-        </Pressable>
-
-        <View>
+        <View style={styles.table}>
           <ScrollView
             horizontal={true}
-            contentContainerStyle={{
-              flexDirection: "row",
-            }}
+            style={{ minWidth: handleSizeLockedTable() }}
+            showsHorizontalScrollIndicator={false}
           >
-            {tableHead.map((colHeadData, colHeadIndex) => (
-              <Pressable
-                key={colHeadIndex}
-                style={styles.button}
-                onPress={() => handleFilter(`appTableCol${colHeadIndex}`)}
-              >
-                <Text style={styles.buttonText}>{colHeadData}</Text>
-              </Pressable>
-            ))}
-            
-                      </ScrollView>
-        </View>
-
-        <View style={{ flexDirection: "row" }}>
-          {filter.map((item, index) => (
-            <Text key={index}>{item} </Text>
-          ))}
-        </View>
-
-        <View style={{ height: "60%", flexDirection: "row" }}>
-          <TableWrapper style={colums.appTableColLock}>
-            <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-              <TableWrapper style={{ ...styles.row, ...styles.head }}>
-                <Cell
-                  key={"lockedCol"}
-                  data={tableHead[0]}
-                  textStyle={styles.text}
-                  style={{ width: 70 }}
-                />
-              </TableWrapper>
-            </Table>
-            <SyncedScrollView scrollViewId={0} style={stylesTable.dataWrapper}>
-              <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-                {tableData &&
-                  tableData.map((rowData, index) => (
-                    <TableWrapper key={index} style={styles.row}>
-                      <Cell
-                        key={index}
-                        data={rowData[0]}
-                        textStyle={styles.text}
-                        style={{
-                          width: 70,
-                        }}
-                      />
-                    </TableWrapper>
-                  ))}
-              </Table>
-            </SyncedScrollView>
-          </TableWrapper>
-
-
-
-          <ScrollView horizontal={true}>
-            <TableWrapper>
-
-
-
-              <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-                <TableWrapper style={{ ...styles.row, ...styles.head }}>
-                  {tableHead.map((cellData, cellIndex) => (
+            <Table>
+              <TableWrapper style={styles.header}>
+                {Array.from(lockedTable).map((colData, colIndex) => (
+                  <Pressable
+                    key={colIndex}
+                    onPress={() => handleLockedTable(colData)}
+                  >
                     <Cell
-                      key={cellIndex}
-                      data={cellData}
-                      textStyle={styles.text}
-                      style={{
-                        ...colums[`appTableCol${cellIndex}`],
-                        width: 70,
-                      }}
+                      key={colIndex}
+                      data={params[colData]}
+                      style={styles.cellHead}
+                      textStyle={styles.cellHeadText}
+                      width={tableWidth && tableWidth[colData]}
                     />
-                  ))}
-                </TableWrapper>
-              </Table>
+                  </Pressable>
+                ))}
 
+                {/* {params.map((colData, colIndex) =>
+                  lockedTable.has(colIndex) ? (
+                    <Pressable
+                      key={colIndex}
+                      onPress={() => handleLockedTable(colIndex)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={colData}
+                        style={styles.cellHead}
+                        textStyle={styles.cellHeadText}
+                        width={tableWidth && tableWidth[colIndex]}
+                      />
+                    </Pressable>
+                  ) : (
+                    <View key={colIndex}></View>
+                  )
+                )} */}
+              </TableWrapper>
+              <SyncedScrollView
+                scrollViewId={0}
+                showsVerticalScrollIndicator={false}
+              >
+                {data?.map((rowData, rowIndex) => (
+                  <TableWrapper key={rowIndex} style={styles.header}>
+                    {Array.from(lockedTable).map((colData, colIndex) => (
+                      <Cell
+                        key={colIndex}
+                        data={rowData[colData]}
+                        style={styles.cellData}
+                        width={tableWidth && tableWidth[colData]}
+                      />
+                    ))}
+                    {/* {rowData.map((colData, colIndex) =>
+                      lockedTable.has(colIndex) ? (
+                        <Cell
+                          key={colIndex}
+                          data={colData}
+                          style={styles.cellData}
+                          width={tableWidth && tableWidth[colIndex]}
+                        />
+                      ) : (
+                        <View key={colIndex}></View>
+                      )
+                    )} */}
+                  </TableWrapper>
+                ))}
+              </SyncedScrollView>
+            </Table>
+          </ScrollView>
 
+          <ScrollView
+            horizontal={true}
+            style={{ minWidth: "50%" }}
+            showsHorizontalScrollIndicator={false}
+          >
+            <Table>
+              <TableWrapper style={styles.header}>
+                {params.map((colData, colIndex) =>
+                  !lockedTable.has(colIndex) ? (
+                    <Pressable
+                      key={colIndex}
+                      onPress={() => handleLockedTable(colIndex)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={colData}
+                        style={styles.cellHead}
+                        textStyle={styles.cellHeadText}
+                        width={tableWidth && tableWidth[colIndex]}
+                      />
+                    </Pressable>
+                  ) : (
+                    <View key={colIndex}></View>
+                  )
+                )}
+              </TableWrapper>
               <SyncedScrollView
                 scrollViewId={1}
-                style={stylesTable.dataWrapper}
+                showsVerticalScrollIndicator={false}
               >
-                <Table borderStyle={{ borderColor: "black", borderWidth: 1 }}>
-                  {tableData.map((rowData, index) => (
-                    <TableWrapper key={index} style={styles.row}>
-                      {rowData.map((cellData, cellIndex) => (
+                {data?.map((rowData, rowIndex) => (
+                  <TableWrapper key={rowIndex} style={styles.header}>
+                    {rowData.map((colData, colIndex) =>
+                      !lockedTable.has(colIndex) ? (
                         <Cell
-                          key={cellIndex}
-                          data={cellData}
-                          textStyle={styles.text}
-                          style={{
-                            ...colums[`appTableCol${cellIndex}`],
-                            width: 70,
-                          }}
+                          key={colIndex}
+                          data={colData}
+                          style={styles.cellData}
+                          width={tableWidth && tableWidth[colIndex]}
                         />
-                      ))}
-                    </TableWrapper>
-                  ))}
-                </Table>
+                      ) : (
+                        <View key={colIndex}></View>
+                      )
+                    )}
+                  </TableWrapper>
+                ))}
               </SyncedScrollView>
-            </TableWrapper>
-
-
-
+            </Table>
           </ScrollView>
         </View>
       </View>
@@ -284,36 +216,71 @@ export default function UseStateTable() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 16, paddingTop: 30, backgroundColor: "#fff", flex: 1 },
-  head: { height: 60, backgroundColor: "#f1f8ff" },
-  text: { margin: 6 },
-  button: {
+  serchBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-    width: 80,
-    marginTop: 16,
+    width: "80%",
   },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "black",
-  },
-  row: { flexDirection: "row", backgroundColor: "#FFF1C1" },
-  input: {
+  searchIcon: {
+    backgroundColor: "green",
     height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-    flex: 3,
-  },
-  buttonSrc: {
-    backgroundColor: "blue",
-    flex: 1,
+    width: 40,
+    alignItems: "center",
     justifyContent: "center",
-    alignItems: "center",
+  },
+  filterIcon: {
+    backgroundColor: "blue",
     height: 40,
-    margin: 12,
+    width: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+    textAlign: "center",
+    margin: 10,
+  },
+  input: {
+    flex: 1,
+    fontSize: 18,
+    height: 40,
+    padding: 8,
+    backgroundColor: "#fff",
+  },
+  table: {
+    flexDirection: "row",
+    width: "95%",
+    height: "75%",
+    backgroundColor: "white",
+  },
+  cellHead: {
+    backgroundColor: "grey",
+    borderWidth: 1,
+    borderColor: "black",
+    padding: 10,
+    height: 60,
+  },
+  cellHeadText: {
+    color: "#fff",
+  },
+  cellData: {
+    backgroundColor: "#eeeeee",
+    borderWidth: 1,
+    borderColor: "black",
     padding: 10,
   },
+  header: {
+    flexDirection: "row",
+  },
+  tableLeft: {},
+  tableRight: {},
 });

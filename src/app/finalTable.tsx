@@ -18,12 +18,36 @@ import { SyncedScrollView } from "../components/SyncedScrollView";
 
 type ColumnKey = `appTableCol${number | string}`;
 
+type DataRow = {
+  bairro: string;
+  cep: string;
+  cidade: string;
+  cnpj: string;
+  complemento: string;
+  contato: string;
+  corenter8: string;
+  email: string;
+  endereco: string;
+  estado: string;
+  fantasia: string;
+  fax: string;
+  id: string;
+  insc: string;
+  numero: string;
+  razaosocial: string;
+  statusenter8: string;
+  telefone: string;
+  tipo: string;
+};
+
+type DataTable = DataRow[];
+
 export default function FinalTable() {
   const lockedSet = new Set<string>();
   const params = modulesParam.pedido.table ? modulesParam.pedido.table : {};
-  const [data, setData] = useState([]);
-  const [dataBackup, setDataBackup] = useState([]);
-  const [search, setSearch] = useState("");
+  const [data, setData] = useState<DataTable>([]);
+  const [dataBackup, setDataBackup] = useState<DataTable>([]);
+  const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState(lockedSet);
   const [colTable, setColTable] = useState<Set<string>>(new Set());
   const [colTableBackup, setColTableBackup] = useState<Set<string>>();
@@ -74,6 +98,40 @@ export default function FinalTable() {
     }
   }
 
+  function handleSizeTable() {
+    if (Array.from(colTable).length <= 0) {
+      return 0;
+    }
+    if (params[Array.from(colTable)[0]].tableWidth < 200) {
+      return params[Array.from(colTable)[0]].tableWidth;
+    }
+  }
+
+  function handleGlobalSearch() {
+    if (searchWord === "") {
+      setData(dataBackup);
+    }
+    const filteredData: DataTable = [];
+    data.forEach((row) => {
+      const filteredRow: string[] = [];
+      (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
+        const value = row[colKey] as string;
+        if (
+          value !== "" &&
+          value !== null &&
+          value.toLowerCase().includes(searchWord.toLowerCase())
+        ) {
+          filteredRow.push(value);
+        }
+      });
+
+      filteredRow.length > 0 && filteredData.push(row);
+    });
+
+    console.log(filteredData);
+    setData(filteredData);
+  }
+
   return (
     <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
       <View style={styles.container}>
@@ -81,12 +139,12 @@ export default function FinalTable() {
           <TextInput
             style={styles.input}
             placeholder="Pesquise..."
-            value={search}
-            onChangeText={(e) => setSearch(e)}
+            value={searchWord}
+            onChangeText={(e) => setSearchWord(e)}
           />
           <Pressable
             style={styles.searchIcon}
-            onPress={() => console.log(data)}
+            onPress={() => handleGlobalSearch()}
           >
             <FontAwesome name="search" size={24} color="white" />
           </Pressable>
@@ -100,10 +158,9 @@ export default function FinalTable() {
         <Text style={styles.text}>Tabela de Pedidos</Text>
 
         <View style={styles.table}>
-
-        <ScrollView
+          <ScrollView
             horizontal={true}
-            style={{minWidth: handleSizeLockedTable()}}
+            style={{ minWidth: handleSizeLockedTable() }}
             showsHorizontalScrollIndicator={false}
           >
             <Table>
@@ -132,26 +189,28 @@ export default function FinalTable() {
                 {data.map((rowData, rowIndex) => {
                   return (
                     <TableWrapper key={rowIndex} style={styles.header}>
-                      {Array.from(lockedColTable).map((colKey, colIndex) => {
-                        return (
-                          <Cell
-                            key={colIndex}
-                            data={rowData[colKey]}
-                            style={styles.cellData}
-                            width={params[colKey].tableWidth}
-                          />
-                        );
-                      })}
+                      {(Array.from(lockedColTable) as Array<keyof DataRow>).map(
+                        (colKey, colIndex) => {
+                          return (
+                            <Cell
+                              key={colIndex}
+                              data={rowData[colKey]}
+                              style={styles.cellData}
+                              width={params[colKey].tableWidth}
+                            />
+                          );
+                        }
+                      )}
                     </TableWrapper>
                   );
                 })}
               </SyncedScrollView>
             </Table>
           </ScrollView>
-          
+
           <ScrollView
             horizontal={true}
-            style={{ minWidth: "50%" }}
+            style={{ minWidth: handleSizeTable() }}
             showsHorizontalScrollIndicator={false}
           >
             <Table>
@@ -180,24 +239,24 @@ export default function FinalTable() {
                 {data.map((rowData, rowIndex) => {
                   return (
                     <TableWrapper key={rowIndex} style={styles.header}>
-                      {Array.from(colTable).map((colKey, colIndex) => {
-                        return (
-                          <Cell
-                            key={colIndex}
-                            data={rowData[colKey]}
-                            style={styles.cellData}
-                            width={params[colKey].tableWidth}
-                          />
-                        );
-                      })}
+                      {(Array.from(colTable) as Array<keyof DataRow>).map(
+                        (colKey, colIndex) => {
+                          return (
+                            <Cell
+                              key={colIndex}
+                              data={rowData[colKey]}
+                              style={styles.cellData}
+                              width={params[colKey].tableWidth}
+                            />
+                          );
+                        }
+                      )}
                     </TableWrapper>
                   );
                 })}
               </SyncedScrollView>
             </Table>
           </ScrollView>
-
-
         </View>
       </View>
     </SyncedScrollViewContext.Provider>
@@ -234,7 +293,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#ffffff",
     textAlign: "center",
     margin: 10,
   },

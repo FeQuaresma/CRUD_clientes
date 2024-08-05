@@ -9,15 +9,68 @@ const arrTest = [
   ["Laura", "Mulher", "19", "Artista"],
 ];
 
-const filterdWord = "A";
+const objTest = [
+  {
+    nome: "Carlos",
+    genero: "Homem",
+    idade: "25",
+    profissao: "Engenheiro",
+  },
+  {
+    nome: "Maria",
+    genero: "Mulher",
+    idade: "30",
+    profissao: "Advogada",
+  },
+  {
+    nome: "Ezequiel",
+    genero: "Não-Binário",
+    idade: "21",
+    profissao: "Influencer",
+  },
+  {
+    nome: "Mariana",
+    genero: "Mulher",
+    idade: "22",
+    profissao: "Estudante",
+  },
+  { nome: "João", genero: "Homem", idade: "35", profissao: "Mecânico" },
+  { nome: "Ana", genero: "Mulher", idade: "28", profissao: "Designer" },
+  {
+    nome: "Pedro",
+    genero: "Homem",
+    idade: "42",
+    profissao: "Professor",
+  },
+  {
+    nome: "Laura",
+    genero: "Mulher",
+    idade: "19",
+    profissao: "Artista",
+  },
+];
 
-arrTest.forEach((row) => {
-  const filterdWords = row.filter((word) => word.toLowerCase().includes(filterdWord.toLowerCase()))
+const filteredWord = "A";
 
+// arrTest.forEach((row) => {
+//   const filterdWords = row.filter((word) =>
+//     word.toLowerCase().includes(filterdWord.toLowerCase())
+//   );
 
-  if(filterdWords.length !== 0) {
-    console.log(
-      `Nome: ${row[0]}, Sexo: ${row[1]}, Idade: ${row[2]}, Profissão: ${row[3]}`
-    );
-  }
+//   if (filterdWords.length !== 0) {
+// console.log(
+//   `Nome: ${row[0]}, Gênero: ${row[1]}, Idade: ${row[2]}, Profissão: ${row[3]}`
+// );
+//   }
+// });
+
+objTest.forEach((row) => {
+  let filteredRow = [];
+  Object.keys(row).forEach((colkey) => {
+    if (row[colkey].toLowerCase().includes(filteredWord.toLowerCase())) {
+      filteredRow.push(row[colkey]);
+    }
+  });
+
+  filteredRow.length > 0 && console.log(filteredRow)
 });

@@ -16,8 +16,6 @@ import {
 } from "../context/SyncedScrollViewContext";
 import { SyncedScrollView } from "../components/SyncedScrollView";
 
-type ColumnKey = `appTableCol${number | string}`;
-
 type DataRow = {
   bairro: string;
   cep: string;
@@ -93,6 +91,7 @@ export default function FinalTable() {
     if (Array.from(lockedColTable).length <= 0) {
       return 0;
     }
+
     if (params[Array.from(lockedColTable)[0]].tableWidth < 200) {
       return params[Array.from(lockedColTable)[0]].tableWidth;
     }
@@ -102,33 +101,40 @@ export default function FinalTable() {
     if (Array.from(colTable).length <= 0) {
       return 0;
     }
-    if (params[Array.from(colTable)[0]].tableWidth < 200) {
+    if (Array.from(colTable).length === 1 && params[Array.from(colTable)[0]].tableWidth < 200) {
       return params[Array.from(colTable)[0]].tableWidth;
     }
+  }
+
+  function accentRemove(str:string) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  }
+
+  function cellValueMask(str:string, colkey:string){
+    return str
   }
 
   function handleGlobalSearch() {
     if (searchWord === "") {
       setData(dataBackup);
+      return
     }
     const filteredData: DataTable = [];
-    data.forEach((row) => {
+    dataBackup.forEach((row) => {
       const filteredRow: string[] = [];
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
-        const value = row[colKey] as string;
+        const cellValue = row[colKey] as string;
         if (
-          value !== "" &&
-          value !== null &&
-          value.toLowerCase().includes(searchWord.toLowerCase())
+          cellValue !== "" &&
+          cellValue !== null &&
+          accentRemove(cellValue).includes(accentRemove(searchWord))
         ) {
-          filteredRow.push(value);
+          filteredRow.push(cellValue);
         }
       });
 
       filteredRow.length > 0 && filteredData.push(row);
     });
-
-    console.log(filteredData);
     setData(filteredData);
   }
 
@@ -140,7 +146,7 @@ export default function FinalTable() {
             style={styles.input}
             placeholder="Pesquise..."
             value={searchWord}
-            onChangeText={(e) => setSearchWord(e)}
+            onChangeText={(e) => setSearchWord(e.trimStart())}
           />
           <Pressable
             style={styles.searchIcon}
@@ -223,7 +229,7 @@ export default function FinalTable() {
                     >
                       <Cell
                         key={colIndex}
-                        data={params[colKey].label}
+                        data={cellValueMask(params[colKey].label, colKey)}
                         style={styles.cellHead}
                         textStyle={styles.cellHeadText}
                         width={params[colKey].tableWidth}
@@ -306,7 +312,7 @@ const styles = StyleSheet.create({
   },
   table: {
     flexDirection: "row",
-    width: "95%",
+    maxWidth: "95%",
     height: "75%",
     backgroundColor: "white",
   },

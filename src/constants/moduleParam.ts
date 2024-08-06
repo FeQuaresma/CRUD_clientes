@@ -8,11 +8,11 @@ export type ModuleParam = {
       [key: string]: {
         label: string;
         tableWidth: number;
+        masks?: string[];
       };
     };
   };
 };
-
 
 export const modulesParam: ModuleParam = {
   cliente: {
@@ -89,8 +89,16 @@ export const modulesParam: ModuleParam = {
       bairro: { label: "Bairro", tableWidth: 15 * 8 },
       cidade: { label: "Cidade", tableWidth: 15 * 8 },
       estado: { label: "Estado", tableWidth: 10 * 8 },
-      telefone: { label: "Telefone", tableWidth: 14 * 8 },
-      fax: { label: "Telefone 2", tableWidth: 14 * 8 },
+      telefone: {
+        label: "Telefone",
+        tableWidth: 14 * 8,
+        masks: ["(##)#####-####", "(##)####-####"],
+      },
+      fax: {
+        label: "Telefone 2",
+        tableWidth: 14 * 8,
+        masks: ["(##)#####-####", "(##)####-####"],
+      },
       contato: { label: "Contato", tableWidth: 15 * 8 },
       email: { label: "E-mail", tableWidth: 32 * 8 },
       tipo: { label: "Tipo", tableWidth: 7 * 8 },
@@ -99,3 +107,6 @@ export const modulesParam: ModuleParam = {
 };
 
 // : {label: "", tableWidth: *8}
+// 08002312121
+// 11949174470
+//

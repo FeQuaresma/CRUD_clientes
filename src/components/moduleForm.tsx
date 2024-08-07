@@ -12,7 +12,7 @@ import {
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
 
-export default function ModuleForm({ formParam }: any) {
+export default function ModuleForm({ formParam, formMode, navigation }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
@@ -201,14 +201,26 @@ export default function ModuleForm({ formParam }: any) {
             )}
           </View>
         ))}
+
+        {formMode === "Regiter" && (
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              setErrorMsg();
+            }}
+          >
+            <Text style={styles.buttonText}>Enviar Formulário</Text>
+          </Pressable>
+        )}
+
+        {/* {formMode === "Filter" && ( */}
         <Pressable
           style={styles.button}
-          onPress={() => {
-            setErrorMsg();
-          }}
+          onPress={() => console.log(navigation)}
         >
-          <Text style={styles.buttonText}>Enviar Formulário</Text>
+          <Text style={styles.buttonText}>Filtrar</Text>
         </Pressable>
+        {/* )} */}
 
         <Modal
           animationType="none"
@@ -237,6 +249,6 @@ export default function ModuleForm({ formParam }: any) {
           </View>
         </Modal>
       </ScrollView>
-      </View>
+    </View>
   );
 }

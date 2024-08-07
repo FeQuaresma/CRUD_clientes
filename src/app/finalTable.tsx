@@ -40,7 +40,7 @@ type DataRow = {
 
 type DataTable = DataRow[];
 
-export default function FinalTable() {
+export default function FinalTable({ navigation }: any) {
   const lockedSet = new Set<string>();
   const params = modulesParam.pedido.table ? modulesParam.pedido.table : {};
   const [data, setData] = useState<DataTable>([]);
@@ -101,23 +101,30 @@ export default function FinalTable() {
     if (Array.from(colTable).length <= 0) {
       return 0;
     }
-    if (Array.from(colTable).length === 1 && params[Array.from(colTable)[0]].tableWidth < 200) {
+    if (
+      Array.from(colTable).length === 1 &&
+      params[Array.from(colTable)[0]].tableWidth < 200
+    ) {
       return params[Array.from(colTable)[0]].tableWidth;
     }
   }
 
-  function accentRemove(str:string) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  function accentRemove(str: string) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
   }
 
-  function cellValueMask(str:string, colkey:string){
-    return str
+  function cellValueMask(str: string, colkey: string) {
+    return str;
   }
 
   function handleGlobalSearch() {
     if (searchWord === "") {
       setData(dataBackup);
-      return
+      return;
     }
     const filteredData: DataTable = [];
     dataBackup.forEach((row) => {
@@ -156,7 +163,7 @@ export default function FinalTable() {
           </Pressable>
           <Pressable
             style={styles.filterIcon}
-            onPress={() => console.log(colTable)}
+            onPress={() => navigation.navigate("FilterModal")}
           >
             <FontAwesome name="filter" size={24} color="white" />
           </Pressable>
@@ -229,7 +236,7 @@ export default function FinalTable() {
                     >
                       <Cell
                         key={colIndex}
-                        data={cellValueMask(params[colKey].label, colKey)}
+                        data={params[colKey].label}
                         style={styles.cellHead}
                         textStyle={styles.cellHeadText}
                         width={params[colKey].tableWidth}

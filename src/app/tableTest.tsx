@@ -136,7 +136,7 @@ export default function TableTest() {
 
   return (
     <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
-      <View style={{ ...styles.container, backgroundColor: "grey" }}>
+      <View style={{ ...styles.container}}>
         <Pressable
           style={{ ...styles.buttonSrc, backgroundColor: "red" }}
           onPress={() => {

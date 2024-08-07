@@ -2,7 +2,7 @@ import { Pressable, ScrollView, Text } from "react-native";
 import { styles } from "../../constants/styles";
 import { useNavigationState } from "@react-navigation/native";
 
-export default function Home({ navigationRef }:any){
+export default function Home(){
   
   const routes = useNavigationState(state => state);
   return (

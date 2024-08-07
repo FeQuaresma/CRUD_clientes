@@ -56,9 +56,9 @@ export default function Index({ navigation }: any) {
       </Pressable>
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate("finalTable")}
+        onPress={() => navigation.navigate("tableNavigator")}
       >
-        <Text style={styles.buttonText}>finalTable</Text>
+        <Text style={styles.buttonText}>tableNavigator</Text>
       </Pressable>
     </ScrollView>
   );

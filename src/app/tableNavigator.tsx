@@ -6,6 +6,7 @@ import { Modal, Pressable, Text, View } from "react-native";
 import ModuleForm from "../components/moduleForm";
 
 import { modulesParam } from "../constants/moduleParam";
+import { Table } from "react-native-reanimated-table";
 
 const Stack = createNativeStackNavigator();
 
@@ -68,6 +69,7 @@ export default function TableNavigator({ navigation }: any) {
           statusBarTranslucent: true,
         }}
       />
+
       <Stack.Screen
         name="FilterModal"
         options={{
@@ -77,11 +79,9 @@ export default function TableNavigator({ navigation }: any) {
           statusBarTranslucent: true,
         }}
       >
-          {() => <ModuleForm
-            formParam={modulesParam.cliente.formParam}
-            formMode={"Filter"}
-          />}
+        {(e) => <ModuleForm {...e}  formParam={modulesParam.cliente.tableParam} formMode={"Filter"}/>}
       </Stack.Screen>
+
     </Stack.Navigator>
   );
 }

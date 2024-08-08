@@ -1,18 +1,29 @@
 import { Param, params } from "./params";
 
+export interface TableParam {
+  label?: string;
+  inputType: string;
+  inputMode?: string;
+  value: string;
+  placeholder?: string;
+  masks?: string[];
+  valueMasked?: string;
+  maxLength?: number;
+  customCSS?: object;
+  options?: { label: string; value: string }[];
+  tableWidth: number;
+
+}
+
 export type ModuleParam = {
   [key: string]: {
     moduleName: string;
     formParam: Param;
-    table?: {
-      [key: string]: {
-        label: string;
-        tableWidth: number;
-        masks?: string[];
+    tableParam?: {
+      [key: string]: TableParam
       };
     };
   };
-};
 
 export const modulesParam: ModuleParam = {
   cliente: {
@@ -40,6 +51,116 @@ export const modulesParam: ModuleParam = {
       contatotelefone2: params.contatotelefone2,
       contatoemail: params.contatoemail,
     },
+    tableParam: {
+      numero: {
+        label: "Número",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        placeholder: "CPF ou CNPJ",
+        masks: ["###.###.###-##", "##.###.###/####-##"],
+        valueMasked: "",
+        maxLength: 18,
+        tableWidth: 9 * 8 
+      },
+      fantasia: {
+        label: "Nome Fantasia",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,        
+        tableWidth: 18 * 8 
+      },
+      razaosocial: {
+        label: "Razão Social",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,        
+        tableWidth: 30 * 8 
+      },
+      endereco: {
+        label: "Endereço",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 20 * 8 
+      },
+      bairro: {
+        label: "Bairro",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 18 * 8 
+      },
+      cidade: {
+        label: "Cidade",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 15 * 8 
+      },
+      estado: {
+        label: "Estado",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 9 * 8 
+      },
+      telefone: {
+        label: "Telefone",
+        inputType: "input",
+        inputMode: "tel",
+        placeholder: "(00) 00000-0000",
+        masks: ["(##) ####-####", "(##) #####-####"],
+        customCSS: {width: 160},
+        value: "",
+        valueMasked: "",
+        maxLength: 15,
+        tableWidth: 15 * 8 
+      },
+      fax: {
+        label: "Telefone 2",
+        inputType: "input",
+        inputMode: "tel",
+        placeholder: "(00) 00000-0000",
+        masks: ["(##) ####-####", "(##) #####-####"],
+        
+        customCSS: {width: 160},
+        value: "",
+        valueMasked: "",
+        maxLength: 15,
+        tableWidth: 15 * 8 
+      },
+      contato: {
+        label: "Contato",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 18 * 8 
+      },
+      email: {
+        label: "E-mail",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 23 * 8 
+      },
+      tipo: {
+        label: "Tipo",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 9 * 8 
+      },
+    }
   },
   transportadora: {
     moduleName: "Transportadora",
@@ -80,33 +201,6 @@ export const modulesParam: ModuleParam = {
       contatoemail: params.contatoemail,
       contatotelefone: params.contatotelefone,
       cnpjcpf: params.cnpjcpf,
-    },
-    table: {
-      numero: { label: "Número", tableWidth: 9 * 8 },
-      fantasia: { label: "Fantasia", tableWidth: 20 * 8 },
-      razaosocial: { label: "Razão Social", tableWidth: 30 * 8 },
-      endereco: { label: "Endereço", tableWidth: 20 * 8 },
-      bairro: { label: "Bairro", tableWidth: 15 * 8 },
-      cidade: { label: "Cidade", tableWidth: 15 * 8 },
-      estado: { label: "Estado", tableWidth: 10 * 8 },
-      telefone: {
-        label: "Telefone",
-        tableWidth: 14 * 8,
-        masks: ["(##)#####-####", "(##)####-####"],
-      },
-      fax: {
-        label: "Telefone 2",
-        tableWidth: 14 * 8,
-        masks: ["(##)#####-####", "(##)####-####"],
-      },
-      contato: { label: "Contato", tableWidth: 15 * 8 },
-      email: { label: "E-mail", tableWidth: 32 * 8 },
-      tipo: { label: "Tipo", tableWidth: 7 * 8 },
-    },
+    }
   },
 };
-
-// : {label: "", tableWidth: *8}
-// 08002312121
-// 11949174470
-//

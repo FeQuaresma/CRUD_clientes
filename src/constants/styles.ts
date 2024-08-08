@@ -35,6 +35,7 @@ export const styles = StyleSheet.create({
     width: widthDefault,
   },
   button: {
+    width: widthDefault,
     backgroundColor: "#007aff",
     padding: 10,
     borderRadius: 5,

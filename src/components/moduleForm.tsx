@@ -11,6 +11,7 @@ import {
   Grid,
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
+import { params } from "../constants/params";
 
 export default function ModuleForm({ formParam, formMode, navigation }: any) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -135,92 +136,125 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
     }
   };
 
+  const handleFilterNavigation = () => {
+    let formData: any = {};
+    Object.keys(form).map((key) => {
+      formData[key] = form[key].value;
+    });
+    navigation.navigate("FinalTable", { formData });
+  };
+
   return (
     <View style={styles.containerView}>
-      <ScrollView contentContainerStyle={styles.containerScrollView}>
-        {Object.keys(form).map((field) => (
-          <View key={field}>
-            {form[field].label && (
-              <Text style={styles.inputLabel}>
-                {form[field].label}
-                {form[field].isRequired && "*"}
-              </Text>
+      <ScrollView
+        contentContainerStyle={{
+          ...styles.containerScrollView,
+          borderWidth: 1,
+          borderColor: "red",
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "center"
+          }}
+        >
+          {Object.keys(form).map((field) => (
+            <View
+              key={field}
+              style={{
+                borderWidth: 3,
+                borderColor: "blue",
+                minWidth: form[field].quebraDeLinha === true ? "100%" : 0,
+                alignItems: "center",
+              }}
+            >
+              {form[field].label && (
+                <Text style={styles.inputLabel}>
+                  {form[field].label}
+                  {form[field].isRequired && "*"}
+                </Text>
+              )}
+              {form[field].errorMsg && (
+                <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
+              )}
+              {form[field].inputType === "input" && (
+                <Input
+                  field={form[field]}
+                  onValueChange={(e: any, fillForm: any, errorMsg: any) =>
+                    handleInputChange(e, field, fillForm, errorMsg)
+                  }
+                />
+              )}
+              {form[field].inputType === "select" && (
+                <Select
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "multiSelect" && (
+                <MultiSelect
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "boolean" && (
+                <Boolean
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "textBox" && (
+                <TextBox
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "date" && (
+                <Date
+                  field={form[field].value}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "file" && (
+                <File
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+              {form[field].inputType === "grid" && (
+                <Grid
+                  field={form[field]}
+                  onValueChange={(e: any) => handleInputChange(e, field)}
+                />
+              )}
+            </View>
+          ))}
+
+          <View style={{ width: "100%", alignItems: "center" }}>
+            {formMode === "Regiter" && (
+              <Pressable
+                style={styles.button}
+                onPress={() => {
+                  setErrorMsg();
+                }}
+              >
+                <Text style={styles.buttonText}>Enviar Formulário</Text>
+              </Pressable>
             )}
-            {form[field].errorMsg && (
-              <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
-            )}
-            {form[field].inputType === "input" && (
-              <Input
-                field={form[field]}
-                onValueChange={(e: any, fillForm: any, errorMsg: any) =>
-                  handleInputChange(e, field, fillForm, errorMsg)
-                }
-              />
-            )}
-            {form[field].inputType === "select" && (
-              <Select
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "multiSelect" && (
-              <MultiSelect
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "boolean" && (
-              <Boolean
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "textBox" && (
-              <TextBox
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "date" && (
-              <Date
-                field={form[field].value}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "file" && (
-              <File
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
-            )}
-            {form[field].inputType === "grid" && (
-              <Grid
-                field={form[field]}
-                onValueChange={(e: any) => handleInputChange(e, field)}
-              />
+
+            {formMode === "Filter" && (
+              <Pressable
+                style={styles.button}
+                onPress={() => handleFilterNavigation()}
+              >
+                <Text style={styles.buttonText}>Filtrar</Text>
+              </Pressable>
             )}
           </View>
-        ))}
-
-        {formMode === "Regiter" && (
-          <Pressable
-            style={styles.button}
-            onPress={() => {
-              setErrorMsg();
-            }}
-          >
-            <Text style={styles.buttonText}>Enviar Formulário</Text>
-          </Pressable>
-        )}
-
-        {/* {formMode === "Filter" && ( */}
-        <Pressable
-          style={styles.button}
-          onPress={() => console.log(navigation)}
-        >
-          <Text style={styles.buttonText}>Filtrar</Text>
-        </Pressable>
-        {/* )} */}
+        </View>
 
         <Modal
           animationType="none"

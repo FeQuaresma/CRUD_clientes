@@ -15,6 +15,7 @@ import {
   syncedScrollViewState,
 } from "../context/SyncedScrollViewContext";
 import { SyncedScrollView } from "../components/SyncedScrollView";
+import { useRoute } from "@react-navigation/native";
 
 type DataRow = {
   bairro: string;
@@ -42,13 +43,21 @@ type DataTable = DataRow[];
 
 export default function FinalTable({ navigation }: any) {
   const lockedSet = new Set<string>();
-  const params = modulesParam.pedido.table ? modulesParam.pedido.table : {};
+  const params = modulesParam.cliente.tableParam
+    ? modulesParam.cliente.tableParam
+    : {};
   const [data, setData] = useState<DataTable>([]);
   const [dataBackup, setDataBackup] = useState<DataTable>([]);
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState(lockedSet);
   const [colTable, setColTable] = useState<Set<string>>(new Set());
   const [colTableBackup, setColTableBackup] = useState<Set<string>>();
+
+  const route = useRoute();
+
+  useEffect(() => {
+    console.log(route.params);
+  }, [route.params]);
 
   useEffect(() => {
     loadData().then((dataOnline) => {
@@ -166,6 +175,12 @@ export default function FinalTable({ navigation }: any) {
             onPress={() => navigation.navigate("FilterModal")}
           >
             <FontAwesome name="filter" size={24} color="white" />
+          </Pressable>
+          <Pressable
+            style={{ ...styles.filterIcon, backgroundColor: "red" }}
+            onPress={() => console.log(route)}
+          >
+            <FontAwesome name="key" size={24} color="white" />
           </Pressable>
         </View>
         <Text style={styles.text}>Tabela de Pedidos</Text>

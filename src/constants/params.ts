@@ -19,6 +19,7 @@ export interface FormParam {
     paramEnd: string;
     type: "fillform" | "errorMsg" | null;
   };
+  quebraDeLinha?: boolean;
 }
 
 export type Param = {
@@ -39,6 +40,7 @@ export const params: Param = {
     isEditable: false,
     customCSS: { color: "black" },
     function: ["validateCPF", "validateCNPJ"],
+    quebraDeLinha: true,
   },
   insc: {
     label: "Inscrição Estadual",
@@ -362,7 +364,7 @@ export const params: Param = {
     isRequired: true,
     isEditable: false,
     value: "",
-    placeholder: "Digite o nome do cliente"
+    placeholder: "Digite o nome do cliente",
   },
   produto: {
     label: "Produto",
@@ -371,7 +373,7 @@ export const params: Param = {
     isRequired: true,
     isEditable: false,
     value: "",
-    placeholder: "Digite o código do produto"
+    placeholder: "Digite o código do produto",
   },
   quantidadeProduto: {
     label: "Qtd.",
@@ -380,7 +382,7 @@ export const params: Param = {
     isRequired: true,
     isEditable: true,
     value: "",
-  }, 
+  },
   precoProduto: {
     label: "Preço Unitário",
     inputType: "input",
@@ -389,7 +391,7 @@ export const params: Param = {
     isEditable: true,
     value: "",
   },
-  
+
   descontoProduto: {
     label: "Desc",
     inputType: "input",
@@ -397,7 +399,7 @@ export const params: Param = {
     isRequired: true,
     isEditable: true,
     value: "",
-  }, 
+  },
   precoTotalProduto: {
     label: "Preço Total",
     inputType: "input",

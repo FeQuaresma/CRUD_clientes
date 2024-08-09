@@ -32,31 +32,6 @@ function HomeScreen({ navigation }: any) {
   );
 }
 
-// export default function TableNavigator()  {
-//   return (
-//     <Stack.Navigator>
-//       <Stack.Group>
-//         <Stack.Screen name="Home" component={HomeScreen} />
-//       </Stack.Group>
-//       <Stack.Group>
-//         <Stack.Screen name="MyModal" component={ModalScreen} />
-//       </Stack.Group>
-//     </Stack.Navigator>
-//   );
-// }
-
-// function ClienteModule({ navigation }: any) {
-//   return (
-//     <>
-//       <ModuleForm
-//         formParam={modulesParam.cliente.formParam}
-//         formMode={"Filter"}
-//       />
-//       <Pressable onPress={() => navigation.goBack()}><Text>Filtrar</Text></Pressable>
-//     </>
-//   );
-// }
-
 export default function TableNavigator({ navigation }: any) {
   return (
     <Stack.Navigator initialRouteName="FinalTable">
@@ -68,6 +43,7 @@ export default function TableNavigator({ navigation }: any) {
           statusBarStyle: "light",
           statusBarTranslucent: true,
         }}
+        initialParams={{}}
       />
 
       <Stack.Screen
@@ -79,7 +55,7 @@ export default function TableNavigator({ navigation }: any) {
           statusBarTranslucent: true,
         }}
       >
-        {(e) => <ModuleForm {...e}  formParam={modulesParam.cliente.tableParam} formMode={"Filter"}/>}
+        {(e) => <ModuleForm {...e}  formParam={modulesParam.cliente.tableParam} formMode={"filter"}/>}
       </Stack.Screen>
 
     </Stack.Navigator>

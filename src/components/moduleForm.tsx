@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Text, View, Pressable, Modal, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  Pressable,
+  Modal,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import {
   Date,
   Select,
@@ -12,11 +20,20 @@ import {
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
 import { params } from "../constants/params";
+import { useRoute } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 export default function ModuleForm({ formParam, formMode, navigation }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
+
+  const route = useRoute();
+
+  useEffect(() => {
+    handleFilterCallBack(route.params);
+  }, [route.params]);
 
   useEffect(() => {
     if (errorCheckComplete) {
@@ -73,10 +90,8 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
 
         for (let i = 0; i < masks.length; i++) {
           let maskOn = masks[i].replace(/[^0-9#]/g, "").length;
-          // console.log("maskOn: ", maskOn, " / v.Lenght: ", v.length);
           if (v.length === maskOn) {
             pattern = masks[i];
-            // console.log("pattern: ", pattern);
             break;
           }
         }
@@ -101,6 +116,7 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
       e = e.replace(/\D/g, "");
     }
 
+    //inserir dados no input
     setForm((prevForm: any) => ({
       ...prevForm,
       [field]: {
@@ -138,14 +154,97 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
 
   const handleFilterNavigation = () => {
     let formData: any = {};
+    let colVisibility: string[] = []
     Object.keys(form).map((key) => {
-      formData[key] = form[key].value;
+      if (form[key].value !== "") {
+        formData[key] = form[key].value;
+      }
+      if(form[key].isVisible){
+        colVisibility.push(key)
+      }
     });
-    navigation.navigate("FinalTable", { formData });
+    console.log(formData)
+    navigation.navigate("FinalTable", { formData, colVisibility });
   };
 
+  const handleFilterCallBack = (fillForm: any) => {
+    if (fillForm.formData) {
+      Object.keys(fillForm.formData).map((formField) => {
+        if (form[formField]) {
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [formField]: {
+              ...prevForm[formField],
+              value: fillForm.formData[formField],
+            },
+          }));
+        }
+      });
+    }
+    if (fillForm.colVisibility){
+      Object.keys(form).forEach((key)=>{
+        if(fillForm.colVisibility.includes(key)) {
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [key]: {
+              ...prevForm[key],
+              isVisible: true,
+            },
+          }));
+        } else {
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [key]: {
+              ...prevForm[key],
+              isVisible: false,
+            },
+          }));
+        }
+      })
+      // fillForm.colVisibility.forEach((e:string)=>{
+      //   console.log(e)
+      // })
+
+    }
+  };
+
+  const handleVisibilityChange = (field: string) => {
+    if (form[field].isVisible) {
+      setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          isVisible: false,
+        },
+      }));
+    } else {
+      setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          isVisible: true,
+        },
+      }));
+    }
+  };
+
+  const handleResetForm = () => {
+    Object.keys(form).forEach((field)=>{
+      form[field].value !== "" && setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          value: "",
+        },
+      }));
+    })
+  }
+
   return (
-    <View style={styles.containerView}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.containerView}
+    >
       <ScrollView
         contentContainerStyle={{
           ...styles.containerScrollView,
@@ -158,24 +257,72 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
             flex: 1,
             flexDirection: "row",
             flexWrap: "wrap",
-            justifyContent: "center"
+            justifyContent: "center",
           }}
         >
           {Object.keys(form).map((field) => (
             <View
               key={field}
               style={{
-                borderWidth: 3,
+                borderWidth: 1,
                 borderColor: "blue",
-                minWidth: form[field].quebraDeLinha === true ? "100%" : 0,
-                alignItems: "center",
+                margin: 6,
               }}
             >
               {form[field].label && (
-                <Text style={styles.inputLabel}>
-                  {form[field].label}
-                  {form[field].isRequired && "*"}
-                </Text>
+                <View
+                  style={{
+                    margin: 2,
+                    borderColor: "red",
+                    borderWidth: 1,
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={styles.inputLabel}>
+                    {form[field].label}
+                    {form[field].isRequired && "*"}
+                  </Text>
+                  {formMode === "filter" && (
+                    <View style={{ flexDirection: "row" }}>
+                      {form[field].isVisible && (
+                        <Pressable
+                          style={{
+                            height: 22,
+                            width: 22,
+                            backgroundColor: "green",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 6,
+                          }}
+                          onPress={() => {
+                            handleVisibilityChange(field);
+                          }}
+                        >
+                          <Ionicons name="eye" size={15} color="white" />
+                        </Pressable>
+                      )}
+                      {!form[field].isVisible && (
+                        <Pressable
+                          style={{
+                            height: 22,
+                            width: 22,
+                            backgroundColor: "red",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 6,
+                          }}
+                          onPress={() => {
+                            handleVisibilityChange(field);
+                          }}
+                        >
+                          <Ionicons name="eye-off" size={15} color="white" />
+                        </Pressable>
+                      )}
+                    </View>
+                  )}
+                </View>
               )}
               {form[field].errorMsg && (
                 <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
@@ -232,28 +379,6 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
               )}
             </View>
           ))}
-
-          <View style={{ width: "100%", alignItems: "center" }}>
-            {formMode === "Regiter" && (
-              <Pressable
-                style={styles.button}
-                onPress={() => {
-                  setErrorMsg();
-                }}
-              >
-                <Text style={styles.buttonText}>Enviar Formulário</Text>
-              </Pressable>
-            )}
-
-            {formMode === "Filter" && (
-              <Pressable
-                style={styles.button}
-                onPress={() => handleFilterNavigation()}
-              >
-                <Text style={styles.buttonText}>Filtrar</Text>
-              </Pressable>
-            )}
-          </View>
         </View>
 
         <Modal
@@ -283,6 +408,43 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
           </View>
         </Modal>
       </ScrollView>
-    </View>
+      <View style={{ width: "100%", alignItems: "center" }}>
+        {formMode === "Regiter" && (
+          <Pressable
+            style={styles.button}
+            onPress={() => {
+              setErrorMsg();
+            }}
+          >
+            <Text style={styles.buttonText}>Enviar Formulário</Text>
+          </Pressable>
+        )}
+
+        {formMode === "filter" && (
+          <View style={{flexDirection: "row", alignItems: "center"}}>
+            <Pressable
+              style={styles.button}
+              onPress={() => handleFilterNavigation()}
+            >
+              <Text style={styles.buttonText}>Filtrar</Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "red",
+                padding: 10,
+                borderRadius: 5,
+                marginTop: 10,
+                marginLeft: 10 ,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => handleResetForm()}
+            >
+              <MaterialCommunityIcons name="broom" size={26} color="white" />
+            </Pressable>
+          </View>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }

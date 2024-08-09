@@ -12,7 +12,7 @@ export interface TableParam {
   customCSS?: object;
   options?: { label: string; value: string }[];
   tableWidth: number;
-
+  isVisible: boolean;
 }
 
 export type ModuleParam = {
@@ -61,7 +61,8 @@ export const modulesParam: ModuleParam = {
         masks: ["###.###.###-##", "##.###.###/####-##"],
         valueMasked: "",
         maxLength: 18,
-        tableWidth: 9 * 8 
+        tableWidth: 9 * 8,
+        isVisible: false,
       },
       fantasia: {
         label: "Nome Fantasia",
@@ -69,7 +70,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,        
-        tableWidth: 18 * 8 
+        tableWidth: 18 * 8 ,
+        isVisible: true,
       },
       razaosocial: {
         label: "Razão Social",
@@ -77,7 +79,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,        
-        tableWidth: 30 * 8 
+        tableWidth: 30 * 8 ,
+        isVisible: true,
       },
       endereco: {
         label: "Endereço",
@@ -85,7 +88,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 20 * 8 
+        tableWidth: 20 * 8 ,
+        isVisible: true,
       },
       bairro: {
         label: "Bairro",
@@ -93,7 +97,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 18 * 8 
+        tableWidth: 18 * 8 ,
+        isVisible: true,
       },
       cidade: {
         label: "Cidade",
@@ -101,7 +106,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 15 * 8 
+        tableWidth: 15 * 8 ,
+        isVisible: true,
       },
       estado: {
         label: "Estado",
@@ -109,7 +115,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 9 * 8 
+        tableWidth: 9 * 8 ,
+        isVisible: true,
       },
       telefone: {
         label: "Telefone",
@@ -121,7 +128,8 @@ export const modulesParam: ModuleParam = {
         value: "",
         valueMasked: "",
         maxLength: 15,
-        tableWidth: 15 * 8 
+        tableWidth: 15 * 8 ,
+        isVisible: true,
       },
       fax: {
         label: "Telefone 2",
@@ -134,7 +142,8 @@ export const modulesParam: ModuleParam = {
         value: "",
         valueMasked: "",
         maxLength: 15,
-        tableWidth: 15 * 8 
+        tableWidth: 15 * 8 ,
+        isVisible: true,
       },
       contato: {
         label: "Contato",
@@ -142,7 +151,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 18 * 8 
+        tableWidth: 18 * 8 ,
+        isVisible: true,
       },
       email: {
         label: "E-mail",
@@ -150,7 +160,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 23 * 8 
+        tableWidth: 23 * 8 ,
+        isVisible: true,
       },
       tipo: {
         label: "Tipo",
@@ -158,7 +169,8 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 9 * 8 
+        tableWidth: 9 * 8 ,
+        isVisible: true,
       },
     }
   },

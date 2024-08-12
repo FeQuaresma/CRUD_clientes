@@ -57,12 +57,11 @@ export const modulesParam: ModuleParam = {
         inputType: "input",
         inputMode: "numeric",
         value: "",
-        placeholder: "CPF ou CNPJ",
         masks: ["###.###.###-##", "##.###.###/####-##"],
         valueMasked: "",
         maxLength: 18,
         tableWidth: 9 * 8,
-        isVisible: false,
+        isVisible: true,
       },
       fantasia: {
         label: "Nome Fantasia",
@@ -143,7 +142,7 @@ export const modulesParam: ModuleParam = {
         valueMasked: "",
         maxLength: 15,
         tableWidth: 15 * 8 ,
-        isVisible: true,
+        isVisible: false,
       },
       contato: {
         label: "Contato",

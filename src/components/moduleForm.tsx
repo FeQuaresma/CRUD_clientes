@@ -19,17 +19,15 @@ import {
   Grid,
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
-import { params } from "../constants/params";
 import { useRoute } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function ModuleForm({ formParam, formMode, navigation }: any) {
+export default function ModuleForm({ formParam, formMode, navigation, route }: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
-  const route = useRoute();
 
   useEffect(() => {
     handleFilterCallBack(route.params);
@@ -154,16 +152,16 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
 
   const handleFilterNavigation = () => {
     let formData: any = {};
-    let colVisibility: string[] = []
+    let colVisibility: string[] = [];
     Object.keys(form).map((key) => {
       if (form[key].value !== "") {
         formData[key] = form[key].value;
       }
-      if(form[key].isVisible){
-        colVisibility.push(key)
+      if (!form[key].isVisible) {
+        colVisibility.push(key);
       }
     });
-    console.log(formData)
+    console.log(formData);
     navigation.navigate("FinalTable", { formData, colVisibility });
   };
 
@@ -181,17 +179,9 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
         }
       });
     }
-    if (fillForm.colVisibility){
-      Object.keys(form).forEach((key)=>{
-        if(fillForm.colVisibility.includes(key)) {
-          setForm((prevForm: any) => ({
-            ...prevForm,
-            [key]: {
-              ...prevForm[key],
-              isVisible: true,
-            },
-          }));
-        } else {
+    if (fillForm.colVisibility) {
+      Object.keys(form).forEach((key) => {
+        if (fillForm.colVisibility.includes(key)) {
           setForm((prevForm: any) => ({
             ...prevForm,
             [key]: {
@@ -199,12 +189,19 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
               isVisible: false,
             },
           }));
+        } else {
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [key]: {
+              ...prevForm[key],
+              isVisible: true,
+            },
+          }));
         }
-      })
+      });
       // fillForm.colVisibility.forEach((e:string)=>{
       //   console.log(e)
       // })
-
     }
   };
 
@@ -229,16 +226,19 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
   };
 
   const handleResetForm = () => {
-    Object.keys(form).forEach((field)=>{
-      form[field].value !== "" && setForm((prevForm: any) => ({
-        ...prevForm,
-        [field]: {
-          ...prevForm[field],
-          value: "",
-        },
-      }));
-    })
-  }
+    Object.keys(form).forEach((field) => {
+      (form[field].value !== "" ||
+        form[field].isVisible !== formParam[field].isVisible) &&
+        setForm((prevForm: any) => ({
+          ...prevForm,
+          [field]: {
+            ...prevForm[field],
+            value: formParam[field].value,
+            isVisible: formParam[field].isVisible,
+          },
+        }));
+    });
+  };
 
   return (
     <KeyboardAvoidingView
@@ -248,8 +248,6 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
       <ScrollView
         contentContainerStyle={{
           ...styles.containerScrollView,
-          borderWidth: 1,
-          borderColor: "red",
         }}
       >
         <View
@@ -264,8 +262,6 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
             <View
               key={field}
               style={{
-                borderWidth: 1,
-                borderColor: "blue",
                 margin: 6,
               }}
             >
@@ -273,8 +269,6 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
                 <View
                   style={{
                     margin: 2,
-                    borderColor: "red",
-                    borderWidth: 1,
                     flexDirection: "row",
                     justifyContent: "space-between",
                     alignItems: "center",
@@ -421,7 +415,7 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
         )}
 
         {formMode === "filter" && (
-          <View style={{flexDirection: "row", alignItems: "center"}}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Pressable
               style={styles.button}
               onPress={() => handleFilterNavigation()}
@@ -434,7 +428,7 @@ export default function ModuleForm({ formParam, formMode, navigation }: any) {
                 padding: 10,
                 borderRadius: 5,
                 marginTop: 10,
-                marginLeft: 10 ,
+                marginLeft: 10,
                 justifyContent: "center",
                 alignItems: "center",
               }}

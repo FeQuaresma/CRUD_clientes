@@ -58,6 +58,11 @@ export default function FinalTable({ navigation, route }: any) {
 
 
   useEffect(() => {
+    console.log(colTable)
+    console.log(lockedColTable)
+  },[colTable])
+
+  useEffect(() => {
     loadData().then((dataOnline) => {
       setData(dataOnline);
       setDataBackup(dataOnline);
@@ -66,23 +71,40 @@ export default function FinalTable({ navigation, route }: any) {
     const dataSet: Set<string> = new Set(
       Object.keys(params).map((colKey) => colKey)
     );
-    setColTable(dataSet);
     setColTableBackup(dataSet);
     console.log("Data loaded!");
 
     const colVisArray: string[] = []
 
     Object.keys(params).forEach((colKey)=>{
-      params[colKey].isVisible && colVisArray.push(colKey)
+      !params[colKey].isVisible && colVisArray.push(colKey)
     })
     setColVisibility(colVisArray)
     
   }, []);
 
+  useEffect(()=>{
+    const colData: string[] = []
+    const lockedColTableTemp = lockedColTable
+
+    Object.keys(params).forEach((colKey)=>{
+      if(colVisibility.includes(colKey)){
+        lockedColTableTemp.delete(colKey)
+      } else {
+        colData.push(colKey)
+      }
+
+    })
+
+    setColTable(new Set(colData))
+    setLockedColTable(lockedColTableTemp)
+    
+  },[colVisibility])
+
   useEffect(() => {
     console.log(route.params)
     setRouteParams(route.params);
-    route.params.colVisibility && setColVisibility(route.params.colVisibility )
+    route.params.colVisibility && handleColVisibility()
   }, [route.params]);
 
   useEffect(() => {
@@ -110,10 +132,6 @@ export default function FinalTable({ navigation, route }: any) {
 
     setColTable(colTableBackupTemp);
     setLockedColTable(lockedColTableTemp);
-  }
-
-  function handleColVisibility(){
-
   }
 
   function handleSizeLockedTable() {
@@ -206,6 +224,10 @@ export default function FinalTable({ navigation, route }: any) {
     setRouteParams({})
   }
 
+  function handleColVisibility() {
+
+  }
+
   return (
     <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
       <View style={styles.container}>
@@ -224,7 +246,7 @@ export default function FinalTable({ navigation, route }: any) {
           </Pressable>
           <Pressable
             style={styles.filterIcon}
-            onPress={() => navigation.navigate("FilterModal", routeParams)}
+            onPress={() => navigation.navigate("FilterModal", route.params)}
           >
             <FontAwesome name="filter" size={24} color="white" />
           </Pressable>
@@ -235,7 +257,7 @@ export default function FinalTable({ navigation, route }: any) {
             <MaterialCommunityIcons name="broom" size={24} color="white" />
           </Pressable>
         </View>
-        <Pressable onPress={()=>{console.log(colVisibility.includes("fantasia"))}}>
+        <Pressable onPress={()=>{console.log(route.params)}}>
         <Text style={styles.text}>Tabela de Pedidos</Text>
         </Pressable>
 
@@ -248,7 +270,7 @@ export default function FinalTable({ navigation, route }: any) {
             <Table>
               <TableWrapper style={styles.header}>
                 {Array.from(lockedColTable).map((colKey, colIndex) => 
-                  colVisibility.includes(colKey) ? (
+                  (
                     <Pressable
                       key={colKey}
                       onPress={() => handleLockedTable(colKey)}
@@ -261,7 +283,7 @@ export default function FinalTable({ navigation, route }: any) {
                         width={params[colKey].tableWidth}
                       />
                     </Pressable>
-                  ) : <View key={colKey}></View>
+                  )
                 )}
               </TableWrapper>
               <SyncedScrollView
@@ -273,14 +295,14 @@ export default function FinalTable({ navigation, route }: any) {
                     <TableWrapper key={rowIndex} style={styles.header}>
                       {(Array.from(lockedColTable) as Array<keyof DataRow>).map(
                         (colKey, colIndex) => 
-                          colVisibility.includes(colKey) ? (
+                          (
                             <Cell
                               key={colIndex}
                               data={rowData[colKey]}
                               style={styles.cellData}
                               width={params[colKey].tableWidth}
                             />
-                          ) : <View key={colKey}></View>
+                          )
                         
                       )}
                     </TableWrapper>
@@ -298,7 +320,7 @@ export default function FinalTable({ navigation, route }: any) {
             <Table>
               <TableWrapper style={styles.header}>
                 {Array.from(colTable).map((colKey, colIndex) => 
-                  colVisibility.includes(colKey) ? (
+                  (
                     <Pressable
                       key={colKey}
                       onPress={() => handleLockedTable(colKey)}
@@ -311,7 +333,7 @@ export default function FinalTable({ navigation, route }: any) {
                         width={params[colKey].tableWidth}
                       />
                     </Pressable>
-                  ) : <View key={colKey}></View>
+                  )
                 )}
               </TableWrapper>
               <SyncedScrollView
@@ -323,14 +345,14 @@ export default function FinalTable({ navigation, route }: any) {
                     <TableWrapper key={rowIndex} style={styles.header}>
                       {(Array.from(colTable) as Array<keyof DataRow>).map(
                         (colKey, colIndex) => 
-                          colVisibility.includes(colKey) ? (
+                          (
                             <Cell
                               key={colIndex}
                               data={rowData[colKey]}
                               style={styles.cellData}
                               width={params[colKey].tableWidth}
                             />
-                          ) : <View key={colKey}></View>
+                          )
                         
                       )}
                     </TableWrapper>

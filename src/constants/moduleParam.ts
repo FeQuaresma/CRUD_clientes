@@ -6,7 +6,7 @@ export interface TableParam {
   inputMode?: string;
   value: string;
   placeholder?: string;
-  masks?: string[];
+  masks?: string[] | [RegExp, string, number][];
   valueMasked?: string;
   maxLength?: number;
   customCSS?: object;
@@ -122,7 +122,10 @@ export const modulesParam: ModuleParam = {
         inputType: "input",
         inputMode: "tel",
         placeholder: "(00) 00000-0000",
-        masks: ["(##) ####-####", "(##) #####-####"],
+        masks: [
+          [/^(\d{2})(\d{5})(\d{4})$/, "($1)$2-$3", 11],
+          [/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3", 10],
+        ],
         customCSS: {width: 160},
         value: "",
         valueMasked: "",

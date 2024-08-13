@@ -56,11 +56,17 @@ export default function FinalTable({ navigation, route }: any) {
   const [colVisibility, setColVisibility] = useState<string[]>([]);
   const [routeParams, setRouteParams] = useState({});
 
+  useEffect(() => {
+    console.log(route.params);
+    setRouteParams(route.params);
+    setColVisibility(route.params.colVisibility);
+  }, [route.params]);
 
   useEffect(() => {
-    console.log(colTable)
-    console.log(lockedColTable)
-  },[colTable])
+    console.log(colVisibility);
+    console.log(colTable);
+    console.log(lockedColTable);
+  }, [colTable]);
 
   useEffect(() => {
     loadData().then((dataOnline) => {
@@ -74,43 +80,41 @@ export default function FinalTable({ navigation, route }: any) {
     setColTableBackup(dataSet);
     console.log("Data loaded!");
 
-    const colVisArray: string[] = []
+    const colVisArray: string[] = [];
 
-    Object.keys(params).forEach((colKey)=>{
-      !params[colKey].isVisible && colVisArray.push(colKey)
-    })
-    setColVisibility(colVisArray)
-    
+    Object.keys(params).forEach((colKey) => {
+      !params[colKey].isVisible && colVisArray.push(colKey);
+    });
+    console.log("ln 83", colVisArray);
+
+    setColVisibility(colVisArray);
   }, []);
 
-  useEffect(()=>{
-    const colData: string[] = []
-    const lockedColTableTemp = lockedColTable
-
-    Object.keys(params).forEach((colKey)=>{
-      if(colVisibility.includes(colKey)){
-        lockedColTableTemp.delete(colKey)
-      } else {
-        colData.push(colKey)
-      }
-
-    })
-
-    setColTable(new Set(colData))
-    setLockedColTable(lockedColTableTemp)
-    
-  },[colVisibility])
-
   useEffect(() => {
-    console.log(route.params)
-    setRouteParams(route.params);
-    route.params.colVisibility && handleColVisibility()
-  }, [route.params]);
+    const colData: string[] = [];
+    const colVisibilityTemp = new Set(colVisibility);
+    const lockedColTableTemp = lockedColTable;
+
+    Object.keys(params).forEach((colKey) => {
+      if (colVisibilityTemp.has(colKey)) {
+        lockedColTableTemp.delete(colKey);
+      } else {
+        if (!lockedColTableTemp.has(colKey)) {
+          colData.push(colKey);
+        }
+      }
+    });
+
+    console.log("ln 108", colVisibilityTemp);
+    console.log("ln 109", colData, lockedColTableTemp);
+
+    setColTable(new Set(colData));
+    setLockedColTable(lockedColTableTemp);
+  }, [colVisibility]);
 
   useEffect(() => {
     handleFilterSearch(routeParams);
   }, [routeParams]);
-
 
   function loadData() {
     return fetch("https://www.caae.org.br/teste/teste.json")
@@ -121,6 +125,7 @@ export default function FinalTable({ navigation, route }: any) {
   function handleLockedTable(colKey: string) {
     let lockedColTableTemp = new Set(lockedColTable);
     let colTableBackupTemp = new Set(colTableBackup);
+    let colVisibilityTemp = new Set(colVisibility);
 
     if (lockedColTableTemp.has(colKey)) {
       lockedColTableTemp.delete(colKey);
@@ -128,7 +133,8 @@ export default function FinalTable({ navigation, route }: any) {
       lockedColTableTemp.add(colKey);
     }
 
-    lockedColTableTemp.forEach((colKey) => colTableBackupTemp.delete(colKey));
+    colVisibility.forEach((key) => colTableBackupTemp.delete(key));
+    lockedColTableTemp.forEach((key) => colTableBackupTemp.delete(key));
 
     setColTable(colTableBackupTemp);
     setLockedColTable(lockedColTableTemp);
@@ -141,6 +147,14 @@ export default function FinalTable({ navigation, route }: any) {
 
     if (params[Array.from(lockedColTable)[0]].tableWidth < 200) {
       return params[Array.from(lockedColTable)[0]].tableWidth;
+    }
+  }
+
+  function handleBar() {
+    if (Array.from(lockedColTable).length <= 0) {
+      return "none";
+    } else {
+      return;
     }
   }
 
@@ -164,8 +178,19 @@ export default function FinalTable({ navigation, route }: any) {
       .trim();
   }
 
-  function cellValueMask(str: string, colkey: string) {
-    return str;
+  function cellValueMask(value: string, colKey: string) {
+    const mask = params[colKey].masks ? params[colKey].masks : false;
+    const cleanValue = value.replace(/\D/g, "");
+
+    if (mask) {
+      for (const [pattern, format, length] of mask) {
+        if (cleanValue.length === length) {
+          return cleanValue.replace(pattern, format);
+        }
+      }
+    }
+
+    return value;
   }
 
   function handleGlobalSearch() {
@@ -220,12 +245,8 @@ export default function FinalTable({ navigation, route }: any) {
   }
 
   function handleResetTable() {
-    setSearchWord("")
-    setRouteParams({})
-  }
-
-  function handleColVisibility() {
-
+    setSearchWord("");
+    setRouteParams({});
   }
 
   return (
@@ -257,8 +278,12 @@ export default function FinalTable({ navigation, route }: any) {
             <MaterialCommunityIcons name="broom" size={24} color="white" />
           </Pressable>
         </View>
-        <Pressable onPress={()=>{console.log(route.params)}}>
-        <Text style={styles.text}>Tabela de Pedidos</Text>
+        <Pressable
+          onPress={() => {
+            console.log("tabela de pedidos", route.params, colVisibility);
+          }}
+        >
+          <Text style={styles.text}>Tabela de Pedidos</Text>
         </Pressable>
 
         <View style={styles.table}>
@@ -269,22 +294,20 @@ export default function FinalTable({ navigation, route }: any) {
           >
             <Table>
               <TableWrapper style={styles.header}>
-                {Array.from(lockedColTable).map((colKey, colIndex) => 
-                  (
-                    <Pressable
-                      key={colKey}
-                      onPress={() => handleLockedTable(colKey)}
-                    >
-                      <Cell
-                        key={colIndex}
-                        data={params[colKey].label}
-                        style={styles.cellHead}
-                        textStyle={styles.cellHeadText}
-                        width={params[colKey].tableWidth}
-                      />
-                    </Pressable>
-                  )
-                )}
+                {Array.from(lockedColTable).map((colKey, colIndex) => (
+                  <Pressable
+                    key={colKey}
+                    onPress={() => handleLockedTable(colKey)}
+                  >
+                    <Cell
+                      key={colIndex}
+                      data={params[colKey].label}
+                      style={styles.cellHead}
+                      textStyle={styles.cellHeadText}
+                      width={params[colKey].tableWidth}
+                    />
+                  </Pressable>
+                ))}
               </TableWrapper>
               <SyncedScrollView
                 scrollViewId={0}
@@ -294,16 +317,14 @@ export default function FinalTable({ navigation, route }: any) {
                   return (
                     <TableWrapper key={rowIndex} style={styles.header}>
                       {(Array.from(lockedColTable) as Array<keyof DataRow>).map(
-                        (colKey, colIndex) => 
-                          (
-                            <Cell
-                              key={colIndex}
-                              data={rowData[colKey]}
-                              style={styles.cellData}
-                              width={params[colKey].tableWidth}
-                            />
-                          )
-                        
+                        (colKey, colIndex) => (
+                          <Cell
+                            key={colIndex}
+                            data={cellValueMask(rowData[colKey], colKey)}
+                            style={styles.cellData}
+                            width={params[colKey].tableWidth}
+                          />
+                        )
                       )}
                     </TableWrapper>
                   );
@@ -311,6 +332,9 @@ export default function FinalTable({ navigation, route }: any) {
               </SyncedScrollView>
             </Table>
           </ScrollView>
+          <View
+            style={{ backgroundColor: "black", width: 3, display: handleBar() }}
+          ></View>
 
           <ScrollView
             horizontal={true}
@@ -319,22 +343,20 @@ export default function FinalTable({ navigation, route }: any) {
           >
             <Table>
               <TableWrapper style={styles.header}>
-                {Array.from(colTable).map((colKey, colIndex) => 
-                  (
-                    <Pressable
-                      key={colKey}
-                      onPress={() => handleLockedTable(colKey)}
-                    >
-                      <Cell
-                        key={colIndex}
-                        data={params[colKey].label}
-                        style={styles.cellHead}
-                        textStyle={styles.cellHeadText}
-                        width={params[colKey].tableWidth}
-                      />
-                    </Pressable>
-                  )
-                )}
+                {Array.from(colTable).map((colKey, colIndex) => (
+                  <Pressable
+                    key={colKey}
+                    onPress={() => handleLockedTable(colKey)}
+                  >
+                    <Cell
+                      key={colIndex}
+                      data={params[colKey].label}
+                      style={styles.cellHead}
+                      textStyle={styles.cellHeadText}
+                      width={params[colKey].tableWidth}
+                    />
+                  </Pressable>
+                ))}
               </TableWrapper>
               <SyncedScrollView
                 scrollViewId={1}
@@ -344,16 +366,14 @@ export default function FinalTable({ navigation, route }: any) {
                   return (
                     <TableWrapper key={rowIndex} style={styles.header}>
                       {(Array.from(colTable) as Array<keyof DataRow>).map(
-                        (colKey, colIndex) => 
-                          (
-                            <Cell
-                              key={colIndex}
-                              data={rowData[colKey]}
-                              style={styles.cellData}
-                              width={params[colKey].tableWidth}
-                            />
-                          )
-                        
+                        (colKey, colIndex) => (
+                          <Cell
+                            key={colIndex}
+                            data={rowData[colKey]}
+                            style={styles.cellData}
+                            width={params[colKey].tableWidth}
+                          />
+                        )
                       )}
                     </TableWrapper>
                   );

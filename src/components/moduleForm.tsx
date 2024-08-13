@@ -19,7 +19,6 @@ import {
   Grid,
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
-import { useRoute } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 

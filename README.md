@@ -147,3 +147,13 @@ Além disso, é possível travar uma coluna para que a mesma não acompanhe o sc
 
 
 4. Filtro/Pesquisa
+
+## Mascaras
+
+1. Dinheiro [/^(\d+)(?:\.(\d{2}))?$/, "R$ $1,$2"]
+
+2. Telefone [
+          [/^(\d{2})(\d{5})(\d{4})$/, "($1)$2-$3", 11],
+          [/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3", 10],
+          [/^(\d{4})(\d{4})$/, "$1-$2", 8],
+        ]

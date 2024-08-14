@@ -1,7 +1,7 @@
 import { Param, params } from "./params";
 
 export interface TableParam {
-  label?: string;
+  label: string;
   inputType: string;
   inputMode?: string;
   value: string;
@@ -57,10 +57,9 @@ export const modulesParam: ModuleParam = {
         inputType: "input",
         inputMode: "numeric",
         value: "",
-        masks: ["###.###.###-##", "##.###.###/####-##"],
         valueMasked: "",
         maxLength: 18,
-        tableWidth: 9 * 8,
+        tableWidth: 10 * 8,
         isVisible: true,
       },
       fantasia: {
@@ -121,29 +120,31 @@ export const modulesParam: ModuleParam = {
         label: "Telefone",
         inputType: "input",
         inputMode: "tel",
-        placeholder: "(00) 00000-0000",
+        placeholder: "00.00000-0000",
         masks: [
-          [/^(\d{2})(\d{5})(\d{4})$/, "($1)$2-$3", 11],
-          [/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3", 10],
+          [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
+          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1]
         ],
         customCSS: {width: 160},
         value: "",
         valueMasked: "",
-        maxLength: 15,
-        tableWidth: 15 * 8 ,
+        maxLength: 13,
+        tableWidth: 16 * 8 ,
         isVisible: true,
       },
       fax: {
         label: "Telefone 2",
         inputType: "input",
         inputMode: "tel",
-        placeholder: "(00) 00000-0000",
-        masks: ["(##) ####-####", "(##) #####-####"],
-        
+        placeholder: "00.00000-0000",
+        masks: [
+          [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
+          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1]
+        ],
         customCSS: {width: 160},
         value: "",
         valueMasked: "",
-        maxLength: 15,
+        maxLength: 13,
         tableWidth: 15 * 8 ,
         isVisible: false,
       },
@@ -215,6 +216,88 @@ export const modulesParam: ModuleParam = {
       contatoemail: params.contatoemail,
       contatotelefone: params.contatotelefone,
       cnpjcpf: params.cnpjcpf,
+    },
+    tableParam: {
+      numero: {
+        label: "Pedido",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: true,
+      },
+      notafiscal: {
+        label: "Nota Fiscal",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: true,
+      },
+      data: {
+        label: "Data",
+        inputType: "date",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: true,
+      },
+      cliente: {
+        label: "Cliente",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        maxLength: 60,
+        tableWidth: 23 * 8 ,
+        isVisible: true,
+      },
+      total: {
+        label: "Valor",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: true,
+      },
+      formapagamento: {
+        label: "Forma Pagamento",
+        inputType: "input",
+        inputMode: "text",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: true,
+      },
+      vencimento: {
+        label: "Vencimento",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: false,
+      },
+      usuario: {
+        label: "Usuário",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: false,
+      },
+      statusenter8: {
+        label: "Status enter8",
+        inputType: "input",
+        inputMode: "numeric",
+        value: "",
+        valueMasked: "",
+        tableWidth: 10 * 8,
+        isVisible: false,
+      },
     }
   },
 };

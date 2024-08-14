@@ -43,8 +43,8 @@ type DataRow = {
 type DataTable = DataRow[];
 
 export default function FinalTable({ navigation, route }: any) {
-  const params = modulesParam.cliente.tableParam
-    ? modulesParam.cliente.tableParam
+  const params = modulesParam.pedido.tableParam
+    ? modulesParam.pedido.tableParam
     : {};
   const [data, setData] = useState<DataTable>([]);
   const [dataBackup, setDataBackup] = useState<DataTable>([]);
@@ -180,12 +180,12 @@ export default function FinalTable({ navigation, route }: any) {
 
   function cellValueMask(value: string, colKey: string) {
     const mask = params[colKey].masks ? params[colKey].masks : false;
-    const cleanValue = value.replace(/\D/g, "");
-
+    
     if (mask) {
-      for (const [pattern, format, length] of mask) {
-        if (cleanValue.length === length) {
-          return cleanValue.replace(pattern, format);
+      const cleanValue = value.replace(/\D/g, "");
+      for (let i = 0; i < mask.length; i++) {
+        if (cleanValue.length === mask[i][2]) {
+          return cleanValue.replace(mask[i][0],mask[i][1]);
         }
       }
     }
@@ -369,7 +369,7 @@ export default function FinalTable({ navigation, route }: any) {
                         (colKey, colIndex) => (
                           <Cell
                             key={colIndex}
-                            data={rowData[colKey]}
+                            data={cellValueMask(rowData[colKey], colKey)}
                             style={styles.cellData}
                             width={params[colKey].tableWidth}
                           />

@@ -73,36 +73,31 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
     return true;
   };
 
+  function maskedValue(value: string, mask: any) {
+  value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
+    for (let i = 0; i < mask.length; i++) {
+      if (value.length >= mask[i][2]) {
+        value = value.replace(mask[i][0], mask[i][1]);
+        break;
+      }
+    }
+    while (/[^\w\s]$/.test(value)) {
+      value = value.slice(0,-1)
+    }
+    return value;
+  }
+
   const handleInputChange = (
     e: any,
     field: any,
     fillForm?: any,
     errorMsg?: any
   ) => {
+
+
     // Máscara de input
     if (form[field].masks) {
-      const mask = (value: any, masks: Array<string>) => {
-        let v = value.replace(/\D/g, "");
-        let pattern = "";
-
-        for (let i = 0; i < masks.length; i++) {
-          let maskOn = masks[i].replace(/[^0-9#]/g, "").length;
-          if (v.length === maskOn) {
-            pattern = masks[i];
-            break;
-          }
-        }
-
-        if (pattern === "") {
-          return v;
-        }
-
-        let i = 0;
-        const maskedValue = pattern.replace(/#/g, () => v[i++] || "");
-        return maskedValue;
-      };
-
-      let eMasked = mask(e, form[field].masks);
+      let eMasked = maskedValue(e, form[field].masks);
       setForm((prevForm: any) => ({
         ...prevForm,
         [field]: {

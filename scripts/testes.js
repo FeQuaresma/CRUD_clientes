@@ -3,16 +3,18 @@ const mask = [
   [/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3", 10],
 ];
 
-function formatPhoneNumber(value) {
-  const numericValue = value.replace(/\D/g, "");
-
-  for (const [pattern, format, length] of mask) {
-    if (numericValue.length === length) {
-      return numericValue.replace(pattern, format);
+function cellValueMask(value) {
+  
+  if (mask) {
+    const cleanValue = value.replace(/\D/g, "");
+    for (let i = 0; i < mask.length; i++) {
+      if (cleanValue.length === mask[i][2]) {
+        return cleanValue.replace(mask[i][0],mask[i][1]);
+      }
     }
   }
-  
-  return numericValue;
+
+  return value;
 }
 
 console.log(formatPhoneNumber("11949174470"));

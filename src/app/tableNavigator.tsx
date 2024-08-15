@@ -55,7 +55,7 @@ export default function TableNavigator({ navigation }: any) {
           statusBarTranslucent: true,
         }}
       >
-        {(e) => <ModuleForm {...e}  formParam={modulesParam.cliente.tableParam} formMode={"filter"}/>}
+        {(e) => <ModuleForm {...e}  formParam={modulesParam.pedido.tableParam} formMode={"filter"}/>}
       </Stack.Screen>
 
     </Stack.Navigator>

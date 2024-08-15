@@ -16,38 +16,24 @@ import {
   syncedScrollViewState,
 } from "../context/SyncedScrollViewContext";
 import { SyncedScrollView } from "../components/SyncedScrollView";
-import { useRoute } from "@react-navigation/native";
 
 type DataRow = {
-  bairro: string;
-  cep: string;
-  cidade: string;
-  cnpj: string;
-  complemento: string;
-  contato: string;
-  corenter8: string;
-  email: string;
-  endereco: string;
-  estado: string;
-  fantasia: string;
-  fax: string;
-  id: string;
-  insc: string;
-  numero: string;
-  razaosocial: string;
-  statusenter8: string;
-  telefone: string;
-  tipo: string;
+  [key: string]: string;
 };
 
-type DataTable = DataRow[];
+type DataTable = {
+  formAtual: DataRow[];
+  [key: string]: any;
+};
 
 export default function FinalTable({ navigation, route }: any) {
   const params = modulesParam.pedido.tableParam
     ? modulesParam.pedido.tableParam
     : {};
-  const [data, setData] = useState<DataTable>([]);
-  const [dataBackup, setDataBackup] = useState<DataTable>([]);
+
+  const [data, setData] = useState<DataRow[]>([]);
+  const [dataBackup, setDataBackup] = useState<DataRow[]>([]);
+
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState<Set<string>>(new Set());
   const [colTable, setColTable] = useState<Set<string>>(new Set());
@@ -69,9 +55,21 @@ export default function FinalTable({ navigation, route }: any) {
   }, [colTable]);
 
   useEffect(() => {
-    loadData().then((dataOnline) => {
-      setData(dataOnline);
-      setDataBackup(dataOnline);
+    loadData().then((dataOnline: DataTable) => {
+      dataOnline.formAtual.forEach((dataRow: DataRow) => {
+        Object.keys(dataRow).forEach((key: string) => {
+          if (dataOnline[key]) {
+            dataRow[key] = dataOnline[key][dataRow[key]];
+          } else if (dataRow[key] === "&nbsp;") {
+            dataRow[key] = "";
+          } else {
+            dataRow[key] = cellValueMask(dataRow[key], key);
+          }
+        });
+      });
+
+      setData(dataOnline.formAtual);
+      setDataBackup(dataOnline.formAtual);
     });
 
     const dataSet: Set<string> = new Set(
@@ -117,7 +115,7 @@ export default function FinalTable({ navigation, route }: any) {
   }, [routeParams]);
 
   function loadData() {
-    return fetch("https://www.caae.org.br/teste/teste.json")
+    return fetch("https://www.caae.org.br/teste/testeDatav2.json?n=1")
       .then((response) => response.json())
       .catch((error) => console.error(error));
   }
@@ -180,12 +178,12 @@ export default function FinalTable({ navigation, route }: any) {
 
   function cellValueMask(value: string, colKey: string) {
     const mask = params[colKey].masks ? params[colKey].masks : false;
-    
+
     if (mask) {
       const cleanValue = value.replace(/\D/g, "");
       for (let i = 0; i < mask.length; i++) {
-        if (cleanValue.length === mask[i][2]) {
-          return cleanValue.replace(mask[i][0],mask[i][1]);
+        if (cleanValue.length >= Number(mask[i][2])) {
+          return cleanValue.replace(mask[i][0], mask[i][1]);
         }
       }
     }
@@ -199,7 +197,7 @@ export default function FinalTable({ navigation, route }: any) {
       return;
     }
 
-    const filteredData: DataTable = [];
+    const filteredData: DataRow[] = [];
     dataBackup.forEach((row) => {
       const filteredRow: string[] = [];
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
@@ -280,7 +278,7 @@ export default function FinalTable({ navigation, route }: any) {
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", route.params, colVisibility);
+            console.log("tabela de pedidos", dataBackup[0]);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>
@@ -320,7 +318,7 @@ export default function FinalTable({ navigation, route }: any) {
                         (colKey, colIndex) => (
                           <Cell
                             key={colIndex}
-                            data={cellValueMask(rowData[colKey], colKey)}
+                            data={rowData[colKey]}
                             style={styles.cellData}
                             width={params[colKey].tableWidth}
                           />
@@ -369,7 +367,7 @@ export default function FinalTable({ navigation, route }: any) {
                         (colKey, colIndex) => (
                           <Cell
                             key={colIndex}
-                            data={cellValueMask(rowData[colKey], colKey)}
+                            data={rowData[colKey]}
                             style={styles.cellData}
                             width={params[colKey].tableWidth}
                           />

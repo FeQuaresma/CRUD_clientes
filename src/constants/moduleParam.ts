@@ -13,6 +13,7 @@ export interface TableParam {
   options?: { label: string; value: string }[];
   tableWidth: number;
   isVisible: boolean;
+  isNumber: boolean;
 }
 
 export type ModuleParam = {
@@ -226,6 +227,7 @@ export const modulesParam: ModuleParam = {
         valueMasked: "",
         tableWidth: 10 * 8,
         isVisible: true,
+        isNumber: true,
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -235,14 +237,19 @@ export const modulesParam: ModuleParam = {
         valueMasked: "",
         tableWidth: 10 * 8,
         isVisible: true,
+        
+        isNumber: true,
       },
       data: {
         label: "Data",
         inputType: "date",
         value: "",
         valueMasked: "",
-        tableWidth: 10 * 8,
+        masks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 1]],
+        tableWidth: 13 * 8,
         isVisible: true,
+        
+        isNumber: true,
       },
       cliente: {
         label: "Cliente",
@@ -257,10 +264,18 @@ export const modulesParam: ModuleParam = {
         label: "Valor",
         inputType: "input",
         inputMode: "numeric",
+        masks: [
+          [/(\d+)(\d{3})(\d{3})(\d{2})$/, "R$ $1.$2.$3,$4", 9],
+          [/(\d+)(\d{3})(\d{2})$/, "R$ $1.$2,$3", 6],
+          [/(\d+)(\d{2})$/, "R$ $1,$2", 3],
+          [/(\d+)$/, "R$ 0,$1", 2],
+          [/(\d+)$/, "R$ 0,0$1", 1],
+        ],
         value: "",
         valueMasked: "",
-        tableWidth: 10 * 8,
+        tableWidth: 13 * 8,
         isVisible: true,
+        isNumber: true,
       },
       formapagamento: {
         label: "Forma Pagamento",
@@ -268,7 +283,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         valueMasked: "",
-        tableWidth: 10 * 8,
+        tableWidth: 18 * 8,
         isVisible: true,
       },
       vencimento: {
@@ -279,6 +294,7 @@ export const modulesParam: ModuleParam = {
         valueMasked: "",
         tableWidth: 10 * 8,
         isVisible: false,
+        isNumber: true,
       },
       usuario: {
         label: "Usuário",

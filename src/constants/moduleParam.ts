@@ -13,7 +13,10 @@ export interface TableParam {
   options?: { label: string; value: string }[];
   tableWidth: number;
   isVisible: boolean;
-  isNumber: boolean;
+  isNumber?: boolean;
+  searchParam?: string[] | [RegExp, string][];
+  isCurrency?: boolean;
+  footerLabel?: string;
 }
 
 export type ModuleParam = {
@@ -62,6 +65,7 @@ export const modulesParam: ModuleParam = {
         maxLength: 18,
         tableWidth: 10 * 8,
         isVisible: true,
+        isNumber: true,
       },
       fantasia: {
         label: "Nome Fantasia",
@@ -132,6 +136,7 @@ export const modulesParam: ModuleParam = {
         maxLength: 13,
         tableWidth: 16 * 8 ,
         isVisible: true,
+        isNumber: true,
       },
       fax: {
         label: "Telefone 2",
@@ -148,6 +153,7 @@ export const modulesParam: ModuleParam = {
         maxLength: 13,
         tableWidth: 15 * 8 ,
         isVisible: false,
+        isNumber: true,
       },
       contato: {
         label: "Contato",
@@ -228,6 +234,7 @@ export const modulesParam: ModuleParam = {
         tableWidth: 10 * 8,
         isVisible: true,
         isNumber: true,
+        footerLabel: "sumEntries"
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -237,7 +244,6 @@ export const modulesParam: ModuleParam = {
         valueMasked: "",
         tableWidth: 10 * 8,
         isVisible: true,
-        
         isNumber: true,
       },
       data: {
@@ -246,9 +252,9 @@ export const modulesParam: ModuleParam = {
         value: "",
         valueMasked: "",
         masks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 1]],
-        tableWidth: 13 * 8,
+        searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3$2$1"]],
+        tableWidth: 14 * 8,
         isVisible: true,
-        
         isNumber: true,
       },
       cliente: {
@@ -273,9 +279,11 @@ export const modulesParam: ModuleParam = {
         ],
         value: "",
         valueMasked: "",
-        tableWidth: 13 * 8,
+        tableWidth: 18 * 8,
         isVisible: true,
         isNumber: true,
+        isCurrency: true,
+        footerLabel: "sumTotal"
       },
       formapagamento: {
         label: "Forma Pagamento",
@@ -286,34 +294,34 @@ export const modulesParam: ModuleParam = {
         tableWidth: 18 * 8,
         isVisible: true,
       },
-      vencimento: {
-        label: "Vencimento",
-        inputType: "input",
-        inputMode: "numeric",
-        value: "",
-        valueMasked: "",
-        tableWidth: 10 * 8,
-        isVisible: false,
-        isNumber: true,
-      },
-      usuario: {
-        label: "Usuário",
-        inputType: "input",
-        inputMode: "numeric",
-        value: "",
-        valueMasked: "",
-        tableWidth: 10 * 8,
-        isVisible: false,
-      },
-      statusenter8: {
-        label: "Status enter8",
-        inputType: "input",
-        inputMode: "numeric",
-        value: "",
-        valueMasked: "",
-        tableWidth: 10 * 8,
-        isVisible: false,
-      },
+      // vencimento: {
+      //   label: "Vencimento",
+      //   inputType: "input",
+      //   inputMode: "numeric",
+      //   value: "",
+      //   valueMasked: "",
+      //   tableWidth: 10 * 8,
+      //   isVisible: false,
+      //   isNumber: true,
+      // },
+      // usuario: {
+      //   label: "Usuário",
+      //   inputType: "input",
+      //   inputMode: "numeric",
+      //   value: "",
+      //   valueMasked: "",
+      //   tableWidth: 10 * 8,
+      //   isVisible: false,
+      // },
+      // statusenter8: {
+      //   label: "Status enter8",
+      //   inputType: "input",
+      //   inputMode: "numeric",
+      //   value: "",
+      //   valueMasked: "",
+      //   tableWidth: 10 * 8,
+      //   isVisible: false,
+      // },
     }
   },
 };

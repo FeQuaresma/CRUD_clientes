@@ -40,8 +40,8 @@ export default function TableNavigator({ navigation }: any) {
         component={FinalTable}
         options={{
           headerShown: false,
-          statusBarStyle: "light",
-          statusBarTranslucent: true,
+          // statusBarStyle: "light",
+          // statusBarTranslucent: true,
         }}
         initialParams={{}}
       />
@@ -51,8 +51,9 @@ export default function TableNavigator({ navigation }: any) {
         options={{
           presentation: "modal",
           headerShown: false,
-          statusBarStyle: "light",
-          statusBarTranslucent: true,
+          // statusBarStyle: "light",
+          // statusBarTranslucent: true,
+          
         }}
       >
         {(e) => <ModuleForm {...e}  formParam={modulesParam.pedido.tableParam} formMode={"filter"}/>}

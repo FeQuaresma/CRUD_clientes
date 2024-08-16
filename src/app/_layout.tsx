@@ -20,8 +20,8 @@ export default function App() {
         component={Index}
         options={{
           // headerShown: false,
-          statusBarStyle: "light",
-          statusBarTranslucent: true,
+          // statusBarStyle: "light",
+          // statusBarTranslucent: true,
           orientation: "all"
         }}
       />
@@ -66,8 +66,8 @@ export default function App() {
         component={TableNavigator}
         options={{
           headerShown: false,
-          statusBarStyle: "light",
-          statusBarTranslucent: true,
+          // statusBarStyle: "light",
+          // statusBarTranslucent: true,
         }}
       />
     </Stack.Navigator>

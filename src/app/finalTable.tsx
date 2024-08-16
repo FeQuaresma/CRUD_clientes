@@ -32,27 +32,26 @@ export default function FinalTable({ navigation, route }: any) {
     : {};
 
   const [data, setData] = useState<DataRow[]>([]);
-  const [dataBackup, setDataBackup] = useState<DataRow[]>([]);
+  const [dataOrigin, setDataOrigin] = useState<DataRow[]>([]);
 
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState<Set<string>>(new Set());
   const [colTable, setColTable] = useState<Set<string>>(new Set());
-  const [colTableBackup, setColTableBackup] = useState<Set<string>>();
+  const [colTableOrigin, setColTableOrigin] = useState<Set<string>>();
 
   const [colVisibility, setColVisibility] = useState<string[]>([]);
   const [routeParams, setRouteParams] = useState({});
 
   useEffect(() => {
-    console.log(route.params);
     setRouteParams(route.params);
     setColVisibility(route.params.colVisibility);
   }, [route.params]);
 
-  useEffect(() => {
-    console.log(colVisibility);
-    console.log(colTable);
-    console.log(lockedColTable);
-  }, [colTable]);
+  // useEffect(() => {
+  //   console.log(colVisibility);
+  //   console.log(colTable);
+  //   console.log(lockedColTable);
+  // }, [colTable]);
 
   useEffect(() => {
     loadData().then((dataOnline: DataTable) => {
@@ -62,20 +61,34 @@ export default function FinalTable({ navigation, route }: any) {
             dataRow[key] = dataOnline[key][dataRow[key]];
           } else if (dataRow[key] === "&nbsp;") {
             dataRow[key] = "";
-          } else {
-            dataRow[key] = cellValueMask(dataRow[key], key);
           }
         });
       });
 
+      Object.keys(params).forEach((key)=>{
+        if(params[key].footerLabel){
+          switch (params[key].footerLabel){
+            case "sumTotal": 
+            dataOnline.formAtual.forEach(()=>{
+              
+            })
+            case "sumEntries": 
+            return ""
+            default:
+              return ""
+          }
+
+        }
+      })
+
       setData(dataOnline.formAtual);
-      setDataBackup(dataOnline.formAtual);
+      setDataOrigin(dataOnline.formAtual);
     });
 
     const dataSet: Set<string> = new Set(
       Object.keys(params).map((colKey) => colKey)
     );
-    setColTableBackup(dataSet);
+    setColTableOrigin(dataSet);
     console.log("Data loaded!");
 
     const colVisArray: string[] = [];
@@ -83,7 +96,6 @@ export default function FinalTable({ navigation, route }: any) {
     Object.keys(params).forEach((colKey) => {
       !params[colKey].isVisible && colVisArray.push(colKey);
     });
-    console.log("ln 83", colVisArray);
 
     setColVisibility(colVisArray);
   }, []);
@@ -103,9 +115,6 @@ export default function FinalTable({ navigation, route }: any) {
       }
     });
 
-    console.log("ln 108", colVisibilityTemp);
-    console.log("ln 109", colData, lockedColTableTemp);
-
     setColTable(new Set(colData));
     setLockedColTable(lockedColTableTemp);
   }, [colVisibility]);
@@ -115,14 +124,14 @@ export default function FinalTable({ navigation, route }: any) {
   }, [routeParams]);
 
   function loadData() {
-    return fetch("https://www.caae.org.br/teste/testeDatav2.json?n=1")
+    return fetch("https://www.caae.org.br/teste/testeDatav2.json?n=2")
       .then((response) => response.json())
       .catch((error) => console.error(error));
   }
 
   function handleLockedTable(colKey: string) {
     let lockedColTableTemp = new Set(lockedColTable);
-    let colTableBackupTemp = new Set(colTableBackup);
+    let colTableOriginTemp = new Set(colTableOrigin);
     let colVisibilityTemp = new Set(colVisibility);
 
     if (lockedColTableTemp.has(colKey)) {
@@ -131,10 +140,10 @@ export default function FinalTable({ navigation, route }: any) {
       lockedColTableTemp.add(colKey);
     }
 
-    colVisibility.forEach((key) => colTableBackupTemp.delete(key));
-    lockedColTableTemp.forEach((key) => colTableBackupTemp.delete(key));
+    colVisibility.forEach((key) => colTableOriginTemp.delete(key));
+    lockedColTableTemp.forEach((key) => colTableOriginTemp.delete(key));
 
-    setColTable(colTableBackupTemp);
+    setColTable(colTableOriginTemp);
     setLockedColTable(lockedColTableTemp);
   }
 
@@ -177,37 +186,95 @@ export default function FinalTable({ navigation, route }: any) {
   }
 
   function cellValueMask(value: string, colKey: string) {
-    const mask = params[colKey].masks ? params[colKey].masks : false;
+    if (params[colKey]) {
+      const mask = params[colKey].masks ? params[colKey].masks : false;
 
-    if (mask) {
-      const cleanValue = value.replace(/\D/g, "");
-      for (let i = 0; i < mask.length; i++) {
-        if (cleanValue.length >= Number(mask[i][2])) {
-          return cleanValue.replace(mask[i][0], mask[i][1]);
+      if (mask) {
+        const cleanValue = value.replace(/\D/g, "");
+        for (let i = 0; i < mask.length; i++) {
+          if (cleanValue.length >= Number(mask[i][2])) {
+            return cleanValue.replace(mask[i][0], mask[i][1]);
+          }
         }
       }
     }
-
     return value;
+  }
+
+  function formatCurrency(value: string): string {
+    // Remove todos os caracteres que não forem números, ponto ou vírgula
+    value = value.replace(/[^\d.,]/g, "");
+
+    // Verifica se o valor possui mais de um ponto ou mais de uma vírgula
+    const countDot = (value.match(/\./g) || []).length;
+    const countComma = (value.match(/,/g) || []).length;
+
+    if (countDot > 1 || countComma > 1) {
+      // Remove todos os pontos e vírgulas, retornando apenas os números
+      return value.replace(/[.,]/g, "");
+    }
+
+    // Separa o valor em duas partes: antes e depois do último ponto ou vírgula
+    const lastSeparator = Math.max(
+      value.lastIndexOf("."),
+      value.lastIndexOf(",")
+    );
+
+    if (lastSeparator !== -1) {
+      const integerPart = value
+        .substring(0, lastSeparator)
+        .replace(/[^0-9]/g, "");
+      const decimalPart = value
+        .substring(lastSeparator + 1)
+        .replace(/[^0-9]/g, "");
+      return `${integerPart}.${decimalPart}`;
+    }
+
+    // Se não houver ponto ou vírgula, retornar o valor sem modificações
+    return value.replace(/[^0-9]/g, "");
   }
 
   function handleGlobalSearch() {
     if (searchWord === "") {
-      setData(dataBackup);
+      setData(dataOrigin);
       return;
     }
-
+    let cleanSearchWord = searchWord.replace(/\D/g, "");
     const filteredData: DataRow[] = [];
-    dataBackup.forEach((row) => {
+    dataOrigin.forEach((row) => {
       const filteredRow: string[] = [];
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
         const cellValue = row[colKey] as string;
-        if (
-          cellValue !== "" &&
-          cellValue !== null &&
-          accentRemove(cellValue).includes(accentRemove(searchWord))
-        ) {
-          filteredRow.push(cellValue);
+        let cleanCellValue = cellValue.replace(/\D/g, "");
+        if (params[colKey]) {
+          if (cellValue !== "" && cellValue !== null) {
+            if (params[colKey].isNumber) {
+              if (params[colKey].searchParam) {
+                // CPF, CNPJ, DATA
+                params[colKey].searchParam.forEach((mask) => {
+                  if (
+                    cleanCellValue
+                      .replace(mask[0], mask[1])
+                      .includes(cleanSearchWord)
+                  ) {
+                    filteredRow.push(cellValue);
+                  }
+                });
+              } else if (params[colKey].isCurrency) {
+                // Dinheiro
+                let currencySeachWord = formatCurrency(searchWord);
+                if (cellValue.includes(currencySeachWord)) {
+                  filteredRow.push(cellValue);
+                }
+              } else if (cellValue.includes(cleanSearchWord)) {
+                filteredRow.push(cellValue);
+              }
+            } else if (
+              accentRemove(cellValue).includes(accentRemove(searchWord))
+            ) {
+              filteredRow.push(cellValue);
+            }
+          }
         }
       });
 
@@ -221,7 +288,7 @@ export default function FinalTable({ navigation, route }: any) {
       let filteredDataForm = filters.formData;
       const filteredData: DataRow[] = [];
 
-      dataBackup.forEach((row: any) => {
+      dataOrigin.forEach((row: any) => {
         const filteredRow: string[] = [];
         Object.keys(filteredDataForm).forEach((colKey) => {
           if (
@@ -238,7 +305,7 @@ export default function FinalTable({ navigation, route }: any) {
       });
       setData(filteredData);
     } else {
-      setData(dataBackup);
+      setData(dataOrigin);
     }
   }
 
@@ -256,6 +323,7 @@ export default function FinalTable({ navigation, route }: any) {
             placeholder="Pesquise..."
             value={searchWord}
             onChangeText={(e) => setSearchWord(e.trimStart())}
+            onSubmitEditing={() => handleGlobalSearch()}
           />
           <Pressable
             style={styles.searchIcon}
@@ -278,7 +346,7 @@ export default function FinalTable({ navigation, route }: any) {
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", dataBackup[0]);
+            console.log("tabela de pedidos", dataOrigin[0]);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>
@@ -307,6 +375,7 @@ export default function FinalTable({ navigation, route }: any) {
                   </Pressable>
                 ))}
               </TableWrapper>
+
               <SyncedScrollView
                 scrollViewId={0}
                 showsVerticalScrollIndicator={false}
@@ -318,7 +387,10 @@ export default function FinalTable({ navigation, route }: any) {
                         (colKey, colIndex) => (
                           <Cell
                             key={colIndex}
-                            data={rowData[colKey]}
+                            data={cellValueMask(
+                              rowData[colKey],
+                              colKey as string
+                            )}
                             style={styles.cellData}
                             width={params[colKey].tableWidth}
                           />
@@ -328,18 +400,36 @@ export default function FinalTable({ navigation, route }: any) {
                   );
                 })}
               </SyncedScrollView>
+
+              <TableWrapper style={styles.header}>
+                {Array.from(lockedColTable).map((colKey, colIndex) => (
+                  <Pressable
+                    key={colKey}
+                    onPress={() => handleLockedTable(colKey)}
+                  >
+                    <Cell
+                      key={colIndex}
+                      data={params[colKey].label}
+                      style={styles.cellHead}
+                      textStyle={styles.cellHeadText}
+                      width={params[colKey].tableWidth}
+                    />
+                  </Pressable>
+                ))}
+              </TableWrapper>
             </Table>
           </ScrollView>
           <View
             style={{ backgroundColor: "black", width: 3, display: handleBar() }}
           ></View>
-
+          {/*Divisória*/}
           <ScrollView
             horizontal={true}
             style={{ minWidth: handleSizeTable() }}
             showsHorizontalScrollIndicator={false}
           >
             <Table>
+
               <TableWrapper style={styles.header}>
                 {Array.from(colTable).map((colKey, colIndex) => (
                   <Pressable
@@ -356,6 +446,7 @@ export default function FinalTable({ navigation, route }: any) {
                   </Pressable>
                 ))}
               </TableWrapper>
+
               <SyncedScrollView
                 scrollViewId={1}
                 showsVerticalScrollIndicator={false}
@@ -367,7 +458,10 @@ export default function FinalTable({ navigation, route }: any) {
                         (colKey, colIndex) => (
                           <Cell
                             key={colIndex}
-                            data={rowData[colKey]}
+                            data={cellValueMask(
+                              rowData[colKey],
+                              colKey as string
+                            )}
                             style={styles.cellData}
                             width={params[colKey].tableWidth}
                           />
@@ -377,6 +471,25 @@ export default function FinalTable({ navigation, route }: any) {
                   );
                 })}
               </SyncedScrollView>
+
+              <TableWrapper style={styles.footer}>
+                {Array.from(colTable).map((colKey, colIndex) => (
+                  <Pressable
+                    key={colKey}
+                    onPress={() => handleLockedTable(colKey)}
+                  >
+                    <Cell
+                      key={colIndex}
+                      data={params[colKey].footerLabel ? params[colKey].footerLabel : ""}
+                      style={styles.cellFoot}
+                      textStyle={styles.cellHeadText}
+                      width={params[colKey].tableWidth}
+                    />
+                  </Pressable>
+                ))}
+              </TableWrapper>
+
+
             </Table>
           </ScrollView>
         </View>
@@ -439,6 +552,13 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 60,
   },
+  cellFoot: {
+    backgroundColor: "#919ba9",
+    borderWidth: 1,
+    borderColor: "black",
+    padding: 10,
+    height: 60,
+  },
   cellHeadText: {
     color: "#fff",
   },
@@ -450,6 +570,8 @@ const styles = StyleSheet.create({
     height: 60,
   },
   header: {
+    flexDirection: "row",
+  },  footer: {
     flexDirection: "row",
   },
   tableLeft: {},

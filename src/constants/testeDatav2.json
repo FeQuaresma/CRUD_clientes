@@ -20,7 +20,7 @@
       "vencimento": "0",
       "usuario": "105",
       "statusenter8": "0",
-      "total": "63.25"
+      "total": "550330660.20"
     },
     {
       "numero": "2334",
@@ -31,7 +31,7 @@
       "vencimento": "0",
       "usuario": "105",
       "statusenter8": "0",
-      "total": "189.85"
+      "total": "550330.66"
     },
     {
       "numero": "2333",
@@ -42,7 +42,7 @@
       "vencimento": "0",
       "usuario": "105",
       "statusenter8": "3",
-      "total": "8.00"
+      "total": "550.33"
     },
     {
       "numero": "2332",
@@ -1127,20 +1127,19 @@
     "899": "Ackom"
   },
   "formapagamento": {
-    "0":"Pendente",
-    "1":"Dinheiro",
-    "2":"Cheque",
-    "3":"Cartão de Crédito",
-    "4":"Cartão de Débito",
-    "5":"Crédito Loja",
-    "10":"Vale Alimentação",
-    "11":"Vale Refeição",
-    "12":"Vale Presente",
-    "13":"Vale Combustível",
-    "14":"Duplicata Mercantil",
-    "15":"Boleto",
-    "90":"Sem pagamento",
-    "99":"Outros"
+    "0": "Pendente",
+    "1": "Dinheiro",
+    "2": "Cheque",
+    "3": "Cartão de Crédito",
+    "4": "Cartão de Débito",
+    "5": "Crédito Loja",
+    "10": "Vale Alimentação",
+    "11": "Vale Refeição",
+    "12": "Vale Presente",
+    "13": "Vale Combustível",
+    "14": "Duplicata Mercantil",
+    "15": "Boleto",
+    "90": "Sem pagamento",
+    "99": "Outros"
   }
-
 }

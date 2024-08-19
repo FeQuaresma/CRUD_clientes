@@ -22,11 +22,15 @@ import { styles, stylesModal } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-export default function ModuleForm({ formParam, formMode, navigation, route }: any) {
+export default function ModuleForm({
+  formParam,
+  formMode,
+  navigation,
+  route,
+}: any) {
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState(formParam);
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
-
 
   useEffect(() => {
     handleFilterCallBack(route.params);
@@ -41,7 +45,7 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
     }
   }, [errorCheckComplete, form]);
 
-  const setErrorMsg = () => {
+  function setErrorMsg() {
     Object.keys(form).map((field: string) => {
       if (form[field].value === "" && form[field].isRequired) {
         setForm((prevForm: any) => ({
@@ -62,19 +66,49 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
       }
     });
     setErrorCheckComplete(true);
-  };
+  }
 
-  const handleModal = () => {
+  function handleModal() {
     for (const field of Object.keys(form)) {
       if (form[field].errorMsg != "") {
         return false;
       }
     }
     return true;
-  };
+  }
+
+  function dateInput(field: string) {
+    switch (formMode) {
+      case "filter":
+        return (
+          <View>
+            <Date
+              field={form[field].value}
+              onValueChange={(e: any) =>
+                handleInputChange(e, field, undefined, undefined, "begining")
+              }
+            />
+            <Date
+              field={form[field].value}
+              onValueChange={(e: any) =>
+                handleInputChange(e, field, undefined, undefined, "end")
+              }
+            />
+          </View>
+        );
+      case "register":
+        return (
+          <Date
+            field={form[field].value}
+            onValueChange={(e: any) => handleInputChange(e, field)}
+          />
+        );
+      case "default":
+    }
+  }
 
   function maskedValue(value: string, mask: any) {
-  value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
+    value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
     for (let i = 0; i < mask.length; i++) {
       if (value.length >= mask[i][2]) {
         value = value.replace(mask[i][0], mask[i][1]);
@@ -82,19 +116,18 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
       }
     }
     while (/[^\w\s]$/.test(value)) {
-      value = value.slice(0,-1)
+      value = value.slice(0, -1);
     }
     return value;
   }
 
-  const handleInputChange = (
+  function handleInputChange(
     e: any,
-    field: any,
+    field: string,
     fillForm?: any,
-    errorMsg?: any
-  ) => {
-
-
+    errorMsg?: any,
+    dateOrder?: string
+  ) {
     // Máscara de input
     if (form[field].masks) {
       let eMasked = maskedValue(e, form[field].masks);
@@ -109,13 +142,41 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
     }
 
     //inserir dados no input
-    setForm((prevForm: any) => ({
-      ...prevForm,
-      [field]: {
-        ...prevForm[field],
-        value: e,
-      },
-    }));
+
+    if (dateOrder) {
+      switch(dateOrder) {
+        case "beggining":
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [field]: {
+              ...prevForm[field],
+              value :{
+                ...prevForm[field].value,
+                beggining: e
+              }
+            },
+          }));
+        case "end":
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [field]: {
+              ...prevForm[field],
+              value :{
+                ...prevForm[field].value,
+                end: e
+              }
+            },
+          }));
+      }
+    } else {
+      setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          value: e,
+        },
+      }));
+    }
 
     // prenchimento automatico de campos
     if (fillForm) {
@@ -142,13 +203,17 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
         },
       }));
     }
-  };
+  }
 
-  const handleFilterNavigation = () => {
+  function handleFilterNavigation() {
     let formData: any = {};
     let colVisibility: string[] = [];
+
     Object.keys(form).map((key) => {
-      if (form[key].value !== "") {
+      if (form[key].value !== "" && (typeof form[key].value !== 'object' || form[key].value === null)) {
+        formData[key] = form[key].value;
+      }
+      if (typeof form[key].value === 'object' || form[key].value === null) {
         formData[key] = form[key].value;
       }
       if (!form[key].isVisible) {
@@ -157,9 +222,9 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
     });
     console.log(formData);
     navigation.navigate("FinalTable", { formData, colVisibility });
-  };
+  }
 
-  const handleFilterCallBack = (fillForm: any) => {
+  function handleFilterCallBack(fillForm: any) {
     if (fillForm.formData) {
       Object.keys(fillForm.formData).map((formField) => {
         if (form[formField]) {
@@ -197,9 +262,9 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
       //   console.log(e)
       // })
     }
-  };
+  }
 
-  const handleVisibilityChange = (field: string) => {
+  function handleVisibilityChange(field: string) {
     if (form[field].isVisible) {
       setForm((prevForm: any) => ({
         ...prevForm,
@@ -217,9 +282,9 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
         },
       }));
     }
-  };
+  }
 
-  const handleResetForm = () => {
+  function handleResetForm() {
     Object.keys(form).forEach((field) => {
       (form[field].value !== "" ||
         form[field].isVisible !== formParam[field].isVisible) &&
@@ -232,7 +297,7 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
           },
         }));
     });
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -347,12 +412,7 @@ export default function ModuleForm({ formParam, formMode, navigation, route }: a
                   onValueChange={(e: any) => handleInputChange(e, field)}
                 />
               )}
-              {form[field].inputType === "date" && (
-                <Date
-                  field={form[field].value}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
+              {form[field].inputType === "date" && dateInput(field)}
               {form[field].inputType === "file" && (
                 <File
                   field={form[field]}

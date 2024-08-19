@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
+import { Cell, Row, Table, TableWrapper } from "react-native-reanimated-table";
 import { modulesParam } from "../constants/moduleParam";
 import {
   SyncedScrollViewContext,
@@ -27,10 +27,9 @@ type DataTable = {
 };
 
 export default function FinalTable({ navigation, route }: any) {
-  const params = modulesParam.pedido.tableParam
-    ? modulesParam.pedido.tableParam
-    : {};
-
+  const [params, setParams] = useState(
+    modulesParam.pedido.tableParam ? modulesParam.pedido.tableParam : {}
+  );
   const [data, setData] = useState<DataRow[]>([]);
   const [dataOrigin, setDataOrigin] = useState<DataRow[]>([]);
 
@@ -47,11 +46,6 @@ export default function FinalTable({ navigation, route }: any) {
     setColVisibility(route.params.colVisibility);
   }, [route.params]);
 
-  // useEffect(() => {
-  //   console.log(colVisibility);
-  //   console.log(colTable);
-  //   console.log(lockedColTable);
-  // }, [colTable]);
 
   useEffect(() => {
     loadData().then((dataOnline: DataTable) => {
@@ -64,22 +58,6 @@ export default function FinalTable({ navigation, route }: any) {
           }
         });
       });
-
-      Object.keys(params).forEach((key)=>{
-        if(params[key].footerLabel){
-          switch (params[key].footerLabel){
-            case "sumTotal": 
-            dataOnline.formAtual.forEach(()=>{
-              
-            })
-            case "sumEntries": 
-            return ""
-            default:
-              return ""
-          }
-
-        }
-      })
 
       setData(dataOnline.formAtual);
       setDataOrigin(dataOnline.formAtual);
@@ -122,6 +100,40 @@ export default function FinalTable({ navigation, route }: any) {
   useEffect(() => {
     handleFilterSearch(routeParams);
   }, [routeParams]);
+
+  useEffect(() => {
+    Object.keys(params).forEach((key) => {
+      switch (params[key].footerLabel?.function) {
+        
+        case "sumTotal":
+          let sumTotal = 0
+
+          data.forEach((row)=>{
+            sumTotal += Number(row[key])
+          })
+          setParams((prevParam: any) => ({
+            ...prevParam,
+            [key]: {
+              ...prevParam[key],
+              footerLabel: {function: "sumTotal", value: cellValueMask(String(sumTotal), key)},
+            },
+          }));
+          break;
+        case "sumEntries":
+          setParams((prevParam: any) => ({
+            ...prevParam,
+            [key]: {
+              ...prevParam[key],
+              footerLabel: {function: "sumEntries", value: String(data.length)},
+            },
+          }));
+          break;
+        default:
+          break;
+      }
+    });
+    
+  }, [data]);
 
   function loadData() {
     return fetch("https://www.caae.org.br/teste/testeDatav2.json?n=2")
@@ -239,16 +251,21 @@ export default function FinalTable({ navigation, route }: any) {
       setData(dataOrigin);
       return;
     }
+
     let cleanSearchWord = searchWord.replace(/\D/g, "");
+
     const filteredData: DataRow[] = [];
+
     dataOrigin.forEach((row) => {
       const filteredRow: string[] = [];
+
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
-        const cellValue = row[colKey] as string;
-        let cleanCellValue = cellValue.replace(/\D/g, "");
         if (params[colKey]) {
+          const cellValue = row[colKey] as string;
+          let cleanCellValue = cellValue.replace(/\D/g, "");
+
           if (cellValue !== "" && cellValue !== null) {
-            if (params[colKey].isNumber) {
+            if (params[colKey].isNumber && cleanSearchWord !== "") {
               if (params[colKey].searchParam) {
                 // CPF, CNPJ, DATA
                 params[colKey].searchParam.forEach((mask) => {
@@ -277,9 +294,9 @@ export default function FinalTable({ navigation, route }: any) {
           }
         }
       });
-
       filteredRow.length > 0 && filteredData.push(row);
     });
+
     setData(filteredData);
   }
 
@@ -291,18 +308,21 @@ export default function FinalTable({ navigation, route }: any) {
       dataOrigin.forEach((row: any) => {
         const filteredRow: string[] = [];
         Object.keys(filteredDataForm).forEach((colKey) => {
-          if (
-            accentRemove(row[colKey]).includes(
-              accentRemove(filteredDataForm[colKey])
-            )
-          ) {
-            filteredRow.push(row[colKey]);
+          if (typeof filteredDataForm[colKey] !== 'object' || filteredDataForm[colKey] === null) {
+
+            if (
+              accentRemove(row[colKey]).includes(
+                accentRemove(filteredDataForm[colKey])
+              )
+            ) {
+              filteredRow.push(row[colKey]);
+            }
+          }
+          });
+          if (filteredRow.length === Object.keys(filteredDataForm).length) {
+            filteredData.push(row);
           }
         });
-        if (filteredRow.length === Object.keys(filteredDataForm).length) {
-          filteredData.push(row);
-        }
-      });
       setData(filteredData);
     } else {
       setData(dataOrigin);
@@ -346,7 +366,7 @@ export default function FinalTable({ navigation, route }: any) {
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", dataOrigin[0]);
+            console.log("tabela de pedidos", routeParams);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>
@@ -401,20 +421,19 @@ export default function FinalTable({ navigation, route }: any) {
                 })}
               </SyncedScrollView>
 
-              <TableWrapper style={styles.header}>
+              <TableWrapper style={styles.footer}>
                 {Array.from(lockedColTable).map((colKey, colIndex) => (
-                  <Pressable
-                    key={colKey}
-                    onPress={() => handleLockedTable(colKey)}
-                  >
                     <Cell
                       key={colIndex}
-                      data={params[colKey].label}
-                      style={styles.cellHead}
+                      data={
+                        params[colKey].footerLabel
+                          ? params[colKey].footerLabel.value
+                          : ""
+                      }
+                      style={styles.cellFoot}
                       textStyle={styles.cellHeadText}
                       width={params[colKey].tableWidth}
                     />
-                  </Pressable>
                 ))}
               </TableWrapper>
             </Table>
@@ -429,7 +448,6 @@ export default function FinalTable({ navigation, route }: any) {
             showsHorizontalScrollIndicator={false}
           >
             <Table>
-
               <TableWrapper style={styles.header}>
                 {Array.from(colTable).map((colKey, colIndex) => (
                   <Pressable
@@ -474,22 +492,19 @@ export default function FinalTable({ navigation, route }: any) {
 
               <TableWrapper style={styles.footer}>
                 {Array.from(colTable).map((colKey, colIndex) => (
-                  <Pressable
-                    key={colKey}
-                    onPress={() => handleLockedTable(colKey)}
-                  >
                     <Cell
                       key={colIndex}
-                      data={params[colKey].footerLabel ? params[colKey].footerLabel : ""}
+                      data={
+                        params[colKey].footerLabel
+                          ? params[colKey].footerLabel.value
+                          : ""
+                      }
                       style={styles.cellFoot}
                       textStyle={styles.cellHeadText}
                       width={params[colKey].tableWidth}
                     />
-                  </Pressable>
                 ))}
               </TableWrapper>
-
-
             </Table>
           </ScrollView>
         </View>
@@ -571,7 +586,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-  },  footer: {
+  },
+  footer: {
     flexDirection: "row",
   },
   tableLeft: {},

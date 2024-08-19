@@ -4,7 +4,7 @@ export interface TableParam {
   label: string;
   inputType: string;
   inputMode?: string;
-  value: string;
+  value: string | {beggining: string, end: string};
   placeholder?: string;
   masks?: string[] | [RegExp, string, number][];
   valueMasked?: string;
@@ -16,7 +16,7 @@ export interface TableParam {
   isNumber?: boolean;
   searchParam?: string[] | [RegExp, string][];
   isCurrency?: boolean;
-  footerLabel?: string;
+  footerLabel?:{function: "sumEntries" | "sumTotal", value: string};
 }
 
 export type ModuleParam = {
@@ -234,7 +234,7 @@ export const modulesParam: ModuleParam = {
         tableWidth: 10 * 8,
         isVisible: true,
         isNumber: true,
-        footerLabel: "sumEntries"
+        footerLabel: {function: "sumEntries", value: ""}
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -249,7 +249,7 @@ export const modulesParam: ModuleParam = {
       data: {
         label: "Data",
         inputType: "date",
-        value: "",
+        value: {beggining: "", end: ""},
         valueMasked: "",
         masks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 1]],
         searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3$2$1"]],
@@ -283,7 +283,7 @@ export const modulesParam: ModuleParam = {
         isVisible: true,
         isNumber: true,
         isCurrency: true,
-        footerLabel: "sumTotal"
+        footerLabel: {function: "sumTotal", value: ""}
       },
       formapagamento: {
         label: "Forma Pagamento",

@@ -41,11 +41,12 @@ export default function FinalTable({ navigation, route }: any) {
   const [colVisibility, setColVisibility] = useState<string[]>([]);
   const [routeParams, setRouteParams] = useState({});
 
+  const [footer, setFooter] = useState<Boolean>(false);
+
   useEffect(() => {
     setRouteParams(route.params);
     setColVisibility(route.params.colVisibility);
   }, [route.params]);
-
 
   useEffect(() => {
     loadData().then((dataOnline: DataTable) => {
@@ -103,19 +104,21 @@ export default function FinalTable({ navigation, route }: any) {
 
   useEffect(() => {
     Object.keys(params).forEach((key) => {
+      if (!footer && params[key].footerLabel) {
+        setFooter(true);
+      }
       switch (params[key].footerLabel?.function) {
-        
         case "sumTotal":
-          let sumTotal = 0
+          let sumTotal = 0;
 
-          data.forEach((row)=>{
-            sumTotal += Number(row[key])
-          })
+          data.forEach((row) => {
+            sumTotal += Number(row[key]);
+          });
           setParams((prevParam: any) => ({
             ...prevParam,
             [key]: {
               ...prevParam[key],
-              footerLabel: {function: "sumTotal", value: cellValueMask(String(sumTotal), key)},
+              footerLabel: { function: "sumTotal", value: String(sumTotal) },
             },
           }));
           break;
@@ -124,7 +127,10 @@ export default function FinalTable({ navigation, route }: any) {
             ...prevParam,
             [key]: {
               ...prevParam[key],
-              footerLabel: {function: "sumEntries", value: String(data.length)},
+              footerLabel: {
+                function: "sumEntries",
+                value: String(data.length),
+              },
             },
           }));
           break;
@@ -132,7 +138,6 @@ export default function FinalTable({ navigation, route }: any) {
           break;
       }
     });
-    
   }, [data]);
 
   function loadData() {
@@ -199,7 +204,11 @@ export default function FinalTable({ navigation, route }: any) {
 
   function cellValueMask(value: string, colKey: string) {
     if (params[colKey]) {
-      const mask = params[colKey].masks ? params[colKey].masks : false;
+      const mask = params[colKey].cellMasks
+        ? params[colKey].cellMasks
+        : params[colKey].masks
+        ? params[colKey].masks
+        : false;
 
       if (mask) {
         const cleanValue = value.replace(/\D/g, "");
@@ -308,8 +317,10 @@ export default function FinalTable({ navigation, route }: any) {
       dataOrigin.forEach((row: any) => {
         const filteredRow: string[] = [];
         Object.keys(filteredDataForm).forEach((colKey) => {
-          if (typeof filteredDataForm[colKey] !== 'object' || filteredDataForm[colKey] === null) {
-
+          if (
+            typeof filteredDataForm[colKey] !== "object" ||
+            filteredDataForm[colKey] === null
+          ) {
             if (
               accentRemove(row[colKey]).includes(
                 accentRemove(filteredDataForm[colKey])
@@ -318,11 +329,11 @@ export default function FinalTable({ navigation, route }: any) {
               filteredRow.push(row[colKey]);
             }
           }
-          });
-          if (filteredRow.length === Object.keys(filteredDataForm).length) {
-            filteredData.push(row);
-          }
         });
+        if (filteredRow.length === Object.keys(filteredDataForm).length) {
+          filteredData.push(row);
+        }
+      });
       setData(filteredData);
     } else {
       setData(dataOrigin);
@@ -421,21 +432,28 @@ export default function FinalTable({ navigation, route }: any) {
                 })}
               </SyncedScrollView>
 
-              <TableWrapper style={styles.footer}>
-                {Array.from(lockedColTable).map((colKey, colIndex) => (
+              {footer ? (
+                <TableWrapper style={styles.footer}>
+                  {Array.from(lockedColTable).map((colKey, colIndex) => (
                     <Cell
                       key={colIndex}
                       data={
                         params[colKey].footerLabel
-                          ? params[colKey].footerLabel.value
+                          ? cellValueMask(
+                              params[colKey].footerLabel.value,
+                              colKey
+                            )
                           : ""
                       }
                       style={styles.cellFoot}
                       textStyle={styles.cellHeadText}
                       width={params[colKey].tableWidth}
                     />
-                ))}
-              </TableWrapper>
+                  ))}
+                </TableWrapper>
+              ) : (
+                <></>
+              )}
             </Table>
           </ScrollView>
           <View
@@ -489,22 +507,28 @@ export default function FinalTable({ navigation, route }: any) {
                   );
                 })}
               </SyncedScrollView>
-
-              <TableWrapper style={styles.footer}>
-                {Array.from(colTable).map((colKey, colIndex) => (
+              {footer ? (
+                <TableWrapper style={styles.footer}>
+                  {Array.from(colTable).map((colKey, colIndex) => (
                     <Cell
                       key={colIndex}
                       data={
                         params[colKey].footerLabel
-                          ? params[colKey].footerLabel.value
+                          ? cellValueMask(
+                              params[colKey].footerLabel.value,
+                              colKey
+                            )
                           : ""
                       }
                       style={styles.cellFoot}
                       textStyle={styles.cellHeadText}
                       width={params[colKey].tableWidth}
                     />
-                ))}
-              </TableWrapper>
+                  ))}
+                </TableWrapper>
+              ) : (
+                <></>
+              )}
             </Table>
           </ScrollView>
         </View>

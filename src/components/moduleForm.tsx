@@ -78,18 +78,22 @@ export default function ModuleForm({
   }
 
   function dateInput(field: string) {
+
     switch (formMode) {
       case "filter":
         return (
           <View>
             <Date
-              field={form[field].value}
+              field={form[field]}
+              dateOrder="start"
               onValueChange={(e: any) =>
-                handleInputChange(e, field, undefined, undefined, "begining")
+                handleInputChange(e, field, undefined, undefined, "start")
               }
             />
             <Date
-              field={form[field].value}
+              field={form[field]}
+
+              dateOrder="end"
               onValueChange={(e: any) =>
                 handleInputChange(e, field, undefined, undefined, "end")
               }
@@ -105,6 +109,7 @@ export default function ModuleForm({
         );
       case "default":
     }
+
   }
 
   function maskedValue(value: string, mask: any) {
@@ -145,18 +150,22 @@ export default function ModuleForm({
 
     if (dateOrder) {
       switch(dateOrder) {
-        case "beggining":
+        case "start":
+          console.log(e)
           setForm((prevForm: any) => ({
             ...prevForm,
             [field]: {
               ...prevForm[field],
               value :{
                 ...prevForm[field].value,
-                beggining: e
+                start: e
               }
             },
           }));
+          break;
         case "end":
+          
+        console.log(e)
           setForm((prevForm: any) => ({
             ...prevForm,
             [field]: {
@@ -167,6 +176,7 @@ export default function ModuleForm({
               }
             },
           }));
+          break;
       }
     } else {
       setForm((prevForm: any) => ({
@@ -293,10 +303,12 @@ export default function ModuleForm({
           [field]: {
             ...prevForm[field],
             value: formParam[field].value,
+            valueMasked: formParam[field].valueMasked,
             isVisible: formParam[field].isVisible,
           },
         }));
     });
+    console.log(form)
   }
 
   return (

@@ -4,10 +4,10 @@ export interface TableParam {
   label: string;
   inputType: string;
   inputMode?: string;
-  value: string | {beggining: string, end: string};
+  value: string | {start: string, end: string};
   placeholder?: string;
   masks?: string[] | [RegExp, string, number][];
-  valueMasked?: string;
+  valueMasked?: string | {start: string, end: string};
   maxLength?: number;
   customCSS?: object;
   options?: { label: string; value: string }[];
@@ -17,6 +17,7 @@ export interface TableParam {
   searchParam?: string[] | [RegExp, string][];
   isCurrency?: boolean;
   footerLabel?:{function: "sumEntries" | "sumTotal", value: string};
+  cellMasks?: string[] | [RegExp, string, number][];
 }
 
 export type ModuleParam = {
@@ -249,9 +250,14 @@ export const modulesParam: ModuleParam = {
       data: {
         label: "Data",
         inputType: "date",
-        value: {beggining: "", end: ""},
-        valueMasked: "",
-        masks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 1]],
+        inputMode: "numeric",
+        maxLength: 10,
+        value: {start: "", end: ""},
+        valueMasked: {start: "", end: ""},
+        placeholder: "DD/MM/AAAA",
+        customCSS: {width: 220},
+        cellMasks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 8]],
+        masks: [[/^(\d{0,2})(\d{0,2})(\d{0,4})$/, "$1/$2/$3", 1]],
         searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3$2$1"]],
         tableWidth: 14 * 8,
         isVisible: true,

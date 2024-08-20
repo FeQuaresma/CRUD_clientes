@@ -2,16 +2,19 @@ import { useState } from "react";
 import { View, TextInput, Pressable, Platform } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "../../constants/styles";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function DatePicker({ field, onValueChange, dateOrder }: any) {
+
+
   const [showPicker, setShowPicker] = useState(false);
 
+
+  
   const [date, setDate] = useState(new Date());
   const [dateValue, setDateValue] = useState(field);
 
   const toggleDatePicker = () => {
-    console.log(dateOrder);
+    console.log(dateOrder)
     setShowPicker(!showPicker);
   };
 
@@ -32,7 +35,7 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
   };
 
   const formatDate = (rawDate: any) => {
-    console.log(rawDate);
+    console.log(rawDate)
     let date = new Date(rawDate);
 
     let year = date.getFullYear();
@@ -45,44 +48,8 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
     return `${day}/${month}/${year}`;
   };
 
-  function valueDetect() {
-    if (dateOrder) {
-      return field.valueMasked[dateOrder];
-    }
-    if (field.valueMasked) {
-      return field.valueMasked 
-    }
-   return field.value
-  }
-
   return (
     <View>
-      <View style={{ flexDirection: "row" }}>
-        <TextInput
-          placeholder={field.placeholder}
-          inputMode={field.inputMode}
-          style={{ ...styles.input, ...field.customCSS }}
-          maxLength={field.maxLength}
-          value={field.valueMasked ? field.valueMasked : field.value}
-          onChangeText={async (e) => {
-            onValueChange(e);
-          }}
-          keyboardType="numeric"
-        />
-
-        <Pressable
-          style={{
-            height: 30,
-            width: 30,
-            backgroundColor: "red",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          onPress={toggleDatePicker}
-        >
-          <Ionicons name="calendar" size={18} color="white" />
-        </Pressable>
-      </View>
       {showPicker && (
         <DateTimePicker
           mode="date"
@@ -92,6 +59,19 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
           locale="pt-BR"
         />
       )}
+      <Pressable onPress={toggleDatePicker}>
+        <TextInput
+          editable={false}
+          style={styles.input}
+          placeholder="DD/MM/AAAA"
+          value={dateValue}
+          onChangeText={(e) => {
+            setDateValue(e);
+          }}
+          keyboardType="numeric"
+          onPressIn={toggleDatePicker}
+        />
+      </Pressable>
     </View>
   );
 }

@@ -33,6 +33,7 @@ export default function ModuleForm({
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
   useEffect(() => {
+    console.log(route.params)
     handleFilterCallBack(route.params);
   }, [route.params]);
 
@@ -78,7 +79,6 @@ export default function ModuleForm({
   }
 
   function dateInput(field: string) {
-
     switch (formMode) {
       case "filter":
         return (
@@ -92,7 +92,6 @@ export default function ModuleForm({
             />
             <Date
               field={form[field]}
-
               dateOrder="end"
               onValueChange={(e: any) =>
                 handleInputChange(e, field, undefined, undefined, "end")
@@ -109,11 +108,11 @@ export default function ModuleForm({
         );
       case "default":
     }
-
   }
 
   function maskedValue(value: string, mask: any) {
-    value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
+    // value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
+    value = value.replace(/\D/g, "") || "";
     for (let i = 0; i < mask.length; i++) {
       if (value.length >= mask[i][2]) {
         value = value.replace(mask[i][0], mask[i][1]);
@@ -135,49 +134,45 @@ export default function ModuleForm({
   ) {
     // Máscara de input
     if (form[field].masks) {
-      let eMasked = maskedValue(e, form[field].masks);
-      setForm((prevForm: any) => ({
-        ...prevForm,
-        [field]: {
-          ...prevForm[field],
-          valueMasked: eMasked,
-        },
-      }));
       e = e.replace(/\D/g, "");
+      let eMasked = maskedValue(e, form[field].masks);
+
+      if (dateOrder) {
+        setForm((prevForm: any) => ({
+          ...prevForm,
+          [field]: {
+            ...prevForm[field],
+            valueMasked: {
+              ...prevForm[field].valueMasked,
+              [dateOrder]: eMasked,
+            },
+          },
+        }));
+      } else {
+        setForm((prevForm: any) => ({
+          ...prevForm,
+          [field]: {
+            ...prevForm[field],
+            valueMasked: eMasked,
+          },
+        }));
+        e = e.replace(/\D/g, "");
+      }
     }
 
     //inserir dados no input
 
     if (dateOrder) {
-      switch(dateOrder) {
-        case "start":
-          console.log(e)
-          setForm((prevForm: any) => ({
-            ...prevForm,
-            [field]: {
-              ...prevForm[field],
-              value :{
-                ...prevForm[field].value,
-                start: e
-              }
-            },
-          }));
-          break;
-        case "end":
-          
-        console.log(e)
-          setForm((prevForm: any) => ({
-            ...prevForm,
-            [field]: {
-              ...prevForm[field],
-              value :{
-                ...prevForm[field].value,
-                end: e
-              }
-            },
-          }));
-          break;
-      }
+      setForm((prevForm: any) => ({
+        ...prevForm,
+        [field]: {
+          ...prevForm[field],
+          value: {
+            ...prevForm[field].value,
+            [dateOrder]: e,
+          },
+        },
+      }));
     } else {
       setForm((prevForm: any) => ({
         ...prevForm,
@@ -220,24 +215,62 @@ export default function ModuleForm({
     let colVisibility: string[] = [];
 
     Object.keys(form).map((key) => {
-      if (form[key].value !== "" && (typeof form[key].value !== 'object' || form[key].value === null)) {
+      if (form[key].value !== "" && form[key].inputType !== "date") {
         formData[key] = form[key].value;
       }
-      if (typeof form[key].value === 'object' || form[key].value === null) {
-        formData[key] = form[key].value;
+
+      if (form[key].inputType === "date") {
+        if (
+          !(
+            typeof form[key].value === "object" &&
+            form[key].value.end === "" &&
+            form[key].value.start === ""
+          )
+        ) {
+          formData[key] = {
+            start: form[key].value.start.replace(
+              /^(\d{2})(\d{2})(\d{4})$/,
+              "$3-$2-$1"
+            ),
+            end: form[key].value.end.replace(
+              /^(\d{2})(\d{2})(\d{4})$/,
+              "$3-$2-$1"
+            ),
+          };
+        } else if (
+          typeof form[key].value === "string" &&
+          form[key].value !== ""
+        ) {
+          formData[key] = form[key].value.replace(
+            /^(\d{2})(\d{2})(\d{4})$/,
+            "$3-$2-$1"
+          );
+        }
       }
+
       if (!form[key].isVisible) {
         colVisibility.push(key);
       }
     });
+
     console.log(formData);
+
     navigation.navigate("FinalTable", { formData, colVisibility });
   }
 
   function handleFilterCallBack(fillForm: any) {
     if (fillForm.formData) {
       Object.keys(fillForm.formData).map((formField) => {
-        if (form[formField]) {
+        if (form[formField].valueMasked) {
+          setForm((prevForm: any) => ({
+            ...prevForm,
+            [formField]: {
+              ...prevForm[formField],
+              value: fillForm.formData[formField],
+              valueMasked: fillForm.formData[formField]
+            },
+          }));
+        } else if (form[formField]) {
           setForm((prevForm: any) => ({
             ...prevForm,
             [formField]: {
@@ -308,7 +341,6 @@ export default function ModuleForm({
           },
         }));
     });
-    console.log(form)
   }
 
   return (

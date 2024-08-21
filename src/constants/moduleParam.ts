@@ -258,7 +258,7 @@ export const modulesParam: ModuleParam = {
         customCSS: {width: 220},
         cellMasks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 8]],
         masks: [[/^(\d{0,2})(\d{0,2})(\d{0,4})$/, "$1/$2/$3", 1]],
-        searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3$2$1"]],
+        searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3-$2-$1"]],
         tableWidth: 14 * 8,
         isVisible: true,
         isNumber: true,

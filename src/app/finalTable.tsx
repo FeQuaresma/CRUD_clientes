@@ -16,6 +16,7 @@ import {
   syncedScrollViewState,
 } from "../context/SyncedScrollViewContext";
 import { SyncedScrollView } from "../components/SyncedScrollView";
+import { isWithinInterval, parseISO } from "date-fns";
 
 type DataRow = {
   [key: string]: string;
@@ -44,7 +45,7 @@ export default function FinalTable({ navigation, route }: any) {
   const [footer, setFooter] = useState<Boolean>(false);
 
   useEffect(() => {
-    setRouteParams(route.params);
+    setRouteParams(route.params.formData);
     setColVisibility(route.params.colVisibility);
   }, [route.params]);
 
@@ -113,12 +114,13 @@ export default function FinalTable({ navigation, route }: any) {
 
           data.forEach((row) => {
             sumTotal += Number(row[key]);
+            console.log(sumTotal)
           });
           setParams((prevParam: any) => ({
             ...prevParam,
             [key]: {
               ...prevParam[key],
-              footerLabel: { function: "sumTotal", value: String(sumTotal) },
+              footerLabel: { function: "sumTotal", value: String(sumTotal.toFixed(2)) },
             },
           }));
           break;
@@ -309,24 +311,33 @@ export default function FinalTable({ navigation, route }: any) {
     setData(filteredData);
   }
 
-  function handleFilterSearch(filters: any) {
-    if (filters && filters.formData) {
-      let filteredDataForm = filters.formData;
+  function handleFilterSearch(filters?: any) {
+    
+    if (filters && Object.keys(filters).length > 0) {
+      let filteredDataForm = filters;
       const filteredData: DataRow[] = [];
 
       dataOrigin.forEach((row: any) => {
         const filteredRow: string[] = [];
         Object.keys(filteredDataForm).forEach((colKey) => {
-          if (
-            typeof filteredDataForm[colKey] !== "object" ||
-            filteredDataForm[colKey] === null
-          ) {
-            if (
-              accentRemove(row[colKey]).includes(
-                accentRemove(filteredDataForm[colKey])
-              )
-            ) {
-              filteredRow.push(row[colKey]);
+          if (filteredDataForm[colKey] !== null) {
+            if (typeof filteredDataForm[colKey] === "string") {
+              if (
+                accentRemove(row[colKey]).includes(
+                  accentRemove(filteredDataForm[colKey])
+                )
+              ) {
+                filteredRow.push(row[colKey]);
+              }
+            } else if (typeof filteredDataForm[colKey] === "object") {
+              const date = parseISO(row[colKey])
+              const interval = {
+                start: parseISO(filteredDataForm[colKey].start),
+                end: parseISO(filteredDataForm[colKey].end),
+              };
+              if (isWithinInterval(date, interval)) {
+                filteredRow.push(row[colKey]);
+              }
             }
           }
         });

@@ -4,10 +4,10 @@ export interface TableParam {
   label: string;
   inputType: string;
   inputMode?: string;
-  value: string | {start: string, end: string};
+  value: string | { start: string; end: string };
   placeholder?: string;
   masks?: string[] | [RegExp, string, number][];
-  valueMasked?: string | {start: string, end: string};
+  valueMasked?: string | { start: string; end: string };
   maxLength?: number;
   customCSS?: object;
   options?: { label: string; value: string }[];
@@ -16,8 +16,9 @@ export interface TableParam {
   isNumber?: boolean;
   searchParam?: string[] | [RegExp, string][];
   isCurrency?: boolean;
-  footerLabel?:{function: "sumEntries" | "sumTotal", value: string};
+  footerLabel?: { function: "sumEntries" | "sumTotal"; value: string };
   cellMasks?: string[] | [RegExp, string, number][];
+  callbackMask?: [RegExp, string];
 }
 
 export type ModuleParam = {
@@ -25,10 +26,10 @@ export type ModuleParam = {
     moduleName: string;
     formParam: Param;
     tableParam?: {
-      [key: string]: TableParam
-      };
+      [key: string]: TableParam;
     };
   };
+};
 
 export const modulesParam: ModuleParam = {
   cliente: {
@@ -73,8 +74,8 @@ export const modulesParam: ModuleParam = {
         inputType: "input",
         inputMode: "text",
         value: "",
-        maxLength: 60,        
-        tableWidth: 18 * 8 ,
+        maxLength: 60,
+        tableWidth: 18 * 8,
         isVisible: true,
       },
       razaosocial: {
@@ -82,8 +83,8 @@ export const modulesParam: ModuleParam = {
         inputType: "input",
         inputMode: "text",
         value: "",
-        maxLength: 60,        
-        tableWidth: 30 * 8 ,
+        maxLength: 60,
+        tableWidth: 30 * 8,
         isVisible: true,
       },
       endereco: {
@@ -92,7 +93,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 20 * 8 ,
+        tableWidth: 20 * 8,
         isVisible: true,
       },
       bairro: {
@@ -101,7 +102,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 18 * 8 ,
+        tableWidth: 18 * 8,
         isVisible: true,
       },
       cidade: {
@@ -110,7 +111,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 15 * 8 ,
+        tableWidth: 15 * 8,
         isVisible: true,
       },
       estado: {
@@ -119,7 +120,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 9 * 8 ,
+        tableWidth: 9 * 8,
         isVisible: true,
       },
       telefone: {
@@ -129,13 +130,13 @@ export const modulesParam: ModuleParam = {
         placeholder: "00.00000-0000",
         masks: [
           [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
-          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1]
+          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
         ],
-        customCSS: {width: 160},
+        customCSS: { width: 160 },
         value: "",
         valueMasked: "",
         maxLength: 13,
-        tableWidth: 16 * 8 ,
+        tableWidth: 16 * 8,
         isVisible: true,
         isNumber: true,
       },
@@ -146,13 +147,13 @@ export const modulesParam: ModuleParam = {
         placeholder: "00.00000-0000",
         masks: [
           [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
-          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1]
+          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
         ],
-        customCSS: {width: 160},
+        customCSS: { width: 160 },
         value: "",
         valueMasked: "",
         maxLength: 13,
-        tableWidth: 15 * 8 ,
+        tableWidth: 15 * 8,
         isVisible: false,
         isNumber: true,
       },
@@ -162,7 +163,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 18 * 8 ,
+        tableWidth: 18 * 8,
         isVisible: true,
       },
       email: {
@@ -171,7 +172,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 23 * 8 ,
+        tableWidth: 23 * 8,
         isVisible: true,
       },
       tipo: {
@@ -180,10 +181,10 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 9 * 8 ,
+        tableWidth: 9 * 8,
         isVisible: true,
       },
-    }
+    },
   },
   transportadora: {
     moduleName: "Transportadora",
@@ -235,7 +236,7 @@ export const modulesParam: ModuleParam = {
         tableWidth: 10 * 8,
         isVisible: true,
         isNumber: true,
-        footerLabel: {function: "sumEntries", value: ""}
+        footerLabel: { function: "sumEntries", value: "" },
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -252,13 +253,14 @@ export const modulesParam: ModuleParam = {
         inputType: "date",
         inputMode: "numeric",
         maxLength: 10,
-        value: {start: "", end: ""},
-        valueMasked: {start: "", end: ""},
+        value: { start: "", end: "" },
+        valueMasked: { start: "", end: "" },
         placeholder: "DD/MM/AAAA",
-        customCSS: {width: 220},
+        customCSS: { width: 220 },
         cellMasks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 8]],
         masks: [[/^(\d{0,2})(\d{0,2})(\d{0,4})$/, "$1/$2/$3", 1]],
         searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3-$2-$1"]],
+        callbackMask: [/^(\d{4})(\d{2})(\d{2})$/, "$3$2$1"],
         tableWidth: 14 * 8,
         isVisible: true,
         isNumber: true,
@@ -269,7 +271,7 @@ export const modulesParam: ModuleParam = {
         inputMode: "text",
         value: "",
         maxLength: 60,
-        tableWidth: 23 * 8 ,
+        tableWidth: 23 * 8,
         isVisible: true,
       },
       total: {
@@ -289,7 +291,7 @@ export const modulesParam: ModuleParam = {
         isVisible: true,
         isNumber: true,
         isCurrency: true,
-        footerLabel: {function: "sumTotal", value: ""}
+        footerLabel: { function: "sumTotal", value: "" },
       },
       formapagamento: {
         label: "Forma Pagamento",
@@ -328,6 +330,6 @@ export const modulesParam: ModuleParam = {
       //   tableWidth: 10 * 8,
       //   isVisible: false,
       // },
-    }
+    },
   },
 };

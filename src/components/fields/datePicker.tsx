@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -10,50 +11,72 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles, stylesModal } from "../../constants/styles";
 import { Ionicons } from "@expo/vector-icons";
+import CalendarPicker from "react-native-calendar-picker";
 
 export default function DatePicker({ field, onValueChange, dateOrder }: any) {
   const [showPicker, setShowPicker] = useState(false);
 
-  const [date, setDate] = useState<Date>(new Date());
-
-  // useEffect(()=>console.log(field),[field])
+  const [dateArray, setDateArray] = useState<Date[]>([]);
 
   const toggleDatePicker = () => {
-    console.log(dateOrder);
     setShowPicker(!showPicker);
   };
 
-  function onChangeIOS() {
-    const formatedDate = formatDate(date);
-    onValueChange(formatedDate);
-    toggleDatePicker();
-  }
+  useEffect(() => {
+    console.log(dateArray);
+  }, [dateArray]);
 
-  const onChange = ({ type }: any, selectedDate: any) => {
-    if (type == "set") {
-      setDate(selectedDate);
-
-      if (Platform.OS === "android") {
-        toggleDatePicker();
-        const formatedDate = formatDate(selectedDate);
-        onValueChange(formatedDate);
+  useEffect(() => {
+    if (!showPicker && dateArray.length) {
+      if (dateArray.length === 1) {
+        onValueChange(formatDate(dateArray[0]), dateOrder);
+      } else if (dateArray.length === 2) {
+        onValueChange(formatDate(dateArray[0]), "start");
+        onValueChange(formatDate(
+          
+        ), "end");
       }
-    } else {
+    }
+  }, [showPicker]);
+
+  // function onChange(e: Date, type: string) {
+  //   console.log(e);
+  //   if (e) {
+  //     switch (type) {
+  //       case "START_DATE":
+  //         type = "start";
+  //         break;
+  //       case "END_DATE":
+  //         type = "end";
+  //         toggleDatePicker()
+  //         break;
+  //     }
+  //     console.log(e,type)
+  //     onValueChange(formatDate(e), type);
+
+  //   }
+  // }
+
+  function onChange(e: Date, type: string) {
+    let dateArrayTemp = dateArray;
+
+    if (e) {
+      dateArrayTemp.push(e);
+    }
+
+    if (type === "END_DATE") {
+      if (dateArrayTemp.length > 2) {
+        dateArrayTemp.shift();
+      }
       toggleDatePicker();
     }
-  };
 
-  function isAndroid() {
-    if (Platform.OS === "android") {
-      return true;
-    } else {
-      return false;
-    }
+    console.log("ln 54", dateArray);
+
+    setDateArray(dateArrayTemp);
   }
 
   const formatDate = (rawDate: any) => {
-    console.log("ln 33", rawDate);
-
     let year = rawDate.getFullYear();
     let month: any = rawDate.getMonth() + 1;
     let day: any = rawDate.getDate();
@@ -97,13 +120,16 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
             alignItems: "center",
             justifyContent: "center",
           }}
-          onPress={toggleDatePicker}
+          onPress={() => {
+            setDateArray([]);
+            toggleDatePicker();
+          }}
         >
           <Ionicons name="calendar" size={18} color="white" />
         </Pressable>
       </View>
 
-      {!isAndroid() && (
+      {showPicker && (
         <Modal
           animationType="none"
           transparent={true}
@@ -115,40 +141,47 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
         >
           <View style={stylesModal.centeredView}>
             <View style={stylesModal.modalView}>
-              <DateTimePicker
-                mode="date"
-                display="inline"
-                value={date}
-                onChange={(e, selectDate) => {
-                  setDate(selectDate ? selectDate : date);
+              <CalendarPicker
+                allowRangeSelection={true}
+                weekdays={["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]}
+                months={[
+                  "Janeiro",
+                  "Fevereiro",
+                  "Março",
+                  "Abril",
+                  "Maio",
+                  "Junho",
+                  "Julho",
+                  "Agosto",
+                  "Setembro",
+                  "Outubro",
+                  "Novembro",
+                  "Dezembro",
+                ]}
+                previousTitle="Anterior"
+                nextTitle="Próximo"
+                textStyle={{
+                  color: "#000000",
                 }}
+                onDateChange={onChange}
+                allowBackwardRangeSelect={true}
               />
-              <View style={{ flexDirection: "row" }}>
-                <Pressable
-                  style={{ ...stylesModal.button, backgroundColor: "red" }}
-                  onPress={toggleDatePicker}
-                >
-                  <Text style={stylesModal.textStyle}>Cancelar</Text>
-                </Pressable>
-                <Pressable
-                  style={{ ...stylesModal.button, ...stylesModal.buttonClose }}
-                  onPress={() => onChangeIOS()}
-                >
-                  <Text style={stylesModal.textStyle}>Confirmar</Text>
-                </Pressable>
-              </View>
+              <Pressable
+                style={{
+                  height: 30,
+                  width: 30,
+                  backgroundColor: "red",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 15,
+                }}
+                onPress={toggleDatePicker}
+              >
+                <Ionicons name="close" size={18} color="white" />
+              </Pressable>
             </View>
           </View>
         </Modal>
-      )}
-
-      {showPicker && isAndroid() && (
-        <DateTimePicker
-          mode="date"
-          display="inline"
-          value={date}
-          onChange={onChange}
-        />
       )}
     </View>
   );

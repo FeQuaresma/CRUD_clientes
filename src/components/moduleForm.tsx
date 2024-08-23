@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState, useEffect } from "react";
 import {
   Text,
@@ -33,7 +34,6 @@ export default function ModuleForm({
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
   useEffect(() => {
-    console.log(route.params)
     handleFilterCallBack(route.params);
   }, [route.params]);
 
@@ -86,15 +86,15 @@ export default function ModuleForm({
             <Date
               field={form[field]}
               dateOrder="start"
-              onValueChange={(e: any) =>
-                handleInputChange(e, field, undefined, undefined, "start")
+              onValueChange={(e: any, type: any) =>
+                handleInputChange(e, field, undefined, undefined, type)
               }
             />
             <Date
               field={form[field]}
               dateOrder="end"
-              onValueChange={(e: any) =>
-                handleInputChange(e, field, undefined, undefined, "end")
+              onValueChange={(e: any, type: any) =>
+                handleInputChange(e, field, undefined, undefined, type)
               }
             />
           </View>
@@ -123,6 +123,19 @@ export default function ModuleForm({
       value = value.slice(0, -1);
     }
     return value;
+  }
+
+  function maskedValueDate(dataObject: any, mask: any) {
+    let dataObjectTemp = dataObject;
+    Object.keys(dataObjectTemp).forEach((key) => {
+      if (dataObjectTemp[key] !== "") {
+        dataObjectTemp[key] = dataObjectTemp[key]
+          .replace(/\D/g, "")
+          .replace(mask[0], mask[1]);
+      }
+    });
+
+    return dataObjectTemp;
   }
 
   function handleInputChange(
@@ -223,19 +236,16 @@ export default function ModuleForm({
         if (
           !(
             typeof form[key].value === "object" &&
-            form[key].value.end === "" &&
-            form[key].value.start === ""
+            !(form[key].value.end !== "" || form[key].value.start !== "")
           )
         ) {
           formData[key] = {
-            start: form[key].value.start.replace(
-              /^(\d{2})(\d{2})(\d{4})$/,
-              "$3-$2-$1"
-            ),
-            end: form[key].value.end.replace(
-              /^(\d{2})(\d{2})(\d{4})$/,
-              "$3-$2-$1"
-            ),
+            start: form[key].value.start
+              .replace(/\D/g, "")
+              .replace(/^(\d{2})(\d{2})(\d{4})$/, "$3-$2-$1"),
+            end: form[key].value.end
+              .replace(/\D/g, "")
+              .replace(/^(\d{2})(\d{2})(\d{4})$/, "$3-$2-$1"),
           };
         } else if (
           typeof form[key].value === "string" &&
@@ -253,23 +263,30 @@ export default function ModuleForm({
       }
     });
 
-    console.log(formData);
-
     navigation.navigate("FinalTable", { formData, colVisibility });
   }
 
   function handleFilterCallBack(fillForm: any) {
     if (fillForm.formData) {
       Object.keys(fillForm.formData).map((formField) => {
-        if (form[formField].valueMasked) {
+        if (form[formField].inputType === "date") {
           setForm((prevForm: any) => ({
             ...prevForm,
             [formField]: {
               ...prevForm[formField],
-              value: fillForm.formData[formField],
-              valueMasked: fillForm.formData[formField]
+
+              value: maskedValueDate(
+                fillForm.formData[formField],
+                form[formField].callbackMask
+              ),
+              valueMasked: maskedValueDate(
+                fillForm.formData[formField],
+                form[formField].masks[0]
+              ),
             },
           }));
+        } else if (form[formField].valueMasked) {
+          console.log("to do");
         } else if (form[formField]) {
           setForm((prevForm: any) => ({
             ...prevForm,
@@ -301,9 +318,6 @@ export default function ModuleForm({
           }));
         }
       });
-      // fillForm.colVisibility.forEach((e:string)=>{
-      //   console.log(e)
-      // })
     }
   }
 
@@ -533,6 +547,20 @@ export default function ModuleForm({
               onPress={() => handleResetForm()}
             >
               <MaterialCommunityIcons name="broom" size={26} color="white" />
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: "red",
+                padding: 10,
+                borderRadius: 5,
+                marginTop: 10,
+                marginLeft: 10,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              onPress={() => console.log(route.params)}
+            >
+              <MaterialCommunityIcons name="circle" size={26} color="white" />
             </Pressable>
           </View>
         )}

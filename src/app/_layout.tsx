@@ -9,6 +9,7 @@ import UseStateTable from "./useStateTable";
 import FinalTable from "./finalTable";
 import TableNavigator from "./tableNavigator";
 import TesteMask from "./testeTwo";
+import TesteCalendar from "./testeThree";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,7 +55,7 @@ export default function App() {
       />
       <Stack.Screen
         name="useStateTable"
-        component={TesteMask}
+        component={TesteCalendar}
         options={{
           headerShown: false,
           statusBarStyle: "light",

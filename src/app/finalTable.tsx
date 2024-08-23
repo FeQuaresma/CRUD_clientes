@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useEffect, useState } from "react";
 import {
   Pressable,
@@ -114,7 +115,6 @@ export default function FinalTable({ navigation, route }: any) {
 
           data.forEach((row) => {
             sumTotal += Number(row[key]);
-            console.log(sumTotal)
           });
           setParams((prevParam: any) => ({
             ...prevParam,
@@ -332,9 +332,10 @@ export default function FinalTable({ navigation, route }: any) {
             } else if (typeof filteredDataForm[colKey] === "object") {
               const date = parseISO(row[colKey])
               const interval = {
-                start: parseISO(filteredDataForm[colKey].start),
-                end: parseISO(filteredDataForm[colKey].end),
+                start: parseISO(filteredDataForm[colKey].start !== "" ? filteredDataForm[colKey].start : "0001-01-01"),
+                end: parseISO(filteredDataForm[colKey].end !== "" ? filteredDataForm[colKey].end : "9999-01-01"),
               };
+
               if (isWithinInterval(date, interval)) {
                 filteredRow.push(row[colKey]);
               }

@@ -32,9 +32,7 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
         onValueChange(formatDate(dateArray[0]), dateOrder);
       } else if (dateArray.length === 2) {
         onValueChange(formatDate(dateArray[0]), "start");
-        onValueChange(formatDate(
-          
-        ), "end");
+        onValueChange(formatDate(dateArray[1]), "end");
       }
     }
   }, [showPicker]);
@@ -168,8 +166,7 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
               />
               <Pressable
                 style={{
-                  height: 30,
-                  width: 30,
+                  padding: 10,
                   backgroundColor: "red",
                   alignItems: "center",
                   justifyContent: "center",
@@ -177,7 +174,8 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
                 }}
                 onPress={toggleDatePicker}
               >
-                <Ionicons name="close" size={18} color="white" />
+                {/* <Ionicons name="close" size={18} color="white" /> */}
+                <Text style={{color: "white"}}>Fechar</Text>
               </Pressable>
             </View>
           </View>

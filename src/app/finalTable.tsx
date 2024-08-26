@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { Cell, Row, Table, TableWrapper } from "react-native-reanimated-table";
+import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
 import { modulesParam } from "../constants/moduleParam";
 import {
   SyncedScrollViewContext,
@@ -120,7 +120,10 @@ export default function FinalTable({ navigation, route }: any) {
             ...prevParam,
             [key]: {
               ...prevParam[key],
-              footerLabel: { function: "sumTotal", value: String(sumTotal.toFixed(2)) },
+              footerLabel: {
+                function: "sumTotal",
+                value: String(sumTotal.toFixed(2)),
+              },
             },
           }));
           break;
@@ -270,14 +273,35 @@ export default function FinalTable({ navigation, route }: any) {
     dataOrigin.forEach((row) => {
       const filteredRow: string[] = [];
 
-      (Object.keys(row) as Array<keyof DataRow>).forEach((colKey) => {
+      (Object.keys(row) as Array<keyof DataRow>).forEach((colKey: any) => {
         if (params[colKey]) {
           const cellValue = row[colKey] as string;
           let cleanCellValue = cellValue.replace(/\D/g, "");
 
           if (cellValue !== "" && cellValue !== null) {
             if (params[colKey].isNumber && cleanSearchWord !== "") {
-              if (params[colKey].searchParam) {
+              if (searchWord[0] === "<" || searchWord[0] === ">") {
+                let cleanSearchParam = searchWord.split("");
+                cleanSearchParam.shift();
+
+                if (
+                  searchWord[0] === "<" &&
+                  Number(row[colKey]) <= Number(cleanSearchParam.join(""))
+                ) {
+                  console.log(cleanSearchParam.join(""), row[colKey]);
+                  console.log("true");
+                  filteredRow.push(row[colKey]);
+                }
+
+                if (
+                  searchWord[0] === ">" &&
+                  Number(row[colKey]) >= Number(cleanSearchParam.join(""))
+                ) {
+                  console.log(cleanSearchParam.join(""), row[colKey]);
+                  console.log("true");
+                  filteredRow.push(row[colKey]);
+                }
+              } else if (params[colKey].searchParam) {
                 // CPF, CNPJ, DATA
                 params[colKey].searchParam.forEach((mask) => {
                   if (
@@ -305,6 +329,7 @@ export default function FinalTable({ navigation, route }: any) {
           }
         }
       });
+
       filteredRow.length > 0 && filteredData.push(row);
     });
 
@@ -330,10 +355,18 @@ export default function FinalTable({ navigation, route }: any) {
                 filteredRow.push(row[colKey]);
               }
             } else if (typeof filteredDataForm[colKey] === "object") {
-              const date = parseISO(row[colKey])
+              const date = parseISO(row[colKey]);
               const interval = {
-                start: parseISO(filteredDataForm[colKey].start !== "" ? filteredDataForm[colKey].start : "0001-01-01"),
-                end: parseISO(filteredDataForm[colKey].end !== "" ? filteredDataForm[colKey].end : "9999-01-01"),
+                start: parseISO(
+                  filteredDataForm[colKey].start !== ""
+                    ? filteredDataForm[colKey].start
+                    : "0001-01-01"
+                ),
+                end: parseISO(
+                  filteredDataForm[colKey].end !== ""
+                    ? filteredDataForm[colKey].end
+                    : "9999-01-01"
+                ),
               };
 
               if (isWithinInterval(date, interval)) {
@@ -389,7 +422,7 @@ export default function FinalTable({ navigation, route }: any) {
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", routeParams);
+            console.log("tabela de pedidos", searchWord[0]);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>

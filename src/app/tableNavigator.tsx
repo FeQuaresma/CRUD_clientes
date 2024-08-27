@@ -32,7 +32,7 @@ function HomeScreen({ navigation }: any) {
   );
 }
 
-export default function TableNavigator({ navigation }: any) {
+export default function TableNavigator() {
   return (
     <Stack.Navigator initialRouteName="FinalTable">
       <Stack.Screen

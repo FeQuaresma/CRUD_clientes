@@ -22,6 +22,7 @@ import {
 import { styles, stylesModal } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function ModuleForm({
   formParam,
@@ -93,9 +94,9 @@ export default function ModuleForm({
             <Date
               field={form[field]}
               dateOrder="end"
-              onValueChange={(e: any, type: any) =>
-                handleInputChange(e, field, undefined, undefined, type)
-              }
+              onValueChange={(e: any, type: any) => {
+                handleInputChange(e, field, undefined, undefined, type);
+              }}
             />
           </View>
         );
@@ -147,7 +148,11 @@ export default function ModuleForm({
   ) {
     // Máscara de input
     if (form[field].masks) {
-      e = e.replace(/\D/g, "");
+      if (form[field].zeroTrim) {
+        e = e.replace(/\D/g, "").replace(/^0+/, "");
+      } else {
+        e = e.replace(/\D/g, "");
+      }
       let eMasked = maskedValue(e, form[field].masks);
 
       if (dateOrder) {
@@ -228,33 +233,43 @@ export default function ModuleForm({
     let colVisibility: string[] = [];
 
     Object.keys(form).map((key) => {
+      let value = form[key].value;
+      form[key].isCurrency && (value = (value / 100).toFixed(2));
       if (form[key].value !== "" && form[key].inputType !== "date") {
-        formData[key] = form[key].value;
+        if (form[key].searchSign) {
+          switch (form[key].searchSign) {
+            case "equals":
+              formData[key] = value;
+              break;
+            case "greater-than":
+              formData[key] = ">" + value;
+              break;
+            case "less-than":
+              formData[key] = "<" + value;
+              break;
+          }
+        } else {
+          formData[key] = value;
+        }
       }
 
       if (form[key].inputType === "date") {
         if (
           !(
-            typeof form[key].value === "object" &&
-            !(form[key].value.end !== "" || form[key].value.start !== "")
+            typeof value === "object" &&
+            !(value.end !== "" || value.start !== "")
           )
         ) {
           formData[key] = {
-            start: form[key].value.start
+            start: value.start
               .replace(/\D/g, "")
               .replace(/^(\d{2})(\d{2})(\d{4})$/, "$3-$2-$1"),
-            end: form[key].value.end
+            end: value.end
               .replace(/\D/g, "")
               .replace(/^(\d{2})(\d{2})(\d{4})$/, "$3-$2-$1"),
           };
-        } else if (
-          typeof form[key].value === "string" &&
-          form[key].value !== ""
-        ) {
-          formData[key] = form[key].value.replace(
-            /^(\d{2})(\d{2})(\d{4})$/,
-            "$3-$2-$1"
-          );
+        } else if (typeof value === "string" && value !== "") {
+          formData[key] = value.replace(/^(\d{2})(\d{2})(\d{4})$/, "$3-$2-$1");
         }
       }
 
@@ -285,8 +300,44 @@ export default function ModuleForm({
               ),
             },
           }));
-        } else if (form[formField].valueMasked) {
-          console.log("to do");
+        } else if (form[formField].searchSign) {
+          let cleanValue = fillForm.formData[formField].replace(/\D/g, "")
+
+          switch (fillForm.formData[formField][0]) {
+            case ">":
+              setForm((prevForm: any) => ({
+                ...prevForm,
+                [formField]: {
+                  ...prevForm[formField],
+                  value: cleanValue,
+                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  searchSign: "greater-than",
+                },
+              }));
+              break;
+            case "<":
+              setForm((prevForm: any) => ({
+                ...prevForm,
+                [formField]: {
+                  ...prevForm[formField],
+                  value: cleanValue,
+                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  searchSign: "less-than",
+                },
+              }));
+              break;
+            default:
+              setForm((prevForm: any) => ({
+                ...prevForm,
+                [formField]: {
+                  ...prevForm[formField],
+                  value: cleanValue,
+                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  searchSign: "equals",
+                },
+              }));
+              break;
+          }
         } else if (form[formField]) {
           setForm((prevForm: any) => ({
             ...prevForm,
@@ -342,24 +393,37 @@ export default function ModuleForm({
   }
 
   function handleResetForm() {
-    Object.keys(form).forEach((field) => {
-      (form[field].value !== "" ||
-        form[field].isVisible !== formParam[field].isVisible) &&
-        setForm((prevForm: any) => ({
-          ...prevForm,
-          [field]: {
-            ...prevForm[field],
-            value: formParam[field].value,
-            valueMasked: formParam[field].valueMasked,
-            isVisible: formParam[field].isVisible,
-          },
-        }));
-    });
+    setForm(formParam);
+  }
+
+  function onChangeSign(field: any) {
+    let changeTo = "";
+
+    switch (form[field].searchSign) {
+      case "equals":
+        changeTo = "greater-than";
+        break;
+      case "greater-than":
+        changeTo = "less-than";
+        break;
+      case "less-than":
+        changeTo = "equals";
+        break;
+    }
+
+    setForm((prevForm: any) => ({
+      ...prevForm,
+      [field]: {
+        ...prevForm[field],
+        searchSign: changeTo,
+      },
+    }));
   }
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
       style={styles.containerView}
     >
       <ScrollView
@@ -435,54 +499,75 @@ export default function ModuleForm({
                   )}
                 </View>
               )}
+
               {form[field].errorMsg && (
                 <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
               )}
-              {form[field].inputType === "input" && (
-                <Input
-                  field={form[field]}
-                  onValueChange={(e: any, fillForm: any, errorMsg: any) =>
-                    handleInputChange(e, field, fillForm, errorMsg)
-                  }
-                />
-              )}
-              {form[field].inputType === "select" && (
-                <Select
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
-              {form[field].inputType === "multiSelect" && (
-                <MultiSelect
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
-              {form[field].inputType === "boolean" && (
-                <Boolean
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
-              {form[field].inputType === "textBox" && (
-                <TextBox
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
-              {form[field].inputType === "date" && dateInput(field)}
-              {form[field].inputType === "file" && (
-                <File
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
-              {form[field].inputType === "grid" && (
-                <Grid
-                  field={form[field]}
-                  onValueChange={(e: any) => handleInputChange(e, field)}
-                />
-              )}
+              <View style={{ flexDirection: "row" }}>
+                {form[field].inputType === "input" && (
+                  <Input
+                    field={form[field]}
+                    onValueChange={(e: any, fillForm: any, errorMsg: any) =>
+                      handleInputChange(e, field, fillForm, errorMsg)
+                    }
+                  />
+                )}
+                {form[field].inputType === "select" && (
+                  <Select
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].inputType === "multiSelect" && (
+                  <MultiSelect
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].inputType === "boolean" && (
+                  <Boolean
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].inputType === "textBox" && (
+                  <TextBox
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].inputType === "date" && dateInput(field)}
+                {form[field].inputType === "file" && (
+                  <File
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].inputType === "grid" && (
+                  <Grid
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                  />
+                )}
+                {form[field].searchSign && (
+                  <Pressable
+                    style={{
+                      height: 30,
+                      width: 30,
+                      backgroundColor: "red",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    onPress={() => onChangeSign(field)}
+                  >
+                    <FontAwesome5
+                      name={form[field].searchSign}
+                      size={18}
+                      color="white"
+                    />
+                  </Pressable>
+                )}
+              </View>
             </View>
           ))}
         </View>
@@ -558,7 +643,7 @@ export default function ModuleForm({
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => console.log(route.params)}
+              onPress={() => console.log(form.total)}
             >
               <MaterialCommunityIcons name="circle" size={26} color="white" />
             </Pressable>

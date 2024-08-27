@@ -105,7 +105,7 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
           maxLength={field.maxLength}
           value={valueDetect()}
           onChangeText={async (e) => {
-            onValueChange(e);
+            dateOrder ? onValueChange(e, dateOrder): onValueChange(e);
           }}
           keyboardType="numeric"
         />

@@ -1,6 +1,5 @@
+import * as React from "react";
 import { styles } from "@/src/constants/styles";
-import * as functions from "@/src/functions";
-import { useState } from "react";
 import { TextInput } from "react-native";
 
 export default function Input({ field, onValueChange }: any) {

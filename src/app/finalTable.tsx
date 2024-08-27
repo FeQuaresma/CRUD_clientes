@@ -347,13 +347,38 @@ export default function FinalTable({ navigation, route }: any) {
         Object.keys(filteredDataForm).forEach((colKey) => {
           if (filteredDataForm[colKey] !== null) {
             if (typeof filteredDataForm[colKey] === "string") {
-              if (
+
+
+
+              if (filteredDataForm[colKey][0] === "<" || filteredDataForm[colKey][0] === ">") {
+                let cleanSearchParam = filteredDataForm[colKey].split("");
+                cleanSearchParam.shift();
+
+                if (
+                  filteredDataForm[colKey][0] === "<" &&
+                  Number(row[colKey]) <= Number(cleanSearchParam.join(""))
+                ) {
+                  filteredRow.push(row[colKey]);
+                }
+
+                if (
+                  filteredDataForm[colKey][0] === ">" &&
+                  Number(row[colKey]) >= Number(cleanSearchParam.join(""))
+                ) {
+                  filteredRow.push(row[colKey]);
+                }
+              } else if (
                 accentRemove(row[colKey]).includes(
                   accentRemove(filteredDataForm[colKey])
                 )
               ) {
                 filteredRow.push(row[colKey]);
               }
+
+
+
+
+
             } else if (typeof filteredDataForm[colKey] === "object") {
               const date = parseISO(row[colKey]);
               const interval = {
@@ -422,7 +447,7 @@ export default function FinalTable({ navigation, route }: any) {
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", searchWord[0]);
+            console.log("tabela de pedidos", routeParams);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>

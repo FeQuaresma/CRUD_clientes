@@ -19,6 +19,8 @@ export interface TableParam {
   footerLabel?: { function: "sumEntries" | "sumTotal"; value: string };
   cellMasks?: string[] | [RegExp, string, number][];
   callbackMask?: [RegExp, string];
+  zeroTrim?: boolean;
+  searchSign?: "equals" | "greater-than" | "less-than";
 }
 
 export type ModuleParam = {
@@ -292,6 +294,9 @@ export const modulesParam: ModuleParam = {
         isNumber: true,
         isCurrency: true,
         footerLabel: { function: "sumTotal", value: "" },
+        zeroTrim: true,
+        customCSS: { width: 220 },
+        searchSign: "equals"
       },
       formapagamento: {
         label: "Forma Pagamento",

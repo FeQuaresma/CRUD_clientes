@@ -278,11 +278,11 @@ export default function ModuleForm({
       }
     });
 
-    navigation.navigate("FinalTable", { formData, colVisibility });
+    navigation.navigate("ModuleList", { formData, colVisibility });
   }
 
   function handleFilterCallBack(fillForm: any) {
-    if (fillForm.formData) {
+    if (fillForm?.formData) {
       Object.keys(fillForm.formData).map((formField) => {
         if (form[formField].inputType === "date") {
           setForm((prevForm: any) => ({
@@ -349,7 +349,7 @@ export default function ModuleForm({
         }
       });
     }
-    if (fillForm.colVisibility) {
+    if (fillForm?.colVisibility) {
       Object.keys(form).forEach((key) => {
         if (fillForm.colVisibility.includes(key)) {
           setForm((prevForm: any) => ({
@@ -600,7 +600,8 @@ export default function ModuleForm({
         </Modal>
       </ScrollView>
       <View style={{ width: "100%", alignItems: "center" }}>
-        {formMode === "Regiter" && (
+
+        {formMode === "register" && (
           <Pressable
             style={styles.button}
             onPress={() => {

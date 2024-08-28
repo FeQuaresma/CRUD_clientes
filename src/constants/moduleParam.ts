@@ -27,6 +27,7 @@ export type ModuleParam = {
   [key: string]: {
     moduleName: string;
     formParam: Param;
+    tableURL?: string;
     tableParam?: {
       [key: string]: TableParam;
     };
@@ -59,6 +60,7 @@ export const modulesParam: ModuleParam = {
       contatotelefone2: params.contatotelefone2,
       contatoemail: params.contatoemail,
     },
+    tableURL: "https://www.caae.org.br/teste/testeData.json?n=1",
     tableParam: {
       numero: {
         label: "Número",
@@ -228,6 +230,7 @@ export const modulesParam: ModuleParam = {
       contatotelefone: params.contatotelefone,
       cnpjcpf: params.cnpjcpf,
     },
+    tableURL: "https://www.caae.org.br/teste/testeDatav2.json",
     tableParam: {
       numero: {
         label: "Pedido",

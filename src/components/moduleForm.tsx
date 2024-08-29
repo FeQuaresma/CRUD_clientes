@@ -301,7 +301,7 @@ export default function ModuleForm({
             },
           }));
         } else if (form[formField].searchSign) {
-          let cleanValue = fillForm.formData[formField].replace(/\D/g, "")
+          let cleanValue = fillForm.formData[formField].replace(/\D/g, "");
 
           switch (fillForm.formData[formField][0]) {
             case ">":
@@ -426,6 +426,33 @@ export default function ModuleForm({
       keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
       style={styles.containerView}
     >
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <Pressable
+          style={{width: 30 }}
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Ionicons name="arrow-back-outline" size={30} color="white" />
+        </Pressable>
+        {formMode === "filter" && (
+          <Text style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}>
+            Filtro
+          </Text>
+        )}
+        {formMode === "register" && (
+          <Text style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}>
+            Cadastro
+          </Text>
+        )}
+        <View style={{width: 30 }} />
+        <Text></Text>
+      </View>
       <ScrollView
         contentContainerStyle={{
           ...styles.containerScrollView,
@@ -600,7 +627,6 @@ export default function ModuleForm({
         </Modal>
       </ScrollView>
       <View style={{ width: "100%", alignItems: "center" }}>
-
         {formMode === "register" && (
           <Pressable
             style={styles.button}

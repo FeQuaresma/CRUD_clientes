@@ -31,6 +31,7 @@ export type ModuleParam = {
     tableParam?: {
       [key: string]: TableParam;
     };
+    tableSort?: string;
   };
 };
 
@@ -60,7 +61,7 @@ export const modulesParam: ModuleParam = {
       contatotelefone2: params.contatotelefone2,
       contatoemail: params.contatoemail,
     },
-    tableURL: "https://www.caae.org.br/teste/testeData.json?n=1",
+    tableURL: "https://www.caae.org.br/teste/testeData.json?n=2",
     tableParam: {
       numero: {
         label: "Número",
@@ -89,7 +90,7 @@ export const modulesParam: ModuleParam = {
         value: "",
         maxLength: 60,
         tableWidth: 30 * 8,
-        isVisible: true,
+        isVisible: false,
       },
       endereco: {
         label: "Endereço",
@@ -168,7 +169,7 @@ export const modulesParam: ModuleParam = {
         value: "",
         maxLength: 60,
         tableWidth: 18 * 8,
-        isVisible: true,
+        isVisible: false,
       },
       email: {
         label: "E-mail",
@@ -177,7 +178,7 @@ export const modulesParam: ModuleParam = {
         value: "",
         maxLength: 60,
         tableWidth: 23 * 8,
-        isVisible: true,
+        isVisible: false,
       },
       tipo: {
         label: "Tipo",
@@ -186,9 +187,10 @@ export const modulesParam: ModuleParam = {
         value: "",
         maxLength: 60,
         tableWidth: 9 * 8,
-        isVisible: true,
+        isVisible: false,
       },
     },
+    tableSort: "numero"
   },
   transportadora: {
     moduleName: "Transportadora",

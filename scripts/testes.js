@@ -1,38 +1,21 @@
-function formatCurrency(value) {
-  // Remove todos os espaços e o símbolo "R$" se existir
-  value = value.replace(/[^\d.,]/g, '');
+var items = [
+  { name: "Edward", value: 21 },
+  { name: "Sharpe", value: 37 },
+  { name: "And", value: 45 },
+  { name: "The", value: -12 },
+  { name: "Magnetic", value: 0},
+  { name: "Zeros", value: 37 },
+];
 
-  // Verifica se o valor possui mais de um ponto ou mais de uma vírgula
-  const countDot = (value.match(/\./g) || []).length;
-  const countComma = (value.match(/,/g) || []).length;
-
-  if (countDot > 1 || countComma > 1) {
-      // Remove todos os caracteres especiais
-      value = value.replace(/[^0-9]/g, '');
-      return value.length > 2 
-          ? `${value.slice(0, -2)}.${value.slice(-2)}`
-          : value;
+items.sort(function (a, b) {
+  if (a.value > b.value) {
+    return 1;
   }
-
-  // Separa o valor em duas partes: antes e depois do último ponto ou vírgula
-  const lastSeparator = Math.max(value.lastIndexOf('.'), value.lastIndexOf(','));
-
-  if (lastSeparator !== -1) {
-      const integerPart = value.substring(0, lastSeparator).replace(/[^0-9]/g, '');
-      const decimalPart = value.substring(lastSeparator + 1).replace(/[^0-9]/g, '');
-      return `${integerPart}.${decimalPart}`;
+  if (a.value < b.value) {
+    return -1;
   }
+  // a must be equal to b
+  return 0;
+});
 
-  // Se não houver ponto ou vírgula, retornar o valor sem modificações
-  return value.replace(/[^0-9]/g, '');
-}
-
-// Exemplos de uso
-console.log(formatCurrency("R$ 123.456.789,00")); // "123456789.00"
-console.log(formatCurrency("R$ 123,456,789.00")); // "123456789.00"
-console.log(formatCurrency("123456789.00"));      // "123456789.00"
-console.log(formatCurrency("123456789,00"));      // "123456789.00"
-console.log(formatCurrency("R$ 1.234,56"));       // "1234.56"
-console.log(formatCurrency("12,34.56"));          // "123456"
-
-console.log(formatCurrency("550,3"));          // "123456"
+console.log(items)

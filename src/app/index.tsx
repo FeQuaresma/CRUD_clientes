@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useEffect, useState } from "react";
 import { Pressable, TextInput, View, Text, ScrollView } from "react-native";
 import { styles } from "../constants/styles";

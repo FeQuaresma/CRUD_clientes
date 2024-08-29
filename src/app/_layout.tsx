@@ -11,54 +11,31 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <Stack.Navigator initialRouteName="teste">
+    <Stack.Navigator initialRouteName="teste" screenOptions={{headerShown: false, 
+      orientation: "all", gestureEnabled: false}}>
       <Stack.Screen
         name="index"
         component={Index}
-        options={{
-          headerShown: false,
-          orientation: "all"
-        }}
       />
       <Stack.Screen
         name="(tabs)"
         component={MyDrawer}
-        options={{
-          headerShown: false,
-          orientation: "all"
-
-        }}
       />
       <Stack.Screen
         name="teste"
         component={ModuleList}
-        options={{
-          headerShown: false,
-          statusBarTranslucent: true,
-        }}
       />
       <Stack.Screen
         name="tableTest"
         component={TableTest}
-        options={{
-          headerShown: false,
-        }}
       />
       <Stack.Screen
         name="useStateTable"
         component={TesteCalendar}
-        options={{
-          headerShown: false,
-        }}
       />
       <Stack.Screen
         name="tableNavigator"
         component={TableNavigator}
-        options={{
-          headerShown: false,
-          // statusBarStyle: "light",
-          // statusBarTranslucent: true,
-        }}
       />
     </Stack.Navigator>
   );

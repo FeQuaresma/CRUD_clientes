@@ -27,22 +27,33 @@ type DataTable = {
   [key: string]: any;
 };
 
-export default function ModuleList({ navigation, route, moduleParam, urlParam}: any) {
+type SortedCol = {
+  name: string;
+  order: "asc" | "desc";
+};
+
+export default function ModuleList({
+  navigation,
+  route,
+  moduleParam,
+  urlParam,
+}: any) {
   const [params, setParams] = useState(
     moduleParam.tableParam ? moduleParam.tableParam : {}
   );
   const [data, setData] = useState<DataRow[]>([]);
   const [dataOrigin, setDataOrigin] = useState<DataRow[]>([]);
-
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState<Set<string>>(new Set());
   const [colTable, setColTable] = useState<Set<string>>(new Set());
   const [colTableOrigin, setColTableOrigin] = useState<Set<string>>();
-
   const [colVisibility, setColVisibility] = useState<string[]>([]);
   const [routeParams, setRouteParams] = useState({});
-
   const [footer, setFooter] = useState<Boolean>(false);
+  const [sortedCol, setSortedCol] = useState<SortedCol>({
+    name: params.tableSort ? params.tableSort : undefined,
+    order: "asc",
+  });
 
   useEffect(() => {
     if (route.params?.formData) {
@@ -148,6 +159,10 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
     });
   }, [data]);
 
+  useEffect(() => {
+    sortTable(sortedCol);
+  }, [sortedCol]);
+
   function loadData() {
     return fetch(urlParam)
       .then((response) => response.json())
@@ -157,7 +172,6 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
   function handleLockedTable(colKey: string) {
     let lockedColTableTemp = new Set(lockedColTable);
     let colTableOriginTemp = new Set(colTableOrigin);
-    let colVisibilityTemp = new Set(colVisibility);
 
     if (lockedColTableTemp.has(colKey)) {
       lockedColTableTemp.delete(colKey);
@@ -219,7 +233,6 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
         : false;
 
       if (mask && value !== undefined) {
-        console.log("ln 223", value)
         const cleanValue = value.replace(/\D/g, "");
         for (let i = 0; i < mask.length; i++) {
           if (cleanValue.length >= Number(mask[i][2])) {
@@ -292,8 +305,6 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
                   searchWord[0] === "<" &&
                   Number(row[colKey]) <= Number(cleanSearchParam.join(""))
                 ) {
-                  console.log(cleanSearchParam.join(""), row[colKey]);
-                  console.log("true");
                   filteredRow.push(row[colKey]);
                 }
 
@@ -301,13 +312,11 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
                   searchWord[0] === ">" &&
                   Number(row[colKey]) >= Number(cleanSearchParam.join(""))
                 ) {
-                  console.log(cleanSearchParam.join(""), row[colKey]);
-                  console.log("true");
                   filteredRow.push(row[colKey]);
                 }
               } else if (params[colKey].searchParam) {
                 // CPF, CNPJ, DATA
-                params[colKey].searchParam.forEach((mask:any) => {
+                params[colKey].searchParam.forEach((mask: any) => {
                   if (
                     cleanCellValue
                       .replace(mask[0], mask[1])
@@ -413,6 +422,80 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
     setRouteParams({});
   }
 
+  function sortTable(sortedColObject: SortedCol) {
+    function sortOrder(a: DataRow, b: DataRow) {
+      if (sortedColObject.order === "asc") {
+        if (params[sortedColObject.name].isNumber) {
+          if (
+            Number(a[sortedColObject.name]) > Number(b[sortedColObject.name])
+          ) {
+            return 1;
+          }
+          if (
+            Number(a[sortedColObject.name]) < Number(b[sortedColObject.name])
+          ) {
+            return -1;
+          }
+          return 0;
+        } else if (a[sortedColObject.name] > b[sortedColObject.name]) {
+          return 1;
+        }
+        if (a[sortedColObject.name] < b[sortedColObject.name]) {
+          return -1;
+        }
+        return 0;
+      } else if (sortedColObject.order === "desc") {
+        if (params[sortedColObject.name].isNumber) {
+          if (
+            Number(a[sortedColObject.name]) < Number(b[sortedColObject.name])
+          ) {
+            return 1;
+          }
+          if (
+            Number(a[sortedColObject.name]) > Number(b[sortedColObject.name])
+          ) {
+            return -1;
+          }
+          return 0;
+        } else if (a[sortedColObject.name] < b[sortedColObject.name]) {
+          return 1;
+        }
+        if (a[sortedColObject.name] > b[sortedColObject.name]) {
+          return -1;
+        }
+        return 0;
+      }
+      return 0;
+    }
+
+    let dataOriginTemp = [...dataOrigin];
+    dataOriginTemp.sort(sortOrder);
+    console.log(dataOriginTemp);
+
+    if (data !== dataOrigin) {
+      let dataTemp = [...data];
+      dataTemp.sort(sortOrder);
+      setData(dataTemp);
+    }
+
+    setDataOrigin(dataOriginTemp);
+  }
+
+  function handleSortChange(colKey: string) {
+    if (sortedCol.name === colKey && sortedCol.order === "asc") {
+      setSortedCol((prevSortedCol) => ({
+        ...prevSortedCol,
+        order: "desc",
+      }));
+    } else {
+      setSortedCol((prevSortedCol) => ({
+        ...prevSortedCol,
+        name: colKey,
+        order: "asc",
+      }));
+    }
+  }
+
   return (
     <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
       <View style={styles.container}>
@@ -445,7 +528,7 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", routeParams);
+            console.log("tabela de pedidos", dataOrigin);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>
@@ -462,7 +545,8 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
                 {Array.from(lockedColTable).map((colKey, colIndex) => (
                   <Pressable
                     key={colKey}
-                    onPress={() => handleLockedTable(colKey)}
+                    onPress={() => handleSortChange(colKey)}
+                    onLongPress={() => handleLockedTable(colKey)}
                   >
                     <Cell
                       key={colIndex}
@@ -538,7 +622,8 @@ export default function ModuleList({ navigation, route, moduleParam, urlParam}: 
                 {Array.from(colTable).map((colKey, colIndex) => (
                   <Pressable
                     key={colKey}
-                    onPress={() => handleLockedTable(colKey)}
+                    onPress={() => handleSortChange(colKey)}
+                    onLongPress={() => handleLockedTable(colKey)}
                   >
                     <Cell
                       key={colIndex}

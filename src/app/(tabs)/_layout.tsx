@@ -61,7 +61,6 @@ Object.keys(modulesParam).map((moduleObject) => {
               <Stack.Screen
                 name="FilterModal"
                 options={{
-                  presentation: "modal",
                   headerShown: false,
                 }}
               >

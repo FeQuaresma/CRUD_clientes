@@ -466,7 +466,11 @@ export default function ModuleForm({
             justifyContent: "center",
           }}
         >
+
           {Object.keys(form).map((field) => (
+
+
+
             <View
               key={field}
               style={{
@@ -596,7 +600,11 @@ export default function ModuleForm({
                 )}
               </View>
             </View>
+
+            
           ))}
+
+
         </View>
 
         <Modal

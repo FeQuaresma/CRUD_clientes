@@ -9,7 +9,15 @@ export interface TableParam {
   masks?: string[] | [RegExp, string, number][];
   valueMasked?: string | { start: string; end: string };
   maxLength?: number;
-  customCSS?: object;
+  customInputCSS?: object;
+  customHeaderCSS?: object;
+  customCellCSS?: object;
+  customFooterCSS?: object;
+  customColumnCSS?: object;
+  customHeaderTextCSS?: object;
+  customCellTextCSS?: object;
+  customFooterTextCSS?: object;
+  customColumnTextCSS?: object;
   options?: { label: string; value: string }[];
   tableWidth: number;
   isVisible: boolean;
@@ -135,9 +143,11 @@ export const modulesParam: ModuleParam = {
         placeholder: "00.00000-0000",
         masks: [
           [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
-          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
+          [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 10],
+          [/^(\d{0,5})(\d{0,4})$/, "$1-$2", 9],
+          [/^(\d{0,4})(\d{0,4})$/, "$1-$2", 1],
         ],
-        customCSS: { width: 160 },
+        customInputCSS: { width: 160 },
         value: "",
         valueMasked: "",
         maxLength: 13,
@@ -154,7 +164,7 @@ export const modulesParam: ModuleParam = {
           [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
           [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
         ],
-        customCSS: { width: 160 },
+        customInputCSS: { width: 160 },
         value: "",
         valueMasked: "",
         maxLength: 13,
@@ -244,6 +254,12 @@ export const modulesParam: ModuleParam = {
         isVisible: true,
         isNumber: true,
         footerLabel: { function: "sumEntries", value: "" },
+        
+        customHeaderCSS: {backgroundColor: "red"},
+        customCellCSS: {backgroundColor: "#00defc"},
+        customFooterCSS: {backgroundColor: "purple"},
+        customFooterTextCSS: {fontWeight: "900"},
+        customColumnTextCSS: {alignSelf: "flex-end"},
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -263,7 +279,7 @@ export const modulesParam: ModuleParam = {
         value: { start: "", end: "" },
         valueMasked: { start: "", end: "" },
         placeholder: "DD/MM/AAAA",
-        customCSS: { width: 220 },
+        customInputCSS: { width: 220 },
         cellMasks: [[/^(\d{0,4})(\d{0,2})(\d{0,2})$/, "$3/$2/$1", 8]],
         masks: [[/^(\d{0,2})(\d{0,2})(\d{0,4})$/, "$1/$2/$3", 1]],
         searchParam: [[/^(\d{4})(\d{2})(\d{2})$/, "$3-$2-$1"]],
@@ -300,7 +316,7 @@ export const modulesParam: ModuleParam = {
         isCurrency: true,
         footerLabel: { function: "sumTotal", value: "" },
         zeroTrim: true,
-        customCSS: { width: 220 },
+        customInputCSS: { width: 220 },
         searchSign: "equals"
       },
       formapagamento: {

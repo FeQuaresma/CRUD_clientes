@@ -296,7 +296,7 @@ export default function ModuleList({
           let cleanCellValue = cellValue.replace(/\D/g, "");
 
           if (cellValue !== "" && cellValue !== null) {
-            if (params[colKey].isNumber && cleanSearchWord !== "") {
+            if (params[colKey]?.isNumber && cleanSearchWord !== "") {
               if (searchWord[0] === "<" || searchWord[0] === ">") {
                 let cleanSearchParam = searchWord.split("");
                 cleanSearchParam.shift();
@@ -425,7 +425,7 @@ export default function ModuleList({
   function sortTable(sortedColObject: SortedCol) {
     function sortOrder(a: DataRow, b: DataRow) {
       if (sortedColObject.order === "asc") {
-        if (params[sortedColObject.name].isNumber) {
+        if (params[sortedColObject.name]?.isNumber) {
           if (
             Number(a[sortedColObject.name]) > Number(b[sortedColObject.name])
           ) {
@@ -445,7 +445,7 @@ export default function ModuleList({
         }
         return 0;
       } else if (sortedColObject.order === "desc") {
-        if (params[sortedColObject.name].isNumber) {
+        if (params[sortedColObject.name]?.isNumber) {
           if (
             Number(a[sortedColObject.name]) < Number(b[sortedColObject.name])
           ) {
@@ -470,7 +470,6 @@ export default function ModuleList({
 
     let dataOriginTemp = [...dataOrigin];
     dataOriginTemp.sort(sortOrder);
-    console.log(dataOriginTemp);
 
     if (data !== dataOrigin) {
       let dataTemp = [...data];
@@ -528,7 +527,7 @@ export default function ModuleList({
         </View>
         <Pressable
           onPress={() => {
-            console.log("tabela de pedidos", dataOrigin);
+            console.log("tabela de pedidos", params.numero);
           }}
         >
           <Text style={styles.text}>Tabela de Pedidos</Text>
@@ -551,8 +550,16 @@ export default function ModuleList({
                     <Cell
                       key={colIndex}
                       data={params[colKey].label}
-                      style={styles.cellHead}
-                      textStyle={styles.cellHeadText}
+                      style={{
+                        ...styles.cellHead,
+                        ...params[colKey].customColumnCSS,
+                        ...params[colKey].customHeaderCSS,
+                      }}
+                      textStyle={{
+                        ...styles.cellHeadText,
+                        ...params[colKey].customColumnTextCSS,
+                        ...params[colKey].customHeaderTextCSS,
+                      }}
                       width={params[colKey].tableWidth}
                     />
                   </Pressable>
@@ -574,7 +581,15 @@ export default function ModuleList({
                               rowData[colKey],
                               colKey as string
                             )}
-                            style={styles.cellData}
+                            style={{
+                              ...styles.cellData,
+                              ...params[colKey].customColumnCSS,
+                              ...params[colKey].customCellCSS,
+                            }}
+                            textStyle={{
+                              ...params[colKey].customColumnTextCSS,
+                              ...params[colKey].customCellTextCSS,
+                            }}
                             width={params[colKey].tableWidth}
                           />
                         )
@@ -597,8 +612,16 @@ export default function ModuleList({
                             )
                           : ""
                       }
-                      style={styles.cellFoot}
-                      textStyle={styles.cellHeadText}
+                      style={{
+                        ...styles.cellFoot,
+                        ...params[colKey].customColumnCSS,
+                        ...params[colKey].customFooterCSS,
+                      }}
+                      textStyle={{
+                        ...styles.cellHeadText,
+                        ...params[colKey].customColumnTextCSS,
+                        ...params[colKey].customFooterTextCSS,
+                      }}
                       width={params[colKey].tableWidth}
                     />
                   ))}
@@ -628,8 +651,16 @@ export default function ModuleList({
                     <Cell
                       key={colIndex}
                       data={params[colKey].label}
-                      style={styles.cellHead}
-                      textStyle={styles.cellHeadText}
+                      style={{
+                        ...styles.cellHead,
+                        ...params[colKey].customColumnCSS,
+                        ...params[colKey].customHeaderCSS,
+                      }}
+                      textStyle={{
+                        ...styles.cellHeadText,
+                        ...params[colKey].customColumnTextCSS,
+                        ...params[colKey].customHeaderTextCSS,
+                      }}
                       width={params[colKey].tableWidth}
                     />
                   </Pressable>
@@ -651,7 +682,15 @@ export default function ModuleList({
                               rowData[colKey],
                               colKey as string
                             )}
-                            style={styles.cellData}
+                            style={{
+                              ...styles.cellData,
+                              ...params[colKey].customColumnCSS,
+                              ...params[colKey].customCellCSS,
+                            }}
+                            textStyle={{
+                              ...params[colKey].customColumnTextCSS,
+                              ...params[colKey].customCellTextCSS,
+                            }}
                             width={params[colKey].tableWidth}
                           />
                         )
@@ -673,8 +712,16 @@ export default function ModuleList({
                             )
                           : ""
                       }
-                      style={styles.cellFoot}
-                      textStyle={styles.cellHeadText}
+                      style={{
+                        ...styles.cellFoot,
+                        ...params[colKey].customColumnCSS,
+                        ...params[colKey].customFooterCSS,
+                      }}
+                      textStyle={{
+                        ...styles.cellHeadText,
+                        ...params[colKey].customColumnTextCSS,
+                        ...params[colKey].customFooterTextCSS,
+                      }}
                       width={params[colKey].tableWidth}
                     />
                   ))}

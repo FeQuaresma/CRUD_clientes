@@ -1,66 +1,29 @@
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Pressable, TextInput, View, Text, ScrollView } from "react-native";
+import { useState } from "react";
+import { Pressable, TextInput, Text, ScrollView } from "react-native";
 import { styles } from "../constants/styles";
-import { useNavigationState } from "@react-navigation/native";
-import Teste from "./teste";
 
 export default function Index({ navigation }: any) {
-
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const routes = useNavigationState((state) => state.routes);
-
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <Text style={styles.inputLabel}>Login</Text>
-      <TextInput
-        style={styles.input}
-        value={username}
-        onChangeText={(e) => setUsername(e)}
-      />
-      <Text style={styles.inputLabel}>Senha</Text>
-      <TextInput
-        style={styles.input}
-        value={password}
-        onChangeText={(e) => setPassword(e)}
-      />
-
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate("(tabs)")}
       >
-        <Text style={styles.buttonText}>Entrar</Text>
+        <Text style={styles.buttonText}>Versão 1</Text>
       </Pressable>
+
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate("teste")}
+        onPress={() => navigation.navigate("(tabs2)")}
       >
-        <Text style={styles.buttonText}>Lista</Text>
+        <Text style={styles.buttonText}>Versão 2</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => console.log(routes)}>
-        <Text style={styles.buttonText}>Rotas</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate("tableTest")}
-      >
-        <Text style={styles.buttonText}>Table Test</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate("useStateTable")}
-      >
-        <Text style={styles.buttonText}>useStateTable</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate("tableNavigator")}
-      >
-        <Text style={styles.buttonText}>tableNavigator</Text>
-      </Pressable>
+
     </ScrollView>
   );
 }

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Switch, View } from "react-native";
 
 export default function Boolean({ field, onValueChange }: any) {

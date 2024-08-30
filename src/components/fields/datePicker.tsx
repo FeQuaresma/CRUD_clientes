@@ -101,7 +101,7 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
         <TextInput
           placeholder={field.placeholder}
           inputMode={field.inputMode}
-          style={{ ...styles.input, ...field.customCSS }}
+          style={{ ...styles.input, ...field.customInputCSS }}
           maxLength={field.maxLength}
           value={valueDetect()}
           onChangeText={async (e) => {

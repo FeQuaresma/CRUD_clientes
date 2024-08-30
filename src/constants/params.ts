@@ -10,7 +10,7 @@ export interface FormParam {
   isRequired: boolean;
   isEditable: boolean;
   isLocked?: boolean;
-  customCSS?: object;
+  customInputCSS?: object;
   function?: string[];
   options?: { label: string; value: string }[];
   link?: {
@@ -38,7 +38,7 @@ export const params: Param = {
     maxLength: 18,
     isRequired: true,
     isEditable: false,
-    customCSS: { color: "black" },
+    customInputCSS: { color: "black" },
     function: ["validateCPF", "validateCNPJ"],
     quebraDeLinha: true,
   },

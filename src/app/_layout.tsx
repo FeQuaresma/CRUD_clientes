@@ -2,10 +2,7 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Index from ".";
 import MyDrawer from "./(tabs)/_layout";
-import ModuleList from "../components/moduleList";
-import TableTest from "./tableTest";
-import TableNavigator from "./tableNavigator";
-import TesteCalendar from "./testeThree";
+import MyDrawer2 from "./(tabs2)/_layout";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,21 +18,9 @@ export default function App() {
         name="(tabs)"
         component={MyDrawer}
       />
-      <Stack.Screen
-        name="teste"
-        component={ModuleList}
-      />
-      <Stack.Screen
-        name="tableTest"
-        component={TableTest}
-      />
-      <Stack.Screen
-        name="useStateTable"
-        component={TesteCalendar}
-      />
-      <Stack.Screen
-        name="tableNavigator"
-        component={TableNavigator}
+            <Stack.Screen
+        name="(tabs2)"
+        component={MyDrawer2}
       />
     </Stack.Navigator>
   );

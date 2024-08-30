@@ -61,7 +61,7 @@ valueMasked?: string; # Valor incial do campo com mascara inclusa
 maxLength?: number; # Tamanho maximo de caracteres (contabiliza as mascaras)
 isRequired: boolean; # Se é obrigatório o preenchimento para enviar o formulário
 isEditable: boolean; # Se é um campo que permite edição
-customCSS?: object; # Caso o campo precise de algum CSS a mais que outros campos
+customInputCSS?: object; # Caso o campo precise de algum CSS a mais que outros campos
 function?: string[]; # WIP
 options?: { label: string; value: string }[]; # Opções quando o inputType é Select
 link?: { # Link para realizar alguma busca de API online

@@ -1,4 +1,4 @@
-export default function validateCPF(cpf: string) {
+export function validateCPF(cpf: string) {
   if (cpf.length != 11) {
     return false;
   } else {

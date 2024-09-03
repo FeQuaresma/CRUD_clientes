@@ -19,7 +19,7 @@ export default function Index({ navigation }: any) {
 
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate("(tabs2)")}
+        onPress={() => console.log("(tabs2)")}
       >
         <Text style={styles.buttonText}>Versão 2</Text>
       </Pressable>

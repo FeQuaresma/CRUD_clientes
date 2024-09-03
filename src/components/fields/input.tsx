@@ -21,6 +21,7 @@ export default function Input({ field, onValueChange }: any) {
   return (
     <TextInput
       placeholder={field.placeholder}
+                    
       style={{ ...styles.input, ...field.customInputCSS}}
       value={field.valueMasked ? field.valueMasked : field.value}
       inputMode={field.inputMode}

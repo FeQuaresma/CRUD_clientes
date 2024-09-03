@@ -1,3 +1,5 @@
+import { Json } from "../functions/executeJsonFunctions";
+
 export interface FormParam {
   label?: string;
   inputType: string;
@@ -11,7 +13,7 @@ export interface FormParam {
   isEditable: boolean;
   isLocked?: boolean;
   customInputCSS?: object;
-  function?: string[];
+  function?: Json;
   options?: { label: string; value: string }[];
   link?: {
     paramBeginning: string;
@@ -38,8 +40,15 @@ export const params: Param = {
     maxLength: 18,
     isRequired: true,
     isEditable: false,
-    customInputCSS: { color: "black" },
-    function: ["validateCPF", "validateCNPJ"],
+    customInputCSS: { width: 220 },
+    function: {
+      functionCode: "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
+      importedFunc: {
+        a: { import: "validateCPF", from: "validateCPF" },
+        b: { import: "valueExported", from: "local" },
+        c: { import: "Alert", from: "react-native" },
+      },
+    },
     quebraDeLinha: true,
   },
   insc: {

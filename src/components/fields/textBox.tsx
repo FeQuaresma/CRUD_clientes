@@ -1,3 +1,4 @@
+import * as React from "react-native";
 import { TextInput } from "react-native";
 import { styles } from "@/src/constants/styles";
 

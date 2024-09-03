@@ -31,17 +31,35 @@ export interface TableParam {
   searchSign?: "equals" | "greater-than" | "less-than";
 }
 
+
+
+
+
+
 export type ModuleParam = {
   [key: string]: {
     moduleName: string;
     formParam: Param;
+
+
+
     tableURL?: string;
     tableParam?: {
       [key: string]: TableParam;
     };
     tableSort?: string;
+
+
+    
   };
 };
+
+
+
+
+
+
+
 
 export const modulesParam: ModuleParam = {
   cliente: {

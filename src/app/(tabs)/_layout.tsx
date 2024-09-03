@@ -12,6 +12,8 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const moduleArray: any = {};
 
+const moduleItem:any ={"moduleIndex": function (){<ModuleIndex/>}}
+
 Object.keys(modulesParam).map((moduleObject) => {
   moduleArray[moduleObject] = () => (
     <Drawer.Navigator screenOptions={{ drawerPosition: "right" }}>

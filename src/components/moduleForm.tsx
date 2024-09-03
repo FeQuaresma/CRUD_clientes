@@ -23,6 +23,7 @@ import { styles, stylesModal } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { executeFunction } from "../functions/executeJsonFunctions";
 
 export default function ModuleForm({
   formParam,
@@ -31,7 +32,15 @@ export default function ModuleForm({
   route,
 }: any) {
   const [modalVisible, setModalVisible] = useState(false);
+
+
+
+
   const [form, setForm] = useState(formParam);
+
+
+
+
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
   useEffect(() => {
@@ -39,13 +48,13 @@ export default function ModuleForm({
   }, [route.params]);
 
   useEffect(() => {
+    console.log("teste1");
     if (errorCheckComplete) {
       if (handleModal()) {
         setModalVisible(true);
       }
-      setErrorCheckComplete(false); // Reset para a próxima verificação de erro
     }
-  }, [errorCheckComplete, form]);
+  }, [errorCheckComplete]);
 
   function setErrorMsg() {
     Object.keys(form).map((field: string) => {
@@ -423,7 +432,7 @@ export default function ModuleForm({
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
       style={styles.containerView}
     >
       <View
@@ -433,7 +442,7 @@ export default function ModuleForm({
         }}
       >
         <Pressable
-          style={{width: 30 }}
+          style={{ width: 30 }}
           onPress={() => {
             navigation.goBack();
           }}
@@ -450,7 +459,7 @@ export default function ModuleForm({
             Cadastro
           </Text>
         )}
-        <View style={{width: 30 }} />
+        <View style={{ width: 30 }} />
         <Text></Text>
       </View>
       <ScrollView
@@ -466,11 +475,7 @@ export default function ModuleForm({
             justifyContent: "center",
           }}
         >
-
           {Object.keys(form).map((field) => (
-
-
-
             <View
               key={field}
               style={{
@@ -562,10 +567,20 @@ export default function ModuleForm({
                   />
                 )}
                 {form[field].inputType === "textBox" && (
+
+
+
+
+
                   <TextBox
                     field={form[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
+
+
+
+
+
                 )}
                 {form[field].inputType === "date" && dateInput(field)}
                 {form[field].inputType === "file" && (
@@ -598,13 +613,25 @@ export default function ModuleForm({
                     />
                   </Pressable>
                 )}
+                {form[field].function && (
+                  <Pressable
+                    style={{
+                      height: 30,
+                      width: 30,
+                      backgroundColor: "red",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    onPress={() =>
+                      executeFunction(form[field].function, form)
+                    }
+                  >
+                    <FontAwesome5 name="circle" size={18} color="white" />
+                  </Pressable>
+                )}
               </View>
             </View>
-
-            
           ))}
-
-
         </View>
 
         <Modal
@@ -616,13 +643,26 @@ export default function ModuleForm({
             setModalVisible(!modalVisible);
           }}
         >
-          <View style={stylesModal.centeredView}>
-            <View style={stylesModal.modalView}>
+          <ScrollView contentContainerStyle={stylesModal.centeredView}>
+            <View style={{ ...stylesModal.modalView }}>
               {Object.keys(form).map((item: any) => (
+
+
+
+
+
                 <Text
                   key={item}
                   style={stylesModal.modalText}
+
+
                 >{`${form[item].label}: ${form[item].value} `}</Text>
+
+
+
+
+
+
               ))}
               <Pressable
                 style={[stylesModal.button, stylesModal.buttonClose]}
@@ -631,7 +671,7 @@ export default function ModuleForm({
                 <Text style={stylesModal.textStyle}>Preencher novamente</Text>
               </Pressable>
             </View>
-          </View>
+          </ScrollView>
         </Modal>
       </ScrollView>
       <View style={{ width: "100%", alignItems: "center" }}>
@@ -639,7 +679,7 @@ export default function ModuleForm({
           <Pressable
             style={styles.button}
             onPress={() => {
-              setErrorMsg();
+              setModalVisible(true);
             }}
           >
             <Text style={styles.buttonText}>Enviar Formulário</Text>

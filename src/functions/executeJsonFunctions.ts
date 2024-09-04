@@ -16,7 +16,6 @@ const json2: Json = {
 
 export async function executeFunction(jsonImported: Json, variable: any = undefined) {
 
-  console.log(variable)
   const itemsArray:any[] = [];
   const itemsKeys:any[] = [];
   
@@ -46,10 +45,8 @@ export async function executeFunction(jsonImported: Json, variable: any = undefi
       
       itemsKeys.push(key)
 
-      console.log(itemsArray, itemsKeys)
-
     } catch (error) {
-      console.error(`Erro ao importar módulo de ${importSource}:`, error);
+      console.error(`Import Error ${importSource}:`, error);
     }
   }
 

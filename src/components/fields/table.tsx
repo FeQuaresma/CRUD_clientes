@@ -33,14 +33,12 @@ type SortedCol = {
 };
 
 export default function TableComponent({
-  navigation,
-  route,
+  // navigation,
+  // route,
   moduleParam,
   urlParam,
 }: any) {
-  const [params, setParams] = useState(
-    moduleParam.tableParam ? moduleParam.tableParam : {}
-  );
+  const [params, setParams] = useState(moduleParam.tableParam);
   const [data, setData] = useState<DataRow[]>([]);
   const [dataOrigin, setDataOrigin] = useState<DataRow[]>([]);
   const [searchWord, setSearchWord] = useState("");
@@ -55,14 +53,14 @@ export default function TableComponent({
     order: "asc",
   });
 
-  useEffect(() => {
-    if (route.params?.formData) {
-      setRouteParams(route.params.formData);
-    }
-    if (route.params?.colVisibility) {
-      setColVisibility(route.params.colVisibility);
-    }
-  }, [route.params]);
+  // useEffect(() => {
+  //   if (route.params?.formData) {
+  //     setRouteParams(route.params.formData);
+  //   }
+  //   if (route.params?.colVisibility) {
+  //     setColVisibility(route.params.colVisibility);
+  //   }
+  // }, [route.params]);
 
   useEffect(() => {
     loadData().then((dataOnline: DataTable) => {
@@ -496,186 +494,90 @@ export default function TableComponent({
   }
 
   return (
-    <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
-      <View style={styles.container}>
-        <View style={styles.serchBar}>
-          <TextInput
-            style={styles.input}
-            placeholder="Pesquise..."
-            value={searchWord}
-            onChangeText={(e) => setSearchWord(e.trimStart())}
-            onSubmitEditing={() => handleGlobalSearch()}
-          />
-          <Pressable
-            style={styles.searchIcon}
-            onPress={() => handleGlobalSearch()}
-          >
-            <FontAwesome name="search" size={24} color="white" />
-          </Pressable>
-          <Pressable
-            style={styles.filterIcon}
-            onPress={() => navigation.navigate("FilterModal", route.params)}
-          >
-            <FontAwesome name="filter" size={24} color="white" />
-          </Pressable>
-          <Pressable
-            style={{ ...styles.filterIcon, backgroundColor: "red" }}
-            onPress={() => handleResetTable()}
-          >
-            <MaterialCommunityIcons name="broom" size={24} color="white" />
-          </Pressable>
-        </View>
-        <Pressable
-          onPress={() => {
-            console.log("tabela de pedidos", params.numero);
-          }}
-        >
-          <Text style={styles.text}>Tabela de Pedidos</Text>
-        </Pressable>
-
-        <View style={styles.table}>
-          <ScrollView
-            horizontal={true}
-            style={{ minWidth: handleSizeLockedTable() }}
-            showsHorizontalScrollIndicator={false}
-          >
-            <Table>
-              <TableWrapper style={styles.header}>
-                {Array.from(lockedColTable).map((colKey, colIndex) => (
-                  <Pressable
-                    key={colKey}
-                    onPress={() => handleSortChange(colKey)}
-                    onLongPress={() => handleLockedTable(colKey)}
-                  >
-                    <Cell
-                      key={colIndex}
-                      data={params[colKey].label}
-                      style={{
-                        ...styles.cellHead,
-                        ...params[colKey].customColumnCSS,
-                        ...params[colKey].customHeaderCSS,
-                      }}
-                      textStyle={{
-                        ...styles.cellHeadText,
-                        ...params[colKey].customColumnTextCSS,
-                        ...params[colKey].customHeaderTextCSS,
-                      }}
-                      width={params[colKey].tableWidth}
-                    />
-                  </Pressable>
-                ))}
-              </TableWrapper>
-
-              <SyncedScrollView
-                scrollViewId={0}
-                showsVerticalScrollIndicator={false}
+    <View style={{ height: 400 }}>
+      <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
+        <View style={styles.container}>
+          {moduleParam.tableSettings.hasSearchBar && (
+            <View style={styles.serchBar}>
+              <TextInput
+                style={styles.input}
+                placeholder="Pesquise..."
+                value={searchWord}
+                onChangeText={(e) => setSearchWord(e.trimStart())}
+                onSubmitEditing={() => handleGlobalSearch()}
+              />
+              <Pressable
+                style={styles.searchIcon}
+                onPress={() => handleGlobalSearch()}
               >
-                {data.map((rowData, rowIndex) => {
-                  return (
-                    <TableWrapper key={rowIndex} style={styles.header}>
-                      {(Array.from(lockedColTable) as Array<keyof DataRow>).map(
-                        (colKey, colIndex) => (
-                          <Cell
-                            key={colIndex}
-                            data={cellValueMask(
-                              rowData[colKey],
-                              colKey as string
-                            )}
-                            style={{
-                              ...styles.cellData,
-                              ...params[colKey].customColumnCSS,
-                              ...params[colKey].customCellCSS,
-                            }}
-                            textStyle={{
-                              ...params[colKey].customColumnTextCSS,
-                              ...params[colKey].customCellTextCSS,
-                            }}
-                            width={params[colKey].tableWidth}
-                          />
-                        )
-                      )}
-                    </TableWrapper>
-                  );
-                })}
-              </SyncedScrollView>
+                <FontAwesome name="search" size={24} color="white" />
+              </Pressable>
+              <Pressable
+                style={styles.filterIcon}
+                // onPress={() => navigation.navigate("FilterModal", route.params)}
+              >
+                <FontAwesome name="filter" size={24} color="white" />
+              </Pressable>
+              <Pressable
+                style={{ ...styles.filterIcon, backgroundColor: "red" }}
+                onPress={() => handleResetTable()}
+              >
+                <MaterialCommunityIcons name="broom" size={24} color="white" />
+              </Pressable>
+            </View>
+          )}
+          <Pressable
+            onPress={() => {
+              console.log("tabela de pedidos", params.numero);
+            }}
+          >
+            <Text style={styles.text}>Tabela de Pedidos</Text>
+          </Pressable>
 
-              {footer ? (
-                <TableWrapper style={styles.footer}>
+          <View style={styles.table}>
+            <ScrollView
+              horizontal={true}
+              style={{ minWidth: handleSizeLockedTable() }}
+              showsHorizontalScrollIndicator={false}
+            >
+              <Table>
+                <TableWrapper style={styles.header}>
                   {Array.from(lockedColTable).map((colKey, colIndex) => (
-                    <Cell
-                      key={colIndex}
-                      data={
-                        params[colKey].footerLabel
-                          ? cellValueMask(
-                              params[colKey].footerLabel.value,
-                              colKey
-                            )
-                          : ""
-                      }
-                      style={{
-                        ...styles.cellFoot,
-                        ...params[colKey].customColumnCSS,
-                        ...params[colKey].customFooterCSS,
-                      }}
-                      textStyle={{
-                        ...styles.cellHeadText,
-                        ...params[colKey].customColumnTextCSS,
-                        ...params[colKey].customFooterTextCSS,
-                      }}
-                      width={params[colKey].tableWidth}
-                    />
+                    <Pressable
+                      key={colKey}
+                      onPress={() => handleSortChange(colKey)}
+                      onLongPress={() => handleLockedTable(colKey)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={params[colKey].label}
+                        style={{
+                          ...styles.cellHead,
+                          ...params[colKey].customColumnCSS,
+                          ...params[colKey].customHeaderCSS,
+                        }}
+                        textStyle={{
+                          ...styles.cellHeadText,
+                          ...params[colKey].customColumnTextCSS,
+                          ...params[colKey].customHeaderTextCSS,
+                        }}
+                        width={params[colKey].tableWidth}
+                      />
+                    </Pressable>
                   ))}
                 </TableWrapper>
-              ) : (
-                <></>
-              )}
-            </Table>
-          </ScrollView>
-          <View
-            style={{ backgroundColor: "black", width: 3, display: handleBar() }}
-          ></View>
-          {/*Divisória*/}
-          <ScrollView
-            horizontal={true}
-            style={{ minWidth: handleSizeTable() }}
-            showsHorizontalScrollIndicator={false}
-          >
-            <Table>
-              <TableWrapper style={styles.header}>
-                {Array.from(colTable).map((colKey, colIndex) => (
-                  <Pressable
-                    key={colKey}
-                    onPress={() => handleSortChange(colKey)}
-                    onLongPress={() => handleLockedTable(colKey)}
-                  >
-                    <Cell
-                      key={colIndex}
-                      data={params[colKey].label}
-                      style={{
-                        ...styles.cellHead,
-                        ...params[colKey].customColumnCSS,
-                        ...params[colKey].customHeaderCSS,
-                      }}
-                      textStyle={{
-                        ...styles.cellHeadText,
-                        ...params[colKey].customColumnTextCSS,
-                        ...params[colKey].customHeaderTextCSS,
-                      }}
-                      width={params[colKey].tableWidth}
-                    />
-                  </Pressable>
-                ))}
-              </TableWrapper>
 
-              <SyncedScrollView
-                scrollViewId={1}
-                showsVerticalScrollIndicator={false}
-              >
-                {data.map((rowData, rowIndex) => {
-                  return (
-                    <TableWrapper key={rowIndex} style={styles.header}>
-                      {(Array.from(colTable) as Array<keyof DataRow>).map(
-                        (colKey, colIndex) => (
+                <SyncedScrollView
+                  scrollViewId={0}
+                  showsVerticalScrollIndicator={false}
+                  nestedScrollEnabled={true}
+                >
+                  {data.map((rowData, rowIndex) => {
+                    return (
+                      <TableWrapper key={rowIndex} style={styles.header}>
+                        {(
+                          Array.from(lockedColTable) as Array<keyof DataRow>
+                        ).map((colKey, colIndex) => (
                           <Cell
                             key={colIndex}
                             data={cellValueMask(
@@ -693,47 +595,153 @@ export default function TableComponent({
                             }}
                             width={params[colKey].tableWidth}
                           />
-                        )
-                      )}
-                    </TableWrapper>
-                  );
-                })}
-              </SyncedScrollView>
-              {footer ? (
-                <TableWrapper style={styles.footer}>
+                        ))}
+                      </TableWrapper>
+                    );
+                  })}
+                </SyncedScrollView>
+
+                {footer ? (
+                  <TableWrapper style={styles.footer}>
+                    {Array.from(lockedColTable).map((colKey, colIndex) => (
+                      <Cell
+                        key={colIndex}
+                        data={
+                          params[colKey].footerLabel
+                            ? cellValueMask(
+                                params[colKey].footerLabel.value,
+                                colKey
+                              )
+                            : ""
+                        }
+                        style={{
+                          ...styles.cellFoot,
+                          ...params[colKey].customColumnCSS,
+                          ...params[colKey].customFooterCSS,
+                        }}
+                        textStyle={{
+                          ...styles.cellHeadText,
+                          ...params[colKey].customColumnTextCSS,
+                          ...params[colKey].customFooterTextCSS,
+                        }}
+                        width={params[colKey].tableWidth}
+                      />
+                    ))}
+                  </TableWrapper>
+                ) : (
+                  <></>
+                )}
+              </Table>
+            </ScrollView>
+            <View
+              style={{
+                backgroundColor: "black",
+                width: 3,
+                display: handleBar(),
+              }}
+            ></View>
+            {/*Divisória*/}
+            <ScrollView
+              horizontal={true}
+              style={{ minWidth: handleSizeTable() }}
+              showsHorizontalScrollIndicator={false}
+            >
+              <Table>
+                <TableWrapper style={styles.header}>
                   {Array.from(colTable).map((colKey, colIndex) => (
-                    <Cell
-                      key={colIndex}
-                      data={
-                        params[colKey].footerLabel
-                          ? cellValueMask(
-                              params[colKey].footerLabel.value,
-                              colKey
-                            )
-                          : ""
-                      }
-                      style={{
-                        ...styles.cellFoot,
-                        ...params[colKey].customColumnCSS,
-                        ...params[colKey].customFooterCSS,
-                      }}
-                      textStyle={{
-                        ...styles.cellHeadText,
-                        ...params[colKey].customColumnTextCSS,
-                        ...params[colKey].customFooterTextCSS,
-                      }}
-                      width={params[colKey].tableWidth}
-                    />
+                    <Pressable
+                      key={colKey}
+                      onPress={() => handleSortChange(colKey)}
+                      onLongPress={() => handleLockedTable(colKey)}
+                    >
+                      <Cell
+                        key={colIndex}
+                        data={params[colKey].label}
+                        style={{
+                          ...styles.cellHead,
+                          ...params[colKey].customColumnCSS,
+                          ...params[colKey].customHeaderCSS,
+                        }}
+                        textStyle={{
+                          ...styles.cellHeadText,
+                          ...params[colKey].customColumnTextCSS,
+                          ...params[colKey].customHeaderTextCSS,
+                        }}
+                        width={params[colKey].tableWidth}
+                      />
+                    </Pressable>
                   ))}
                 </TableWrapper>
-              ) : (
-                <></>
-              )}
-            </Table>
-          </ScrollView>
+
+                <SyncedScrollView
+                  scrollViewId={1}
+                  showsVerticalScrollIndicator={false}
+                  nestedScrollEnabled={true}
+                >
+                  {data.map((rowData, rowIndex) => {
+                    return (
+                      <TableWrapper key={rowIndex} style={styles.header}>
+                        {(Array.from(colTable) as Array<keyof DataRow>).map(
+                          (colKey, colIndex) => (
+                            <Cell
+                              key={colIndex}
+                              data={cellValueMask(
+                                rowData[colKey],
+                                colKey as string
+                              )}
+                              style={{
+                                ...styles.cellData,
+                                ...params[colKey].customColumnCSS,
+                                ...params[colKey].customCellCSS,
+                              }}
+                              textStyle={{
+                                ...params[colKey].customColumnTextCSS,
+                                ...params[colKey].customCellTextCSS,
+                              }}
+                              width={params[colKey].tableWidth}
+                            />
+                          )
+                        )}
+                      </TableWrapper>
+                    );
+                  })}
+                </SyncedScrollView>
+                {footer ? (
+                  <TableWrapper style={styles.footer}>
+                    {Array.from(colTable).map((colKey, colIndex) => (
+                      <Cell
+                        key={colIndex}
+                        data={
+                          params[colKey].footerLabel
+                            ? cellValueMask(
+                                params[colKey].footerLabel.value,
+                                colKey
+                              )
+                            : ""
+                        }
+                        style={{
+                          ...styles.cellFoot,
+                          ...params[colKey].customColumnCSS,
+                          ...params[colKey].customFooterCSS,
+                        }}
+                        textStyle={{
+                          ...styles.cellHeadText,
+                          ...params[colKey].customColumnTextCSS,
+                          ...params[colKey].customFooterTextCSS,
+                        }}
+                        width={params[colKey].tableWidth}
+                      />
+                    ))}
+                  </TableWrapper>
+                ) : (
+                  <></>
+                )}
+              </Table>
+            </ScrollView>
+          </View>
         </View>
-      </View>
-    </SyncedScrollViewContext.Provider>
+      </SyncedScrollViewContext.Provider>
+    </View>
   );
 }
 

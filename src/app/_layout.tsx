@@ -18,10 +18,6 @@ export default function App() {
         name="(tabs)"
         component={MyDrawer}
       />
-            <Stack.Screen
-        name="(tabs2)"
-        component={MyDrawer2}
-      />
     </Stack.Navigator>
   );
 }

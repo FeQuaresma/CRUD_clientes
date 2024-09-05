@@ -48,6 +48,7 @@ export const modulesParam: ModuleParam = {
   cliente: {
     moduleName: "Cliente",
     formParam: {
+      table: params.table,
       cnpjcpf: params.cnpjcpf,
       idestrageiro: params.idestrageiro,
       suframa: params.suframa,

@@ -16,14 +16,6 @@ export default function Index({ navigation }: any) {
       >
         <Text style={styles.buttonText}>Versão 1</Text>
       </Pressable>
-
-      <Pressable
-        style={styles.button}
-        onPress={() => console.log("(tabs2)")}
-      >
-        <Text style={styles.buttonText}>Versão 2</Text>
-      </Pressable>
-
     </ScrollView>
   );
 }

@@ -1,4 +1,5 @@
 import { FunctionJson } from "../functions/executeJsonFunctions";
+import { TableInterface } from "./moduleParamV2";
 
 export interface FormParam {
   label?: string;
@@ -22,6 +23,7 @@ export interface FormParam {
     type: "fillform" | "errorMsg" | null;
   };
   quebraDeLinha?: boolean;
+  table?: TableInterface;
 }
 
 export type Param = {
@@ -42,7 +44,8 @@ export const params: Param = {
     isEditable: false,
     customInputCSS: { width: 220 },
     function: {
-      functionCode: "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
+      functionCode:
+        "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
       importedFunc: {
         a: { import: "validateCPF", from: "validateCPF" },
         b: { import: "valueExported", from: "local" },
@@ -59,6 +62,148 @@ export const params: Param = {
     maxLength: 17,
     isRequired: false,
     isEditable: true,
+  },
+  table: {
+    inputType: "table",
+    value: "",
+    isRequired: false,
+    isEditable: false,
+    table: {
+      tableSettings: {
+        hasSearchBar: false,
+        tableURL: "https://www.caae.org.br/teste/testeData.json",
+      },
+      tableParam: {
+        numero: {
+          label: "Número",
+          inputType: "input",
+          inputMode: "numeric",
+          value: "",
+          valueMasked: "",
+          maxLength: 18,
+          tableWidth: 10 * 8,
+          isVisible: true,
+          isNumber: true,
+        },
+        fantasia: {
+          label: "Nome Fantasia",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 18 * 8,
+          isVisible: true,
+        },
+        razaosocial: {
+          label: "Razão Social",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 30 * 8,
+          isVisible: false,
+        },
+        endereco: {
+          label: "Endereço",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 20 * 8,
+          isVisible: true,
+        },
+        bairro: {
+          label: "Bairro",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 18 * 8,
+          isVisible: true,
+        },
+        cidade: {
+          label: "Cidade",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 15 * 8,
+          isVisible: true,
+        },
+        estado: {
+          label: "Estado",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 9 * 8,
+          isVisible: true,
+        },
+        telefone: {
+          label: "Telefone",
+          inputType: "input",
+          inputMode: "tel",
+          placeholder: "00.00000-0000",
+          masks: [
+            [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
+            [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 10],
+            [/^(\d{0,5})(\d{0,4})$/, "$1-$2", 9],
+            [/^(\d{0,4})(\d{0,4})$/, "$1-$2", 1],
+          ],
+          customInputCSS: { width: 160 },
+          value: "",
+          valueMasked: "",
+          maxLength: 13,
+          tableWidth: 16 * 8,
+          isVisible: true,
+          isNumber: true,
+        },
+        fax: {
+          label: "Telefone 2",
+          inputType: "input",
+          inputMode: "tel",
+          placeholder: "00.00000-0000",
+          masks: [
+            [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
+            [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
+          ],
+          customInputCSS: { width: 160 },
+          value: "",
+          valueMasked: "",
+          maxLength: 13,
+          tableWidth: 15 * 8,
+          isVisible: false,
+          isNumber: true,
+        },
+        contato: {
+          label: "Contato",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 18 * 8,
+          isVisible: false,
+        },
+        email: {
+          label: "E-mail",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 23 * 8,
+          isVisible: false,
+        },
+        tipo: {
+          label: "Tipo",
+          inputType: "input",
+          inputMode: "text",
+          value: "",
+          maxLength: 60,
+          tableWidth: 9 * 8,
+          isVisible: false,
+        },
+      },
+    },
   },
   razaosocial: {
     label: "Razão Social",

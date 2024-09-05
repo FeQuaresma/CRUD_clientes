@@ -463,6 +463,7 @@ export default function ModuleForm({
         contentContainerStyle={{
           ...styles.containerScrollView,
         }}
+        nestedScrollEnabled={true}
       >
         <View
           style={{
@@ -584,10 +585,8 @@ export default function ModuleForm({
                 )}
                 {form[field].inputType === "table" && (
                   <Table
-                    field={form[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
-                    moduleParam={}
-                    urlParam={}
+                    moduleParam={form[field].table}
+                    urlParam={form[field].table.tableSettings.tableURL}
                   />
                 )}
 

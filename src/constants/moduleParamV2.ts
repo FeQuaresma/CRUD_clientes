@@ -28,7 +28,7 @@ export interface pageParam extends Param {
     type: "fillform" | "errorMsg" | null;
   };
   quebraDeLinha?: boolean;
-  tableParam?: TableInterface;
+  table?: TableInterface;
 }
 
 export interface TableInterface {

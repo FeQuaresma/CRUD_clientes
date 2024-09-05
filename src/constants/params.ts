@@ -1,4 +1,4 @@
-import { Json } from "../functions/executeJsonFunctions";
+import { FunctionJson } from "../functions/executeJsonFunctions";
 
 export interface FormParam {
   label?: string;
@@ -13,7 +13,7 @@ export interface FormParam {
   isEditable: boolean;
   isLocked?: boolean;
   customInputCSS?: object;
-  function?: Json;
+  function?: FunctionJson;
   options?: { label: string; value: string }[];
   link?: {
     paramBeginning: string;

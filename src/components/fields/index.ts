@@ -6,3 +6,4 @@ export { default as MultiSelect } from './multiSelect';
 export { default as Boolean } from './boolean';
 export { default as TextBox } from './textBox';
 export { default as Grid } from './grid';
+export { default as Table } from './table';

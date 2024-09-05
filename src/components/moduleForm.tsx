@@ -18,12 +18,15 @@ import {
   Boolean,
   TextBox,
   Grid,
+  Table,
 } from "./fields";
 import { styles, stylesModal } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { executeFunction } from "../functions/executeJsonFunctions";
+
+
 
 export default function ModuleForm({
   formParam,
@@ -33,13 +36,7 @@ export default function ModuleForm({
 }: any) {
   const [modalVisible, setModalVisible] = useState(false);
 
-
-
-
   const [form, setForm] = useState(formParam);
-
-
-
 
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
@@ -567,20 +564,10 @@ export default function ModuleForm({
                   />
                 )}
                 {form[field].inputType === "textBox" && (
-
-
-
-
-
                   <TextBox
                     field={form[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
-
-
-
-
-
                 )}
                 {form[field].inputType === "date" && dateInput(field)}
                 {form[field].inputType === "file" && (
@@ -595,6 +582,15 @@ export default function ModuleForm({
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
+                {form[field].inputType === "table" && (
+                  <Table
+                    field={form[field]}
+                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    moduleParam={}
+                    urlParam={}
+                  />
+                )}
+
                 {form[field].searchSign && (
                   <Pressable
                     style={{
@@ -622,9 +618,7 @@ export default function ModuleForm({
                       alignItems: "center",
                       justifyContent: "center",
                     }}
-                    onPress={() =>
-                      executeFunction(form[field].function, form)
-                    }
+                    onPress={() => executeFunction(form[field].function, form)}
                   >
                     <FontAwesome5 name="circle" size={18} color="white" />
                   </Pressable>
@@ -646,23 +640,10 @@ export default function ModuleForm({
           <ScrollView contentContainerStyle={stylesModal.centeredView}>
             <View style={{ ...stylesModal.modalView }}>
               {Object.keys(form).map((item: any) => (
-
-
-
-
-
                 <Text
                   key={item}
                   style={stylesModal.modalText}
-
-
                 >{`${form[item].label}: ${form[item].value} `}</Text>
-
-
-
-
-
-
               ))}
               <Pressable
                 style={[stylesModal.button, stylesModal.buttonClose]}

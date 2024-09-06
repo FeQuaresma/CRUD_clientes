@@ -5,18 +5,6 @@ import { TextInput } from "react-native";
 export default function Input({ field, onValueChange }: any) {
   let errorMsg: any;
   let fillForm: any;
-  
-  function handleFunctions(){
-    if (field.functions) {
-      for(let func in field.functions){
-        console.log(func)
-        switch (field.functions[func]) {
-          case "fillForm":
-            console.log("fillForm")
-        } 
-      }
-    }
-  }
 
   return (
     <TextInput
@@ -47,7 +35,6 @@ export default function Input({ field, onValueChange }: any) {
 
         //   !validateCPF(e) ? (errorMsg = "CPF inválido") : (errorMsg = "");
         // }
-        handleFunctions();
         onValueChange(e, fillForm, errorMsg);
       }}
     />

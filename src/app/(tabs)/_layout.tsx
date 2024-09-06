@@ -1,112 +1,72 @@
-import React, { useRef } from "react";
+import { useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import Home from ".";
 import Calculator from "./calc";
 import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
-import ModuleList from "@/src/components/moduleList";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import {
+  Module,
+  ModuleParam,
+  modulesParamV2,
+} from "@/src/constants/moduleParamV2";
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-const moduleArray: any = {};
 
-Object.keys(modulesParam).map((moduleObject) => {
-  moduleArray[moduleObject] = () => (
-    <Drawer.Navigator screenOptions={{ drawerPosition: "right" }}>
-      <Drawer.Screen
-        name={`${moduleObject}Home`}
-        options={{
-          title: `${moduleObject}Home`,
-          headerShown: false,
-        }}
-      >
-        {(e) => (
-          <ModuleIndex
-            {...e}
-            moduleName={modulesParam[moduleObject].moduleName}
-            style={{ color: "black" }}
-          />
-        )}
-      </Drawer.Screen>
+export default function MyApp() {
+  const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
-      {modulesParam[moduleObject]?.tableParam && (
-        <Drawer.Screen
-          name={`${moduleObject}List`}
-          options={{
-            title: `${moduleObject}List`,
-            headerShown: false,
-          }}
-        >
-          {(e) => (
-            <Stack.Navigator initialRouteName="ModuleList">
-              <Stack.Screen
-                name="ModuleList"
-                options={{
-                  headerShown: false,
-                }}
-                initialParams={{}}
-              >
-                {(f) => (
-                  <ModuleList
-                    {...e}
-                    {...f}
-                    moduleParam={modulesParam[moduleObject]}
-                    urlParam={modulesParam[moduleObject].tableURL}
-                  />
-                )}
-              </Stack.Screen>
+  function handleCallBack(
+    moduleObject: any,
+    page: any,
+    field: any,
+    value: any
+  ) {
+    console.log(appJson.modules[moduleObject].pages[page].components[field]);
+    setAppJson((prevForm: ModuleParam) => ({
+      ...prevForm,
+      modules: {
+        ...prevForm.modules,
+        [moduleObject]: {
+          ...prevForm.modules[moduleObject],
+          pages: {
+            ...prevForm.modules[moduleObject].pages,
+            [page]: {
+              ...prevForm.modules[moduleObject].pages[page],
+              components: {
+                ...prevForm.modules[moduleObject].pages[page].components,
+                [field]: {
+                  ...prevForm.modules[moduleObject].pages[page].components[
+                    field
+                  ],
+                  value: value,
+                },
+              },
+            },
+          },
+        },
+      },
+    }));
+  }
 
-              <Stack.Screen
-                name="FilterModal"
-                options={{
-                  headerShown: false,
-                }}
-              >
-                {(f) => (
-                  <ModuleForm
-                    {...e}
-                    {...f}
-                    formParam={modulesParam[moduleObject].tableParam}
-                    formMode="filter"
-                  />
-                )}
-              </Stack.Screen>
-            </Stack.Navigator>
-          )}
-        </Drawer.Screen>
-      )}
-      <Drawer.Screen
-        name={`${moduleObject}Form`}
-        options={{
-          title: `${moduleObject}Form`,
-          headerShown: false,
-        }}
-      >
-        {(e) => (
-          <ModuleForm
-            {...e}
-            formParam={modulesParam[moduleObject].formParam}
-            formMode="register"
-          />
-        )}
-      </Drawer.Screen>
-    </Drawer.Navigator>
-  );
-});
-
-export default function MyDrawer() {
   return (
     <Drawer.Navigator backBehavior="history">
       <Drawer.Screen
         name="Home"
-        component={Home}
         options={{
           title: "home",
           headerShown: false,
         }}
-      />
+      >
+        {(e: any) => (
+          <Home
+            {...e}
+            appJson={appJson}
+          />
+        )}
+      </Drawer.Screen>
       <Drawer.Screen
         name="Calculadora"
         component={Calculator}
@@ -115,16 +75,67 @@ export default function MyDrawer() {
           headerShown: false,
         }}
       />
-      {Object.keys(moduleArray).map((moduleObject) => (
+
+      {Object.keys(appJson.modules).map((moduleObject) => (
         <Drawer.Screen
           key={moduleObject}
           name={moduleObject}
-          component={moduleArray[moduleObject]}
           options={{
             title: modulesParam[moduleObject].moduleName,
             headerShown: false,
           }}
-        />
+        >
+          {(e) => (
+            // <ModuleCreator
+            //   {...e}
+            //   moduleData={appJson.modules[moduleObject]}
+            //   appJson={appJson}
+            //   setAppJson={(f:any) => {
+            //     handleCallBack(f);
+            //   }}
+            // />
+            <Drawer.Navigator screenOptions={{ drawerPosition: "right" }}>
+              <Drawer.Screen
+                name={`${appJson.modules[moduleObject].moduleName}Home`}
+                options={{
+                  title: `${appJson.modules[moduleObject].moduleName}Home`,
+                  headerShown: false,
+                }}
+              >
+                {(e) => (
+                  <ModuleIndex
+                    {...e}
+                    moduleName={appJson.modules[moduleObject].moduleName}
+                  />
+                )}
+              </Drawer.Screen>
+
+              {Object.keys(appJson.modules[moduleObject].pages).map((page) => (
+                <Drawer.Screen
+                  key={appJson.modules[moduleObject].pages[page].pageName}
+                  name={appJson.modules[moduleObject].pages[page].pageName}
+                  options={{
+                    title: appJson.modules[moduleObject].pages[page].pageName,
+                    headerShown: false,
+                  }}
+                >
+                  {(e) => (
+                    <ModuleForm
+                      {...e}
+                      formParam={
+                        appJson.modules[moduleObject].pages[page].components
+                      }
+                      formMode="register"
+                      callFather={(value: any, field: any) => {
+                        handleCallBack(moduleObject, page, field, value);
+                      }}
+                    />
+                  )}
+                </Drawer.Screen>
+              ))}
+            </Drawer.Navigator>
+          )}
+        </Drawer.Screen>
       ))}
     </Drawer.Navigator>
   );

@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState, useEffect } from "react";
 import {
   Text,
@@ -20,21 +19,20 @@ import {
   Grid,
   Table,
 } from "./fields";
-import { styles, stylesModal } from "../constants/styles";
+import { styles } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { executeFunction } from "../functions/executeJsonFunctions";
-
-
+import Button from "./fields/button";
 
 export default function ModuleForm({
   formParam,
   formMode,
   navigation,
   route,
+  callFather
 }: any) {
-  const [modalVisible, setModalVisible] = useState(false);
 
   const [form, setForm] = useState(formParam);
 
@@ -43,15 +41,6 @@ export default function ModuleForm({
   useEffect(() => {
     handleFilterCallBack(route.params);
   }, [route.params]);
-
-  useEffect(() => {
-    console.log("teste1");
-    if (errorCheckComplete) {
-      if (handleModal()) {
-        setModalVisible(true);
-      }
-    }
-  }, [errorCheckComplete]);
 
   function setErrorMsg() {
     Object.keys(form).map((field: string) => {
@@ -566,8 +555,8 @@ export default function ModuleForm({
                 )}
                 {form[field].inputType === "textBox" && (
                   <TextBox
-                    field={form[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    field={formParam[field]}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {form[field].inputType === "date" && dateInput(field)}
@@ -587,6 +576,12 @@ export default function ModuleForm({
                   <Table
                     moduleParam={form[field].table}
                     urlParam={form[field].table.tableSettings.tableURL}
+                  />
+                )}
+                {form[field].inputType === "button" && (
+                  <Button
+                    field={formParam[field]}
+                    callFather={(e:any)=>{callFather(e, field)}}
                   />
                 )}
 
@@ -626,40 +621,13 @@ export default function ModuleForm({
             </View>
           ))}
         </View>
-
-        <Modal
-          animationType="none"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            alert("Modal has been closed.");
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <ScrollView contentContainerStyle={stylesModal.centeredView}>
-            <View style={{ ...stylesModal.modalView }}>
-              {Object.keys(form).map((item: any) => (
-                <Text
-                  key={item}
-                  style={stylesModal.modalText}
-                >{`${form[item].label}: ${form[item].value} `}</Text>
-              ))}
-              <Pressable
-                style={[stylesModal.button, stylesModal.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={stylesModal.textStyle}>Preencher novamente</Text>
-              </Pressable>
-            </View>
-          </ScrollView>
-        </Modal>
       </ScrollView>
       <View style={{ width: "100%", alignItems: "center" }}>
         {formMode === "register" && (
           <Pressable
             style={styles.button}
             onPress={() => {
-              setModalVisible(true);
+              console.log(form);
             }}
           >
             <Text style={styles.buttonText}>Enviar Formulário</Text>

@@ -1,8 +1,6 @@
-import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Index from ".";
-import MyDrawer from "./(tabs)/_layout";
-import MyDrawer2 from "./(tabs2)/_layout";
+import MyApp from "./(tabs)/_layout";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,7 +14,7 @@ export default function App() {
       />
       <Stack.Screen
         name="(tabs)"
-        component={MyDrawer}
+        component={MyApp}
       />
     </Stack.Navigator>
   );

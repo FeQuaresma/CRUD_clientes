@@ -1,11 +1,11 @@
 import { Alert } from "react-native";
 
-export interface Json {
+export interface FunctionJson {
   functionCode: string;
   importedFunc: { [key: string]: { import: string; from: string } };
 }
 
-const json2: Json = {
+const json2: FunctionJson = {
   functionCode: "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
   importedFunc: {
     a: { import: "validateCPF", from: "validateCPF" },
@@ -14,7 +14,7 @@ const json2: Json = {
   },
 }
 
-export async function executeFunction(jsonImported: Json, variable: any = undefined) {
+export async function executeFunction(jsonImported: FunctionJson, variable: any = undefined) {
 
   const itemsArray:any[] = [];
   const itemsKeys:any[] = [];

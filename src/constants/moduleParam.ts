@@ -31,40 +31,24 @@ export interface TableParam {
   searchSign?: "equals" | "greater-than" | "less-than";
 }
 
-
-
-
-
-
 export type ModuleParam = {
   [key: string]: {
     moduleName: string;
     formParam: Param;
-
-
 
     tableURL?: string;
     tableParam?: {
       [key: string]: TableParam;
     };
     tableSort?: string;
-
-
-    
   };
 };
-
-
-
-
-
-
-
 
 export const modulesParam: ModuleParam = {
   cliente: {
     moduleName: "Cliente",
     formParam: {
+      table: params.table,
       cnpjcpf: params.cnpjcpf,
       idestrageiro: params.idestrageiro,
       suframa: params.suframa,
@@ -218,7 +202,7 @@ export const modulesParam: ModuleParam = {
         isVisible: false,
       },
     },
-    tableSort: "numero"
+    tableSort: "numero",
   },
   transportadora: {
     moduleName: "Transportadora",
@@ -272,12 +256,12 @@ export const modulesParam: ModuleParam = {
         isVisible: true,
         isNumber: true,
         footerLabel: { function: "sumEntries", value: "" },
-        
-        customHeaderCSS: {backgroundColor: "red"},
-        customCellCSS: {backgroundColor: "#00defc"},
-        customFooterCSS: {backgroundColor: "purple"},
-        customFooterTextCSS: {fontWeight: "900"},
-        customColumnTextCSS: {alignSelf: "flex-end"},
+
+        customHeaderCSS: { backgroundColor: "red" },
+        customCellCSS: { backgroundColor: "#00defc" },
+        customFooterCSS: { backgroundColor: "purple" },
+        customFooterTextCSS: { fontWeight: "900" },
+        customColumnTextCSS: { alignSelf: "flex-end" },
       },
       notafiscal: {
         label: "Nota Fiscal",
@@ -335,7 +319,7 @@ export const modulesParam: ModuleParam = {
         footerLabel: { function: "sumTotal", value: "" },
         zeroTrim: true,
         customInputCSS: { width: 220 },
-        searchSign: "equals"
+        searchSign: "equals",
       },
       formapagamento: {
         label: "Forma Pagamento",

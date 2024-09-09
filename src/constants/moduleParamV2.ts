@@ -30,6 +30,7 @@ export interface pageParam extends Param {
   };
   quebraDeLinha?: boolean;
   table?: TableInterface;
+  errorMsg?: string;
 }
 
 export interface TableInterface {
@@ -69,7 +70,7 @@ export type Module = {
     [key: string]: {
       pageName: string;
       pageSettings?: { CSS: {} };
-      components: { [key: string]: FormParam };
+      components: { [key: string]: pageParam };
     };
   };
 };

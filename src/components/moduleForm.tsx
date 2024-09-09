@@ -31,10 +31,11 @@ export default function ModuleForm({
   formMode,
   navigation,
   route,
-  callFather
+  callFather,
+  setFormParam
 }: any) {
 
-  const [form, setForm] = useState(formParam);
+  // const [form, setForm] = useState(formParam);
 
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
@@ -43,17 +44,17 @@ export default function ModuleForm({
   }, [route.params]);
 
   function setErrorMsg() {
-    Object.keys(form).map((field: string) => {
-      if (form[field].value === "" && form[field].isRequired) {
-        setForm((prevForm: any) => ({
+    Object.keys(formParam).map((field: string) => {
+      if (formParam[field].value === "" && formParam[field].isRequired) {
+        setFormParam((prevForm: any) => ({
           ...prevForm,
           [field]: {
             ...prevForm[field],
             errorMsg: "Campo obrigatório",
           },
         }));
-      } else if (form[field].errorMsg === "Campo obrigatório") {
-        setForm((prevForm: any) => ({
+      } else if (formParam[field].errorMsg === "Campo obrigatório") {
+        setFormParam((prevForm: any) => ({
           ...prevForm,
           [field]: {
             ...prevForm[field],
@@ -66,8 +67,8 @@ export default function ModuleForm({
   }
 
   function handleModal() {
-    for (const field of Object.keys(form)) {
-      if (form[field].errorMsg != "") {
+    for (const field of Object.keys(formParam)) {
+      if (formParam[field].errorMsg != "") {
         return false;
       }
     }
@@ -80,14 +81,14 @@ export default function ModuleForm({
         return (
           <View>
             <Date
-              field={form[field]}
+              field={formParam[field]}
               dateOrder="start"
               onValueChange={(e: any, type: any) =>
                 handleInputChange(e, field, undefined, undefined, type)
               }
             />
             <Date
-              field={form[field]}
+              field={formParam[field]}
               dateOrder="end"
               onValueChange={(e: any, type: any) => {
                 handleInputChange(e, field, undefined, undefined, type);
@@ -98,7 +99,7 @@ export default function ModuleForm({
       case "register":
         return (
           <Date
-            field={form[field].value}
+            field={formParam[field].value}
             onValueChange={(e: any) => handleInputChange(e, field)}
           />
         );
@@ -142,16 +143,16 @@ export default function ModuleForm({
     dateOrder?: string
   ) {
     // Máscara de input
-    if (form[field].masks) {
-      if (form[field].zeroTrim) {
+    if (formParam[field].masks) {
+      if (formParam[field].zeroTrim) {
         e = e.replace(/\D/g, "").replace(/^0+/, "");
       } else {
         e = e.replace(/\D/g, "");
       }
-      let eMasked = maskedValue(e, form[field].masks);
+      let eMasked = maskedValue(e, formParam[field].masks);
 
       if (dateOrder) {
-        setForm((prevForm: any) => ({
+        setFormParam((prevForm: any) => ({
           ...prevForm,
           [field]: {
             ...prevForm[field],
@@ -162,7 +163,7 @@ export default function ModuleForm({
           },
         }));
       } else {
-        setForm((prevForm: any) => ({
+        setFormParam((prevForm: any) => ({
           ...prevForm,
           [field]: {
             ...prevForm[field],
@@ -176,7 +177,7 @@ export default function ModuleForm({
     //inserir dados no input
 
     if (dateOrder) {
-      setForm((prevForm: any) => ({
+      setFormParam((prevForm: any) => ({
         ...prevForm,
         [field]: {
           ...prevForm[field],
@@ -187,7 +188,7 @@ export default function ModuleForm({
         },
       }));
     } else {
-      setForm((prevForm: any) => ({
+      setFormParam((prevForm: any) => ({
         ...prevForm,
         [field]: {
           ...prevForm[field],
@@ -199,8 +200,8 @@ export default function ModuleForm({
     // prenchimento automatico de campos
     if (fillForm) {
       Object.keys(fillForm).map((formField) => {
-        if (form[formField]) {
-          setForm((prevForm: any) => ({
+        if (formParam[formField]) {
+          setFormParam((prevForm: any) => ({
             ...prevForm,
             [formField]: {
               ...prevForm[formField],
@@ -212,8 +213,8 @@ export default function ModuleForm({
     }
 
     // inserir uma mensagem vermelha acima do input
-    if (form[field].errorMsg != undefined) {
-      setForm((prevForm: any) => ({
+    if (formParam[field].errorMsg != undefined) {
+      setFormParam((prevForm: any) => ({
         ...prevForm,
         [field]: {
           ...prevForm[field],
@@ -227,12 +228,12 @@ export default function ModuleForm({
     let formData: any = {};
     let colVisibility: string[] = [];
 
-    Object.keys(form).map((key) => {
-      let value = form[key].value;
-      form[key].isCurrency && (value = (value / 100).toFixed(2));
-      if (form[key].value !== "" && form[key].inputType !== "date") {
-        if (form[key].searchSign) {
-          switch (form[key].searchSign) {
+    Object.keys(formParam).map((key) => {
+      let value = formParam[key].value;
+      formParam[key].isCurrency && (value = (value / 100).toFixed(2));
+      if (formParam[key].value !== "" && formParam[key].inputType !== "date") {
+        if (formParam[key].searchSign) {
+          switch (formParam[key].searchSign) {
             case "equals":
               formData[key] = value;
               break;
@@ -248,7 +249,7 @@ export default function ModuleForm({
         }
       }
 
-      if (form[key].inputType === "date") {
+      if (formParam[key].inputType === "date") {
         if (
           !(
             typeof value === "object" &&
@@ -268,7 +269,7 @@ export default function ModuleForm({
         }
       }
 
-      if (!form[key].isVisible) {
+      if (!formParam[key].isVisible) {
         colVisibility.push(key);
       }
     });
@@ -279,62 +280,62 @@ export default function ModuleForm({
   function handleFilterCallBack(fillForm: any) {
     if (fillForm?.formData) {
       Object.keys(fillForm.formData).map((formField) => {
-        if (form[formField].inputType === "date") {
-          setForm((prevForm: any) => ({
+        if (formParam[formField].inputType === "date") {
+          setFormParam((prevForm: any) => ({
             ...prevForm,
             [formField]: {
               ...prevForm[formField],
 
               value: maskedValueDate(
                 fillForm.formData[formField],
-                form[formField].callbackMask
+                formParam[formField].callbackMask
               ),
               valueMasked: maskedValueDate(
                 fillForm.formData[formField],
-                form[formField].masks[0]
+                formParam[formField].masks[0]
               ),
             },
           }));
-        } else if (form[formField].searchSign) {
+        } else if (formParam[formField].searchSign) {
           let cleanValue = fillForm.formData[formField].replace(/\D/g, "");
 
           switch (fillForm.formData[formField][0]) {
             case ">":
-              setForm((prevForm: any) => ({
+              setFormParam((prevForm: any) => ({
                 ...prevForm,
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  valueMasked: maskedValue(cleanValue,formParam[formField].masks),
                   searchSign: "greater-than",
                 },
               }));
               break;
             case "<":
-              setForm((prevForm: any) => ({
+              setFormParam((prevForm: any) => ({
                 ...prevForm,
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  valueMasked: maskedValue(cleanValue, formParam[formField].masks),
                   searchSign: "less-than",
                 },
               }));
               break;
             default:
-              setForm((prevForm: any) => ({
+              setFormParam((prevForm: any) => ({
                 ...prevForm,
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue, form[formField].masks),
+                  valueMasked: maskedValue(cleanValue, formParam[formField].masks),
                   searchSign: "equals",
                 },
               }));
               break;
           }
-        } else if (form[formField]) {
-          setForm((prevForm: any) => ({
+        } else if (formParam[formField]) {
+          setFormParam((prevForm: any) => ({
             ...prevForm,
             [formField]: {
               ...prevForm[formField],
@@ -345,9 +346,9 @@ export default function ModuleForm({
       });
     }
     if (fillForm?.colVisibility) {
-      Object.keys(form).forEach((key) => {
+      Object.keys(formParam).forEach((key) => {
         if (fillForm.colVisibility.includes(key)) {
-          setForm((prevForm: any) => ({
+          setFormParam((prevForm: any) => ({
             ...prevForm,
             [key]: {
               ...prevForm[key],
@@ -355,7 +356,7 @@ export default function ModuleForm({
             },
           }));
         } else {
-          setForm((prevForm: any) => ({
+          setFormParam((prevForm: any) => ({
             ...prevForm,
             [key]: {
               ...prevForm[key],
@@ -368,8 +369,8 @@ export default function ModuleForm({
   }
 
   function handleVisibilityChange(field: string) {
-    if (form[field].isVisible) {
-      setForm((prevForm: any) => ({
+    if (formParam[field].isVisible) {
+      setFormParam((prevForm: any) => ({
         ...prevForm,
         [field]: {
           ...prevForm[field],
@@ -377,7 +378,7 @@ export default function ModuleForm({
         },
       }));
     } else {
-      setForm((prevForm: any) => ({
+      setFormParam((prevForm: any) => ({
         ...prevForm,
         [field]: {
           ...prevForm[field],
@@ -387,14 +388,14 @@ export default function ModuleForm({
     }
   }
 
-  function handleResetForm() {
-    setForm(formParam);
+  function handleResetFormParam() {
+    setFormParam(formParam);
   }
 
   function onChangeSign(field: any) {
     let changeTo = "";
 
-    switch (form[field].searchSign) {
+    switch (formParam[field].searchSign) {
       case "equals":
         changeTo = "greater-than";
         break;
@@ -406,7 +407,7 @@ export default function ModuleForm({
         break;
     }
 
-    setForm((prevForm: any) => ({
+    setFormParam((prevForm: any) => ({
       ...prevForm,
       [field]: {
         ...prevForm[field],
@@ -462,14 +463,14 @@ export default function ModuleForm({
             justifyContent: "center",
           }}
         >
-          {Object.keys(form).map((field) => (
+          {Object.keys(formParam).map((field) => (
             <View
               key={field}
               style={{
                 margin: 6,
               }}
             >
-              {form[field].label && (
+              {formParam[field].label && (
                 <View
                   style={{
                     margin: 2,
@@ -479,12 +480,12 @@ export default function ModuleForm({
                   }}
                 >
                   <Text style={styles.inputLabel}>
-                    {form[field].label}
-                    {form[field].isRequired && "*"}
+                    {formParam[field].label}
+                    {formParam[field].isRequired && "*"}
                   </Text>
                   {formMode === "filter" && (
                     <View style={{ flexDirection: "row" }}>
-                      {form[field].isVisible && (
+                      {formParam[field].isVisible && (
                         <Pressable
                           style={{
                             height: 22,
@@ -501,7 +502,7 @@ export default function ModuleForm({
                           <Ionicons name="eye" size={15} color="white" />
                         </Pressable>
                       )}
-                      {!form[field].isVisible && (
+                      {!formParam[field].isVisible && (
                         <Pressable
                           style={{
                             height: 22,
@@ -523,69 +524,69 @@ export default function ModuleForm({
                 </View>
               )}
 
-              {form[field].errorMsg && (
-                <Text style={styles.errorMsg}>{form[field].errorMsg}</Text>
+              {formParam[field].errorMsg && (
+                <Text style={styles.errorMsg}>{formParam[field].errorMsg}</Text>
               )}
               <View style={{ flexDirection: "row" }}>
-                {form[field].inputType === "input" && (
+                {formParam[field].inputType === "input" && (
                   <Input
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any, fillForm: any, errorMsg: any) =>
                       handleInputChange(e, field, fillForm, errorMsg)
                     }
                   />
                 )}
-                {form[field].inputType === "select" && (
+                {formParam[field].inputType === "select" && (
                   <Select
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
-                {form[field].inputType === "multiSelect" && (
+                {formParam[field].inputType === "multiSelect" && (
                   <MultiSelect
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
-                {form[field].inputType === "boolean" && (
+                {formParam[field].inputType === "boolean" && (
                   <Boolean
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
-                {form[field].inputType === "textBox" && (
+                {formParam[field].inputType === "textBox" && (
                   <TextBox
                     field={formParam[field]}
                     onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
-                {form[field].inputType === "date" && dateInput(field)}
-                {form[field].inputType === "file" && (
+                {formParam[field].inputType === "date" && dateInput(field)}
+                {formParam[field].inputType === "file" && (
                   <File
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
-                {form[field].inputType === "grid" && (
+                {formParam[field].inputType === "grid" && (
                   <Grid
-                    field={form[field]}
+                    field={formParam[field]}
                     onValueChange={(e: any) => handleInputChange(e, field)}
                   />
                 )}
-                {form[field].inputType === "table" && (
+                {formParam[field].inputType === "table" && (
                   <Table
-                    moduleParam={form[field].table}
-                    urlParam={form[field].table.tableSettings.tableURL}
+                    moduleParam={formParam[field].table}
+                    urlParam={formParam[field].table.tableSettings.tableURL}
                   />
                 )}
-                {form[field].inputType === "button" && (
+                {formParam[field].inputType === "button" && (
                   <Button
                     field={formParam[field]}
                     callFather={(e:any)=>{callFather(e, field)}}
                   />
                 )}
 
-                {form[field].searchSign && (
+                {formParam[field].searchSign && (
                   <Pressable
                     style={{
                       height: 30,
@@ -597,13 +598,13 @@ export default function ModuleForm({
                     onPress={() => onChangeSign(field)}
                   >
                     <FontAwesome5
-                      name={form[field].searchSign}
+                      name={formParam[field].searchSign}
                       size={18}
                       color="white"
                     />
                   </Pressable>
                 )}
-                {form[field].function && (
+                {formParam[field].function && (
                   <Pressable
                     style={{
                       height: 30,
@@ -612,7 +613,7 @@ export default function ModuleForm({
                       alignItems: "center",
                       justifyContent: "center",
                     }}
-                    onPress={() => executeFunction(form[field].function, form)}
+                    onPress={() => executeFunction(formParam[field].function, formParam)}
                   >
                     <FontAwesome5 name="circle" size={18} color="white" />
                   </Pressable>
@@ -627,7 +628,7 @@ export default function ModuleForm({
           <Pressable
             style={styles.button}
             onPress={() => {
-              console.log(form);
+              console.log(formParam);
             }}
           >
             <Text style={styles.buttonText}>Enviar Formulário</Text>
@@ -652,7 +653,7 @@ export default function ModuleForm({
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => handleResetForm()}
+              onPress={() => handleResetFormParam()}
             >
               <MaterialCommunityIcons name="broom" size={26} color="white" />
             </Pressable>
@@ -666,7 +667,7 @@ export default function ModuleForm({
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => console.log(form.total)}
+              onPress={() => console.log(formParam.total)}
             >
               <MaterialCommunityIcons name="circle" size={26} color="white" />
             </Pressable>

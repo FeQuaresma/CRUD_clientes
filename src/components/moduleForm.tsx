@@ -32,9 +32,10 @@ export default function ModuleForm({
   navigation,
   route,
   callFather,
-  setFormParam
+  callFatherTable,
+  callFatherButton,
+  setFormParam,
 }: any) {
-
   // const [form, setForm] = useState(formParam);
 
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
@@ -306,7 +307,10 @@ export default function ModuleForm({
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue,formParam[formField].masks),
+                  valueMasked: maskedValue(
+                    cleanValue,
+                    formParam[formField].masks
+                  ),
                   searchSign: "greater-than",
                 },
               }));
@@ -317,7 +321,10 @@ export default function ModuleForm({
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue, formParam[formField].masks),
+                  valueMasked: maskedValue(
+                    cleanValue,
+                    formParam[formField].masks
+                  ),
                   searchSign: "less-than",
                 },
               }));
@@ -328,7 +335,10 @@ export default function ModuleForm({
                 [formField]: {
                   ...prevForm[formField],
                   value: cleanValue,
-                  valueMasked: maskedValue(cleanValue, formParam[formField].masks),
+                  valueMasked: maskedValue(
+                    cleanValue,
+                    formParam[formField].masks
+                  ),
                   searchSign: "equals",
                 },
               }));
@@ -461,13 +471,19 @@ export default function ModuleForm({
             flexDirection: "row",
             flexWrap: "wrap",
             justifyContent: "center",
+            borderWidth: 1,
+            borderColor: "yellow",
           }}
         >
+
           {Object.keys(formParam).map((field) => (
             <View
               key={field}
               style={{
                 margin: 6,
+                borderWidth: 1,
+                borderColor: "blue",
+                alignItems: "center",
               }}
             >
               {formParam[field].label && (
@@ -477,6 +493,9 @@ export default function ModuleForm({
                     flexDirection: "row",
                     justifyContent: "space-between",
                     alignItems: "center",
+                    width: "100%",
+                    borderWidth: 1,
+                    borderColor: "grey"
                   }}
                 >
                   <Text style={styles.inputLabel}>
@@ -532,26 +551,26 @@ export default function ModuleForm({
                   <Input
                     field={formParam[field]}
                     onValueChange={(e: any, fillForm: any, errorMsg: any) =>
-                      handleInputChange(e, field, fillForm, errorMsg)
+                      callFather(e, field)
                     }
                   />
                 )}
                 {formParam[field].inputType === "select" && (
                   <Select
                     field={formParam[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "multiSelect" && (
                   <MultiSelect
                     field={formParam[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "boolean" && (
                   <Boolean
                     field={formParam[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "textBox" && (
@@ -564,25 +583,28 @@ export default function ModuleForm({
                 {formParam[field].inputType === "file" && (
                   <File
                     field={formParam[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "grid" && (
                   <Grid
                     field={formParam[field]}
-                    onValueChange={(e: any) => handleInputChange(e, field)}
+                    onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "table" && (
                   <Table
                     moduleParam={formParam[field].table}
                     urlParam={formParam[field].table.tableSettings.tableURL}
+                    onValueChange={(e: any, whichTable: string) => callFatherTable(e, field, whichTable)}
                   />
                 )}
                 {formParam[field].inputType === "button" && (
                   <Button
                     field={formParam[field]}
-                    callFather={(e:any)=>{callFather(e, field)}}
+                    onPress={() => {
+                      callFatherButton(field);
+                    }}
                   />
                 )}
 
@@ -613,7 +635,9 @@ export default function ModuleForm({
                       alignItems: "center",
                       justifyContent: "center",
                     }}
-                    onPress={() => executeFunction(formParam[field].function, formParam)}
+                    onPress={() =>
+                      executeFunction(formParam[field].function, formParam)
+                    }
                   >
                     <FontAwesome5 name="circle" size={18} color="white" />
                   </Pressable>
@@ -621,9 +645,10 @@ export default function ModuleForm({
               </View>
             </View>
           ))}
-        </View>
+        
+      </View>
       </ScrollView>
-      <View style={{ width: "100%", alignItems: "center" }}>
+      {/* <View style={{ width: "100%", alignItems: "center" }}>
         {formMode === "register" && (
           <Pressable
             style={styles.button}
@@ -673,7 +698,7 @@ export default function ModuleForm({
             </Pressable>
           </View>
         )}
-      </View>
+      </View> */}
     </KeyboardAvoidingView>
   );
 }

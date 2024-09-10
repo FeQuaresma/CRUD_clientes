@@ -1,5 +1,5 @@
 import { FunctionJson } from "../functions/executeJsonFunctions";
-import { TableInterface } from "./moduleParamV2";
+import { pageParam, TableInterface } from "./moduleParamV2";
 
 export interface FormParam {
   label?: string;
@@ -27,7 +27,7 @@ export interface FormParam {
 }
 
 export type Param = {
-  [key: string]: FormParam;
+  [key: string]: pageParam;
 };
 
 export const params: Param = {
@@ -37,7 +37,10 @@ export const params: Param = {
     inputMode: "numeric",
     value: "",
     placeholder: "CPF ou CNPJ",
-    masks: ["###.###.###-##", "##.###.###/####-##"],
+    masks: [
+      [/^(\d{0,2})(\d{0,3})(\d{0,3})(\d{0,4})(\d{0,2})$/, "$1.$2.$3/$4-$5", 12],
+      [/^(\d{0,3})(\d{0,3})(\d{0,3})(\d{0,2})$/, "$1.$2.$3-$4", 1],
+    ],
     valueMasked: "",
     maxLength: 18,
     isRequired: true,
@@ -72,6 +75,7 @@ export const params: Param = {
       tableSettings: {
         hasSearchBar: false,
         tableURL: "https://www.caae.org.br/teste/testeData.json",
+
       },
       tableParam: {
         numero: {
@@ -165,7 +169,9 @@ export const params: Param = {
           placeholder: "00.00000-0000",
           masks: [
             [/^(\d{2})(\d{1,5})(\d{1,4})$/, "$1.$2-$3", 11],
-            [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 1],
+            [/^(\d{0,2})(\d{0,4})(\d{0,4})$/, "$1.$2-$3", 10],
+            [/^(\d{0,5})(\d{0,4})$/, "$1-$2", 9],
+            [/^(\d{0,4})(\d{0,4})$/, "$1-$2", 1],
           ],
           customInputCSS: { width: 160 },
           value: "",
@@ -269,7 +275,9 @@ export const params: Param = {
     inputType: "input",
     inputMode: "numeric",
     placeholder: "00000-000",
-    masks: ["#####-###"],
+    masks: [
+      [/^(\d{0,5})(\d{0,3})$/, "$1-$2", 1],
+    ],
     value: "",
     isRequired: true,
     isEditable: true,

@@ -6,17 +6,141 @@ import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import {
-  Module,
-  ModuleParam,
-  modulesParamV2,
-} from "@/src/constants/moduleParamV2";
+import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
+import { executeFunction } from "@/src/functions/executeJsonFunctions";
 
-const Stack = createNativeStackNavigator();
+export interface FunctionJson {
+  functionCode: string;
+  importedFunc: { [key: string]: { import: string; from: string } };
+}
 const Drawer = createDrawerNavigator();
 
 export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
+
+  const funcJsonTemp = `console.log("primeira flag");
+
+  const newRow = [{
+numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
+item: appJson.modules.pedido.pages.cadastro.components.item.value,
+quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
+}];
+
+console.log("segunda flag");
+
+setAppJson((prevForm) => ({
+...prevForm,
+modules: {
+...prevForm.modules,
+pedido: {
+...prevForm.modules.pedido,
+pages: {
+...prevForm.modules.pedido.pages,
+cadastro: {
+...prevForm.modules.pedido.pages.cadastro,
+components: {
+...prevForm.modules.pedido.pages.cadastro.components,
+tableNomeProprio: {
+...prevForm.modules.pedido.pages.cadastro.components.table,
+table: {
+  ...prevForm.modules.pedido.pages.cadastro.components.table.table,
+  dataOrigin: prevForm.modules.pedido.pages.cadastro.components.table.table.dataOrigin.concat(newRow),
+  dataTable: prevForm.modules.pedido.pages.cadastro.components.table.table.dataTable.concat(newRow),
+},
+},
+},
+},
+},
+},
+},
+}));
+  console.log("terceira Flag");
+`;
+
+const funcJsonTemp2 = `console.log("primeira flag");
+const newRow = {
+numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
+item: appJson.modules.pedido.pages.cadastro.components.item.value,
+quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
+};
+console.log("segunda flag");
+console.log({...appJson.modules.pedido.pages.cadastro.components.table.table.dataTable,...newRow})
+console.log("terceira Flag");
+`;
+
+  function handleCallBackTable(
+    moduleObject: any,
+    page: any,
+    field: any,
+    value: any,
+    whichTable: any
+  ) {
+    switch (whichTable) {
+      case "Origin":
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      table: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components[field].table,
+                        dataOrigin: prevForm.modules[moduleObject].pages[page]
+                        .components[field].table?.dataOrigin?.concat(value),
+                        dataTable: prevForm.modules[moduleObject].pages[page]
+                        .components[field].table?.dataTable?.concat(value),
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+        break;
+      case "Table":
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      table: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components[field].table,
+                        dataTable: value,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+        break;
+    }
+  }
 
   function handleCallBack(
     moduleObject: any,
@@ -28,154 +152,20 @@ export default function MyApp() {
     dateOrder?: string
   ) {
     if (value) {
-      handleInputChange(moduleObject, page, field, value, fillForm, errorMsg, dateOrder);
-    }
-  }
+      if (appJson.modules[moduleObject].pages[page].components[field].masks) {
+        if (
+          appJson.modules[moduleObject].pages[page].components[field].zeroTrim
+        ) {
+          value = value.replace(/\D/g, "").replace(/^0+/, "");
+        } else {
+          value = value.replace(/\D/g, "");
+        }
+        let eMasked = maskedValue(
+          value,
+          appJson.modules[moduleObject].pages[page].components[field].masks
+        );
 
-  function handleInputChange(
-    moduleObject: any,
-    page: any,
-    field: any,
-    value?: any,
-    fillForm?: any,
-    errorMsg?: any,
-    dateOrder?: string
-  ) {
-    // Máscara de input
-    if (appJson.modules[moduleObject].pages[page].components[field].masks) {
-      if (
-        appJson.modules[moduleObject].pages[page].components[field].zeroTrim
-      ) {
-        value = value.replace(/\D/g, "").replace(/^0+/, "");
-      } else {
-        value = value.replace(/\D/g, "");
-      }
-      let eMasked = maskedValue(
-        value,
-        appJson.modules[moduleObject].pages[page].components[field].masks
-      );
-
-      if (dateOrder) {
-        setAppJson((prevForm: ModuleParam) => ({
-          ...prevForm,
-          modules: {
-            ...prevForm.modules,
-            [moduleObject]: {
-              ...prevForm.modules[moduleObject],
-              pages: {
-                ...prevForm.modules[moduleObject].pages,
-                [page]: {
-                  ...prevForm.modules[moduleObject].pages[page],
-                  components: {
-                    ...prevForm.modules[moduleObject].pages[page].components,
-                    [field]: {
-                      ...prevForm.modules[moduleObject].pages[page].components[
-                        field
-                      ],
-                      valueMasked: {
-                        ...prevForm.modules[moduleObject].pages[page]
-                          .components[field],
-                        [dateOrder]: eMasked,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        }));
-      } else {
-        setAppJson((prevForm: ModuleParam) => ({
-          ...prevForm,
-          modules: {
-            ...prevForm.modules,
-            [moduleObject]: {
-              ...prevForm.modules[moduleObject],
-              pages: {
-                ...prevForm.modules[moduleObject].pages,
-                [page]: {
-                  ...prevForm.modules[moduleObject].pages[page],
-                  components: {
-                    ...prevForm.modules[moduleObject].pages[page].components,
-                    [field]: {
-                      ...prevForm.modules[moduleObject].pages[page].components[
-                        field
-                      ],
-                      valueMasked: eMasked,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        }));
-        value = value.replace(/\D/g, "");
-      }
-    }
-
-    //inserir dados no input
-
-    if (dateOrder) {
-      setAppJson((prevForm: any) => ({
-        ...prevForm,
-        modules: {
-          ...prevForm.modules,
-          [moduleObject]: {
-            ...prevForm.modules[moduleObject],
-            pages: {
-              ...prevForm.modules[moduleObject].pages,
-              [page]: {
-                ...prevForm.modules[moduleObject].pages[page],
-                components: {
-                  ...prevForm.modules[moduleObject].pages[page].components,
-                  [field]: {
-                    ...prevForm.modules[moduleObject].pages[page].components[
-                      field
-                    ],
-                    value: {
-                      ...prevForm.modules[moduleObject].pages[page].components[
-                        field
-                      ].value,
-                      [dateOrder]: value,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      }));
-    } else {
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        modules: {
-          ...prevForm.modules,
-          [moduleObject]: {
-            ...prevForm.modules[moduleObject],
-            pages: {
-              ...prevForm.modules[moduleObject].pages,
-              [page]: {
-                ...prevForm.modules[moduleObject].pages[page],
-                components: {
-                  ...prevForm.modules[moduleObject].pages[page].components,
-                  [field]: {
-                    ...prevForm.modules[moduleObject].pages[page].components[
-                      field
-                    ],
-                    value: value,
-                  },
-                },
-              },
-            },
-          },
-        },
-      }));
-    }
-
-    // prenchimento automatico de campos
-    if (fillForm) {
-      Object.keys(fillForm).map((formField) => {
-        if (appJson.modules[moduleObject].pages[page].components[formField]) {
+        if (dateOrder) {
           setAppJson((prevForm: ModuleParam) => ({
             ...prevForm,
             modules: {
@@ -188,10 +178,14 @@ export default function MyApp() {
                     ...prevForm.modules[moduleObject].pages[page],
                     components: {
                       ...prevForm.modules[moduleObject].pages[page].components,
-                      [formField]: {
+                      [field]: {
                         ...prevForm.modules[moduleObject].pages[page]
-                          .components[formField],
-                        value: value,
+                          .components[field],
+                        valueMasked: {
+                          ...prevForm.modules[moduleObject].pages[page]
+                            .components[field],
+                          [dateOrder]: eMasked,
+                        },
                       },
                     },
                   },
@@ -199,39 +193,184 @@ export default function MyApp() {
               },
             },
           }));
+        } else {
+          setAppJson((prevForm: ModuleParam) => ({
+            ...prevForm,
+            modules: {
+              ...prevForm.modules,
+              [moduleObject]: {
+                ...prevForm.modules[moduleObject],
+                pages: {
+                  ...prevForm.modules[moduleObject].pages,
+                  [page]: {
+                    ...prevForm.modules[moduleObject].pages[page],
+                    components: {
+                      ...prevForm.modules[moduleObject].pages[page].components,
+                      [field]: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components[field],
+                        valueMasked: eMasked,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          }));
+          value = value.replace(/\D/g, "");
         }
-      });
-    }
+      }
 
-    // inserir uma mensagem vermelha acima do input
-    if (
-      appJson.modules[moduleObject].pages[page].components[field].errorMsg !=
-      undefined
-    ) {
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        modules: {
-          ...prevForm.modules,
-          [moduleObject]: {
-            ...prevForm.modules[moduleObject],
-            pages: {
-              ...prevForm.modules[moduleObject].pages,
-              [page]: {
-                ...prevForm.modules[moduleObject].pages[page],
-                components: {
-                  ...prevForm.modules[moduleObject].pages[page].components,
-                  [field]: {
-                    ...prevForm.modules[moduleObject].pages[page].components[
-                      field
-                    ],
-                    errorMsg: errorMsg,
+      //inserir dados no input
+
+      if (dateOrder) {
+        setAppJson((prevForm: any) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      value: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components[field].value,
+                        [dateOrder]: value,
+                      },
+                    },
                   },
                 },
               },
             },
           },
-        },
-      }));
+        }));
+      } else {
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      value: value,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+      }
+
+      // prenchimento automatico de campos
+      if (fillForm) {
+        Object.keys(fillForm).map((formField) => {
+          if (appJson.modules[moduleObject].pages[page].components[formField]) {
+            setAppJson((prevForm: ModuleParam) => ({
+              ...prevForm,
+              modules: {
+                ...prevForm.modules,
+                [moduleObject]: {
+                  ...prevForm.modules[moduleObject],
+                  pages: {
+                    ...prevForm.modules[moduleObject].pages,
+                    [page]: {
+                      ...prevForm.modules[moduleObject].pages[page],
+                      components: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components,
+                        [formField]: {
+                          ...prevForm.modules[moduleObject].pages[page]
+                            .components[formField],
+                          value: value,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            }));
+          }
+        });
+      }
+
+      // inserir uma mensagem vermelha acima do input
+      if (
+        appJson.modules[moduleObject].pages[page].components[field].errorMsg !=
+        undefined
+      ) {
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      errorMsg: errorMsg,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+      }
+    }
+  }
+
+  function handleCallBackButton(moduleObject: any, page: any, field: any) {
+
+
+    const funcCode =
+      appJson.modules[moduleObject].pages[page].components[field]?.function
+        ?.functionCode;
+
+    if (funcCode) {
+      // Se houver função, executa
+      executeFunction(funcJsonTemp, appJson, setAppJson);
+    } else {
+      console.error("No functionCode found in the component.");
+    }
+  }
+
+  async function executeFunction(
+    jsonImported: string,
+    appJson: any,
+    setAppJson: any
+  ) {
+    try {
+      // Criar e executar a função dinamicamente
+      const func = new Function("appJson", "setAppJson", jsonImported);
+      console.log("Executing Function: ", func.toString());
+      func(appJson, setAppJson);
+    } catch (error) {
+      console.error("Error executing functionCode: ", error);
     }
   }
 
@@ -336,6 +475,22 @@ export default function MyApp() {
                       formMode="register"
                       callFather={(value: any, field: any) => {
                         handleCallBack(moduleObject, page, field, value);
+                      }}
+                      callFatherTable={(
+                        value: any,
+                        field: any,
+                        whichTable: string
+                      ) => {
+                        handleCallBackTable(
+                          moduleObject,
+                          page,
+                          field,
+                          value,
+                          whichTable
+                        );
+                      }}
+                      callFatherButton={(field: any) => {
+                        handleCallBackButton(moduleObject, page, field);
                       }}
                     />
                   )}

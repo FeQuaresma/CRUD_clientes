@@ -1,10 +1,21 @@
+import { DataRow } from "../components/fields/table";
 import { FunctionJson } from "../functions/executeJsonFunctions";
 import { FormParam, params } from "./params";
 
 export interface Param {
   label?: string;
-  inputType: string;
-  inputMode?: string;
+  inputType:
+    | "input"
+    | "select"
+    | "multiSelect"
+    | "boolean"
+    | "date"
+    | "file"
+    | "grid"
+    | "table"
+    | "button"
+    | "textBox";
+  inputMode?: "numeric" | "text" | "tel";
   value: string | { start: string; end: string };
   placeholder?: string;
   masks?: string[] | [RegExp, string, number][];
@@ -34,7 +45,10 @@ export interface pageParam extends Param {
 }
 
 export interface TableInterface {
+  dataTable?: DataRow[];
+  dataOrigin?: DataRow[];
   tableSettings: {
+    title?: string;
     tableCss?: {};
     tableSort?: string;
     tableURL?: string;
@@ -88,7 +102,7 @@ export const modulesParamV2: ModuleParam = {
         cadastro: {
           pageName: "Cadastro",
           components: {
-            table: params.table,
+            // table: params.table,
             cnpjcpf: params.cnpjcpf,
             idestrageiro: params.idestrageiro,
             suframa: params.suframa,
@@ -129,6 +143,138 @@ export const modulesParamV2: ModuleParam = {
               maxLength: 60,
               isRequired: false,
               isEditable: true,
+            },
+          },
+        },
+      },
+    },
+    pedido: {
+      moduleName: "Pedidos",
+      pages: {
+        cadastro: {
+          pageName: "Cadastro de Pedido",
+          components: {
+            numero: {
+              label: "Número do pedido",
+              inputType: "input",
+              isEditable: true,
+              isRequired: false,
+              value: "",
+              maxLength: 6,
+              inputMode: "numeric",
+              isNumber: true,
+            },
+            item: {
+              label: "Produto",
+              inputType: "input",
+              isEditable: true,
+              isRequired: false,
+              value: "",
+              maxLength: 30,
+              inputMode: "text",
+            },
+            quantidade: {
+              label: "Quantidade",
+              inputType: "input",
+              isEditable: true,
+              isRequired: false,
+              value: "",
+              maxLength: 6,
+              inputMode: "numeric",
+              isNumber: true,
+            },
+            table: {
+              value: "",
+              inputType: "table",
+              isRequired: false,
+              isEditable: false,
+              table: {
+                dataTable: [],
+                dataOrigin: [],
+                tableSettings: { hasSearchBar: false, title: "Novo pedido" },
+                tableParam: {
+                  numero: {
+                    label: "Número do pedido",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 6,
+                    inputMode: "numeric",
+                    isNumber: true,
+                    isVisible: true,
+                    tableWidth: 100,
+                  },
+                  item: {
+                    label: "Produto",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 30,
+                    inputMode: "text",
+                    isVisible: true,
+                    tableWidth: 200,
+                  },
+                  quantidade: {
+                    label: "Qtd.",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 6,
+                    inputMode: "numeric",
+                    isNumber: true,
+                    isVisible: true,
+                    tableWidth: 60,
+                  },
+                },
+              },
+            },
+            botao: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Cadastrar",
+              function: {
+                functionCode: `console.log("primeira flag");
+                
+                const newRow = [{
+  numero: appJson.modules.pedidos.pages.cadastro.components.numero.value,
+  item: appJson.modules.pedidos.pages.cadastro.components.item.value,
+  quantidade: appJson.modules.pedidos.pages.cadastro.components.quantidade.value,
+              }];
+
+console.log("segunda flag");
+
+setAppJson((prevForm) => ({
+  ...prevForm,
+  modules: {
+    ...prevForm.modules,
+    pedidos: {
+      ...prevForm.modules.pedidos,
+      pages: {
+        ...prevForm.modules.pedidos.pages,
+        cadastro: {
+          ...prevForm.modules.pedidos.pages.cadastro,
+          components: {
+            ...prevForm.modules.pedidos.pages.cadastro.components,
+            table: {
+              ...prevForm.modules.pedidos.pages.cadastro.components.table,
+              table: {
+                ...prevForm.modules.pedidos.pages.cadastro.components.table.table,
+                dataOrigin: {
+                  ...prevForm.modules.pedidos.pages.cadastro.components.table.table.dataOrigin,
+                  ...newRow,
+                },
+                dataTable: {
+                  ...prevForm.modules.pedidos.pages.cadastro.components.table.table.dataTable,
+                  ...newRow,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+}));`,
+                importedFunc: {},
+              },
             },
           },
         },

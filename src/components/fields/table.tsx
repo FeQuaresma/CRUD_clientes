@@ -17,7 +17,7 @@ import {
 import { SyncedScrollView } from "../SyncedScrollView";
 import { isWithinInterval, parseISO } from "date-fns";
 
-type DataRow = {
+export type DataRow = {
   [key: string]: string;
 };
 
@@ -36,10 +36,10 @@ export default function TableComponent({
   // route,
   moduleParam,
   urlParam,
+  onValueChange,
 }: any) {
+
   const [params, setParams] = useState(moduleParam.tableParam);
-  const [data, setData] = useState<DataRow[]>([]);
-  const [dataOrigin, setDataOrigin] = useState<DataRow[]>([]);
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState<Set<string>>(new Set());
   const [colTable, setColTable] = useState<Set<string>>(new Set());
@@ -62,7 +62,7 @@ export default function TableComponent({
   // }, [route.params]);
 
   useEffect(() => {
-    loadData().then((dataOnline: DataTable) => {
+    urlParam && loadData().then((dataOnline: DataTable) => {
       dataOnline.formAtual.forEach((dataRow: DataRow) => {
         Object.keys(dataRow).forEach((key: string) => {
           if (dataOnline[key]) {
@@ -73,8 +73,8 @@ export default function TableComponent({
         });
       });
 
-      setData(dataOnline.formAtual);
-      setDataOrigin(dataOnline.formAtual);
+      onValueChange(dataOnline.formAtual, "Table");
+      onValueChange(dataOnline.formAtual, "Origin");
     });
 
     const dataSet: Set<string> = new Set(
@@ -124,7 +124,7 @@ export default function TableComponent({
         case "sumTotal":
           let sumTotal = 0;
 
-          data.forEach((row) => {
+          moduleParam.dataTable.forEach((row:any) => {
             sumTotal += Number(row[key]);
           });
           setParams((prevParam: any) => ({
@@ -145,7 +145,7 @@ export default function TableComponent({
               ...prevParam[key],
               footerLabel: {
                 function: "sumEntries",
-                value: String(data.length),
+                value: String(moduleParam.dataTable.length),
               },
             },
           }));
@@ -154,7 +154,7 @@ export default function TableComponent({
           break;
       }
     });
-  }, [data]);
+  }, [moduleParam.dataTable]);
 
   useEffect(() => {
     sortTable(sortedCol);
@@ -276,7 +276,7 @@ export default function TableComponent({
 
   function handleGlobalSearch() {
     if (searchWord === "") {
-      setData(dataOrigin);
+      onValueChange(moduleParam.dataOrigin, "Table");
       return;
     }
 
@@ -284,7 +284,7 @@ export default function TableComponent({
 
     const filteredData: DataRow[] = [];
 
-    dataOrigin.forEach((row) => {
+    moduleParam.dataOrigin.forEach((row:any) => {
       const filteredRow: string[] = [];
 
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey: any) => {
@@ -343,7 +343,7 @@ export default function TableComponent({
       filteredRow.length > 0 && filteredData.push(row);
     });
 
-    setData(filteredData);
+    onValueChange(filteredData, "Table");
   }
 
   function handleFilterSearch(filters?: any) {
@@ -351,7 +351,7 @@ export default function TableComponent({
       let filteredDataForm = filters;
       const filteredData: DataRow[] = [];
 
-      dataOrigin.forEach((row: any) => {
+      moduleParam.dataOrigin.forEach((row: any) => {
         const filteredRow: string[] = [];
         Object.keys(filteredDataForm).forEach((colKey) => {
           if (filteredDataForm[colKey] !== null) {
@@ -408,9 +408,9 @@ export default function TableComponent({
           filteredData.push(row);
         }
       });
-      setData(filteredData);
+      onValueChange(filteredData, "Table");
     } else {
-      setData(dataOrigin);
+      onValueChange(moduleParam.dataOrigin, "Table");
     }
   }
 
@@ -465,16 +465,16 @@ export default function TableComponent({
       return 0;
     }
 
-    let dataOriginTemp = [...dataOrigin];
+    let dataOriginTemp = [...moduleParam.dataOrigin];
     dataOriginTemp.sort(sortOrder);
 
-    if (data !== dataOrigin) {
-      let dataTemp = [...data];
+    if (moduleParam.dataTable !== moduleParam.dataOrigin) {
+      let dataTemp = [...moduleParam.dataTable];
       dataTemp.sort(sortOrder);
-      setData(dataTemp);
+      onValueChange(dataTemp, "Table");
     }
 
-    setDataOrigin(dataOriginTemp);
+    onValueChange(dataOriginTemp, "Origin");
   }
 
   function handleSortChange(colKey: string) {
@@ -493,9 +493,9 @@ export default function TableComponent({
   }
 
   return (
-    <View style={{ height: 400 }}>
+    <View style={{ height: 400, borderWidth: 1, borderColor: "red"}}>
       <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
-        <View style={styles.container}>
+        <View style={{...styles.container, borderWidth: 1, borderColor: "yellow"}}>
           {moduleParam.tableSettings.hasSearchBar && (
             <View style={styles.serchBar}>
               <TextInput
@@ -525,13 +525,13 @@ export default function TableComponent({
               </Pressable>
             </View>
           )}
+          {moduleParam.tableSettings.title && 
           <Pressable
-            onPress={() => {
-              console.log("tabela de pedidos", params.numero);
-            }}
+          onPress={() => {onValueChange([{numero: "1", item: "Pão", quantidade: "10"}],"Origin")}}
           >
-            <Text style={styles.text}>Tabela de Pedidos</Text>
+            <Text style={styles.text}>{moduleParam.tableSettings.title}</Text>
           </Pressable>
+          }
 
           <View style={styles.table}>
             <ScrollView
@@ -571,7 +571,7 @@ export default function TableComponent({
                   showsVerticalScrollIndicator={false}
                   nestedScrollEnabled={true}
                 >
-                  {data.map((rowData, rowIndex) => {
+                  {moduleParam.dataTable.map((rowData:any, rowIndex:any) => {
                     return (
                       <TableWrapper key={rowIndex} style={styles.header}>
                         {(
@@ -677,7 +677,7 @@ export default function TableComponent({
                   showsVerticalScrollIndicator={false}
                   nestedScrollEnabled={true}
                 >
-                  {data.map((rowData, rowIndex) => {
+                  {moduleParam.dataTable.map((rowData:any, rowIndex:any) => {
                     return (
                       <TableWrapper key={rowIndex} style={styles.header}>
                         {(Array.from(colTable) as Array<keyof DataRow>).map(
@@ -769,7 +769,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
     alignItems: "center",
-    justifyContent: "center",
   },
   text: {
     fontSize: 20,
@@ -788,7 +787,6 @@ const styles = StyleSheet.create({
   table: {
     flexDirection: "row",
     maxWidth: "95%",
-    height: "75%",
     backgroundColor: "white",
   },
   cellHead: {

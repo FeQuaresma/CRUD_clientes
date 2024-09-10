@@ -12,13 +12,24 @@ const json2: FunctionJson = {
     b: { import: "valueExported", from: "local" },
     c: { import: "Alert", from: "react-native" },
   },
-}
+};
 
-export async function executeFunction(jsonImported: FunctionJson, variable: any = undefined) {
-
-  const itemsArray:any[] = [];
-  const itemsKeys:any[] = [];
+export async function executeFunction(
+  jsonImported: FunctionJson,
+  variable: any = undefined
+) {
+  console.log(typeof jsonImported.importedFunc.c.from);
+  const x = String(jsonImported.importedFunc.c.from);
+  const y = "react-native";
+  console.log(typeof x, x);
+  console.log(typeof y, y);
+  console.log(x === y);
+  // import("react-native");
+  // import("src/functions/validateCPF")
   
+  const itemsArray: any[] = [];
+  const itemsKeys: any[] = [];
+
   const moduleMap: { [key: string]: () => Promise<any> | any } = {
     "react-native": () => import("react-native"),
     validateCPF: () => import("src/functions/validateCPF"),
@@ -41,10 +52,9 @@ export async function executeFunction(jsonImported: FunctionJson, variable: any 
         continue;
       }
 
-      itemsArray.push(importedFunc)
-      
-      itemsKeys.push(key)
+      itemsArray.push(importedFunc);
 
+      itemsKeys.push(key);
     } catch (error) {
       console.error(`Import Error ${importSource}:`, error);
     }
@@ -52,6 +62,5 @@ export async function executeFunction(jsonImported: FunctionJson, variable: any 
 
   const func = new Function(...itemsKeys, jsonImported.functionCode);
 
-  console.log(func.toString())
   func(...itemsArray);
 }

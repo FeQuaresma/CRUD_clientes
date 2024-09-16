@@ -273,7 +273,10 @@ setAppJson((prevForm) => ({
     },
   },
 }));`,
-                importedFunc: {},
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  setAppJson: { import: "setAppJson", from: "setVariable" },
+                },
               },
             },
           },

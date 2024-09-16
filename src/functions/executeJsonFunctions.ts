@@ -1,4 +1,5 @@
 import { Alert } from "react-native";
+import { moduleMap } from "../constants/importModules";
 
 export interface FunctionJson {
   functionCode: string;
@@ -9,7 +10,7 @@ const json2: FunctionJson = {
   functionCode: "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
   importedFunc: {
     a: { import: "validateCPF", from: "validateCPF" },
-    b: { import: "valueExported", from: "local" },
+    b: { import: "variable", from: "local" },
     c: { import: "Alert", from: "react-native" },
   },
 };
@@ -18,34 +19,23 @@ export async function executeFunction(
   jsonImported: FunctionJson,
   variable: any = undefined
 ) {
-  console.log(typeof jsonImported.importedFunc.c.from);
-  const x = String(jsonImported.importedFunc.c.from);
-  const y = "react-native";
-  console.log(typeof x, x);
-  console.log(typeof y, y);
-  console.log(x === y);
-  // import("react-native");
-  // import("src/functions/validateCPF")
-  
+  console.log(variable.cnpjcpf.value)
   const itemsArray: any[] = [];
   const itemsKeys: any[] = [];
-
-  const moduleMap: { [key: string]: () => Promise<any> | any } = {
-    "react-native": () => import("react-native"),
-    validateCPF: () => import("src/functions/validateCPF"),
-    local: () => undefined,
-  };
+  let importedFunc:any;
 
   for (const key of Object.keys(jsonImported.importedFunc)) {
     const { import: importName, from: importSource } =
       jsonImported.importedFunc[key];
 
     try {
-      const importedModule = await moduleMap[importSource]();
 
-      const importedFunc = importedModule
-        ? importedModule[importName]
-        : variable;
+      if (importSource !== "local") {
+        const importedModule = await moduleMap[importSource]();
+        importedFunc = importedModule[importName];
+      } else {
+        importedFunc = variable;
+      }
 
       if (!importedFunc && importedFunc !== "") {
         console.error(`Function ${importName} not found in ${importSource}`);
@@ -53,13 +43,14 @@ export async function executeFunction(
       }
 
       itemsArray.push(importedFunc);
-
       itemsKeys.push(key);
+
+
     } catch (error) {
       console.error(`Import Error ${importSource}:`, error);
     }
   }
-
+  console.log(itemsArray, itemsArray)
   const func = new Function(...itemsKeys, jsonImported.functionCode);
 
   func(...itemsArray);

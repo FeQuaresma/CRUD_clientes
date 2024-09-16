@@ -7,7 +7,7 @@ import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
-import { executeFunction } from "@/src/functions/executeJsonFunctions";
+import { moduleMap } from "@/src/constants/importModules";
 
 export interface FunctionJson {
   functionCode: string;
@@ -346,33 +346,85 @@ console.log("terceira Flag");
 
   function handleCallBackButton(moduleObject: any, page: any, field: any) {
 
-
-    const funcCode =
-      appJson.modules[moduleObject].pages[page].components[field]?.function
-        ?.functionCode;
-
-    if (funcCode) {
+    if (appJson.modules[moduleObject].pages[page].components[field].function) {
       // Se houver função, executa
-      executeFunction(funcJsonTemp, appJson, setAppJson);
+      executeFunction(appJson.modules[moduleObject].pages[page].components[field].function);
     } else {
       console.error("No functionCode found in the component.");
     }
   }
 
+
+
+
+
+
+
+
+
+
+
+
   async function executeFunction(
-    jsonImported: string,
-    appJson: any,
-    setAppJson: any
+    jsonImported: FunctionJson,
   ) {
-    try {
-      // Criar e executar a função dinamicamente
-      const func = new Function("appJson", "setAppJson", jsonImported);
-      console.log("Executing Function: ", func.toString());
-      func(appJson, setAppJson);
-    } catch (error) {
-      console.error("Error executing functionCode: ", error);
+    const itemsArray: any[] = [];
+    const itemsKeys: any[] = [];
+    let importedFunc:any;
+
+
+    // try {
+    //   // Criar e executar a função dinamicamente
+    //   const func = new Function("appJson", "setAppJson", jsonImported);
+    //   console.log("Executing Function: ", func.toString());
+    //   func(appJson, setAppJson);
+    // } catch (error) {
+    //   console.error("Error executing functionCode: ", error);
+    // }
+    for (const key of Object.keys(jsonImported.importedFunc)) {
+      const { import: importName, from: importSource } =
+        jsonImported.importedFunc[key];
+  
+      try {
+  
+        if (importSource === "variable") {
+          importedFunc = appJson;
+        } else if(importSource === "setVariable"){
+          importedFunc = setAppJson;
+        } else {
+          const importedModule = await moduleMap[importSource]();
+          importedFunc = importedModule[importName];
+        }
+  
+        if (!importedFunc && importedFunc !== "") {
+          console.error(`Function ${importName} not found in ${importSource}`);
+          continue;
+        }
+  
+        itemsArray.push(importedFunc);
+        itemsKeys.push(importName);
+  
+  
+      } catch (error) {
+        console.error(`Import Error ${importSource}:`, error);
+      }
     }
+    console.log(itemsArray,itemsKeys)
+    const func = new Function(...itemsKeys, jsonImported.functionCode);
+  
+    func(...itemsArray);
+
   }
+
+
+
+
+
+
+
+
+
+
 
   function maskedValue(value: string, mask: any) {
     // value = value.replace(/\D/g, "").replace(/^0+/, "") || "";

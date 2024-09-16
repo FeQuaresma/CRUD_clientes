@@ -48,10 +48,10 @@ export const params: Param = {
     customInputCSS: { width: 220 },
     function: {
       functionCode:
-        "if(!a(b)){c.alert('CPF inválido')}else{c.alert('CPF válido')}",
+        "if(!validateCPF(variable.cnpjcpf.value)){Alert.alert('CPF inválido')}else{Alert.alert('CPF válido')}",
       importedFunc: {
         a: { import: "validateCPF", from: "validateCPF" },
-        b: { import: "valueExported", from: "local" },
+        b: { import: "variable", from: "local" },
         c: { import: "Alert", from: "react-native" },
       },
     },

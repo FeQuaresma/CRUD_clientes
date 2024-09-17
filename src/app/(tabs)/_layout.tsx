@@ -5,7 +5,6 @@ import Calculator from "./calc";
 import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import { moduleMap } from "@/src/constants/importModules";
 
@@ -57,16 +56,57 @@ table: {
   console.log("terceira Flag");
 `;
 
-const funcJsonTemp2 = `console.log("primeira flag");
-const newRow = {
+const funcJsonTemp2: FunctionJson = {
+  functionCode: `console.log("primeira flag");
+  const newRow = [{
 numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
 item: appJson.modules.pedido.pages.cadastro.components.item.value,
 quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
-};
+}];
+
 console.log("segunda flag");
-console.log({...appJson.modules.pedido.pages.cadastro.components.table.table.dataTable,...newRow})
-console.log("terceira Flag");
-`;
+
+setAppJson((prevForm) => ({
+...prevForm,
+modules: {
+...prevForm.modules,
+pedido: {
+...prevForm.modules.pedido,
+pages: {
+...prevForm.modules.pedido.pages,
+cadastro: {
+...prevForm.modules.pedido.pages.cadastro,
+components: {
+...prevForm.modules.pedido.pages.cadastro.components,
+table: {
+...prevForm.modules.pedido.pages.cadastro.components.table,
+table: {
+  ...prevForm.modules.pedido.pages.cadastro.components.table.table,
+  dataOrigin: [
+    ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataOrigin,
+    ...newRow,
+],
+  dataTable: [
+    ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataTable,
+    ...newRow,
+],
+},
+},
+},
+},
+},
+},
+},
+}));
+
+console.log("terceira flag");
+console.log(newRow)
+console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTable)`,
+  importedFunc: {
+    appJson: { import: "appJson", from: "variable" },
+    setAppJson: { import: "setAppJson", from: "setVariable" },
+  },
+};
 
   function handleCallBackTable(
     moduleObject: any,
@@ -140,6 +180,7 @@ console.log("terceira Flag");
         }));
         break;
     }
+    
   }
 
   function handleCallBack(
@@ -151,7 +192,7 @@ console.log("terceira Flag");
     errorMsg?: any,
     dateOrder?: string
   ) {
-    if (value) {
+    if (value || value === "") {
       if (appJson.modules[moduleObject].pages[page].components[field].masks) {
         if (
           appJson.modules[moduleObject].pages[page].components[field].zeroTrim
@@ -354,17 +395,6 @@ console.log("terceira Flag");
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
   async function executeFunction(
     jsonImported: FunctionJson,
   ) {
@@ -381,6 +411,7 @@ console.log("terceira Flag");
     // } catch (error) {
     //   console.error("Error executing functionCode: ", error);
     // }
+
     for (const key of Object.keys(jsonImported.importedFunc)) {
       const { import: importName, from: importSource } =
         jsonImported.importedFunc[key];
@@ -415,16 +446,6 @@ console.log("terceira Flag");
     func(...itemsArray);
 
   }
-
-
-
-
-
-
-
-
-
-
 
   function maskedValue(value: string, mask: any) {
     // value = value.replace(/\D/g, "").replace(/^0+/, "") || "";
@@ -493,7 +514,7 @@ console.log("terceira Flag");
             //   }}
             // />
             <Drawer.Navigator screenOptions={{ drawerPosition: "right" }}>
-              <Drawer.Screen
+              {/* <Drawer.Screen
                 name={`${appJson.modules[moduleObject].moduleName}Home`}
                 options={{
                   title: `${appJson.modules[moduleObject].moduleName}Home`,
@@ -506,7 +527,7 @@ console.log("terceira Flag");
                     moduleName={appJson.modules[moduleObject].moduleName}
                   />
                 )}
-              </Drawer.Screen>
+              </Drawer.Screen> */}
 
               {Object.keys(appJson.modules[moduleObject].pages).map((page) => (
                 <Drawer.Screen

@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "name": "crud_cliente",
   "main": "expo-router/entry",
   "version": "1.0.0",

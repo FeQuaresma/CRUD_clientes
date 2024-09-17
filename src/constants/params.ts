@@ -47,11 +47,15 @@ export const params: Param = {
     isEditable: false,
     customInputCSS: { width: 220 },
     function: {
-      functionCode:
-        "if(!validateCPF(variable.cnpjcpf.value)){Alert.alert('CPF inválido')}else{Alert.alert('CPF válido')}",
+      functionCode: `
+      if(!validateCPF(appJson.modules.cliente.pages.cadastro.components.cnpjcpf.value)){
+        Alert.alert('CPF inválido')
+        }else{
+        Alert.alert('CPF válido')
+      }`,
       importedFunc: {
         a: { import: "validateCPF", from: "validateCPF" },
-        b: { import: "variable", from: "local" },
+        b: { import: "appJson", from: "variable" },
         c: { import: "Alert", from: "react-native" },
       },
     },
@@ -75,7 +79,6 @@ export const params: Param = {
       tableSettings: {
         hasSearchBar: false,
         tableURL: "https://www.caae.org.br/teste/testeData.json",
-
       },
       tableParam: {
         numero: {
@@ -275,9 +278,7 @@ export const params: Param = {
     inputType: "input",
     inputMode: "numeric",
     placeholder: "00000-000",
-    masks: [
-      [/^(\d{0,5})(\d{0,3})$/, "$1-$2", 1],
-    ],
+    masks: [[/^(\d{0,5})(\d{0,3})$/, "$1-$2", 1]],
     value: "",
     isRequired: true,
     isEditable: true,

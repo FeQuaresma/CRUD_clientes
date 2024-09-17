@@ -38,7 +38,6 @@ export default function TableComponent({
   urlParam,
   onValueChange,
 }: any) {
-
   const [params, setParams] = useState(moduleParam.tableParam);
   const [searchWord, setSearchWord] = useState("");
   const [lockedColTable, setLockedColTable] = useState<Set<string>>(new Set());
@@ -62,20 +61,21 @@ export default function TableComponent({
   // }, [route.params]);
 
   useEffect(() => {
-    urlParam && loadData().then((dataOnline: DataTable) => {
-      dataOnline.formAtual.forEach((dataRow: DataRow) => {
-        Object.keys(dataRow).forEach((key: string) => {
-          if (dataOnline[key]) {
-            dataRow[key] = dataOnline[key][dataRow[key]];
-          } else if (dataRow[key] === "&nbsp;") {
-            dataRow[key] = "";
-          }
+    urlParam &&
+      loadData().then((dataOnline: DataTable) => {
+        dataOnline.formAtual.forEach((dataRow: DataRow) => {
+          Object.keys(dataRow).forEach((key: string) => {
+            if (dataOnline[key]) {
+              dataRow[key] = dataOnline[key][dataRow[key]];
+            } else if (dataRow[key] === "&nbsp;") {
+              dataRow[key] = "";
+            }
+          });
         });
-      });
 
-      onValueChange(dataOnline.formAtual, "Table");
-      onValueChange(dataOnline.formAtual, "Origin");
-    });
+        onValueChange(dataOnline.formAtual, "Table");
+        onValueChange(dataOnline.formAtual, "Origin");
+      });
 
     const dataSet: Set<string> = new Set(
       Object.keys(params).map((colKey) => colKey)
@@ -124,7 +124,7 @@ export default function TableComponent({
         case "sumTotal":
           let sumTotal = 0;
 
-          moduleParam.dataTable.forEach((row:any) => {
+          moduleParam.dataTable.forEach((row: any) => {
             sumTotal += Number(row[key]);
           });
           setParams((prevParam: any) => ({
@@ -284,7 +284,7 @@ export default function TableComponent({
 
     const filteredData: DataRow[] = [];
 
-    moduleParam.dataOrigin.forEach((row:any) => {
+    moduleParam.dataOrigin.forEach((row: any) => {
       const filteredRow: string[] = [];
 
       (Object.keys(row) as Array<keyof DataRow>).forEach((colKey: any) => {
@@ -493,9 +493,16 @@ export default function TableComponent({
   }
 
   return (
-    <View style={{ height: 400, borderWidth: 1, borderColor: "red"}}>
+    <View style={{ borderWidth: 1, borderColor: "red" }}>
       <SyncedScrollViewContext.Provider value={syncedScrollViewState}>
-        <View style={{...styles.container, borderWidth: 1, borderColor: "yellow"}}>
+        <View
+          style={{
+            ...styles.container,
+            borderWidth: 1,
+            borderColor: "yellow",
+            maxHeight: 300,
+          }}
+        >
           {moduleParam.tableSettings.hasSearchBar && (
             <View style={styles.serchBar}>
               <TextInput
@@ -525,13 +532,19 @@ export default function TableComponent({
               </Pressable>
             </View>
           )}
-          {moduleParam.tableSettings.title && 
-          <Pressable
-          onPress={() => {onValueChange([{numero: "1", item: "Pão", quantidade: "10"}],"Origin")}}
-          >
-            <Text style={styles.text}>{moduleParam.tableSettings.title}</Text>
-          </Pressable>
-          }
+
+          {moduleParam.tableSettings.title && (
+            <Pressable
+              onPress={() => {
+                onValueChange(
+                  [{ numero: "1", item: "Pão", quantidade: "10" }],
+                  "Origin"
+                );
+              }}
+            >
+              <Text style={styles.text}>{moduleParam.tableSettings.title}</Text>
+            </Pressable>
+          )}
 
           <View style={styles.table}>
             <ScrollView
@@ -571,29 +584,34 @@ export default function TableComponent({
                   showsVerticalScrollIndicator={false}
                   nestedScrollEnabled={true}
                 >
-                  {moduleParam.dataTable.map((rowData:any, rowIndex:any) => {
+                  {moduleParam.dataTable.map((rowData: any, rowIndex: any) => {
                     return (
                       <TableWrapper key={rowIndex} style={styles.header}>
                         {(
                           Array.from(lockedColTable) as Array<keyof DataRow>
                         ).map((colKey, colIndex) => (
-                          <Cell
+                          <Pressable
                             key={colIndex}
-                            data={cellValueMask(
-                              rowData[colKey],
-                              colKey as string
-                            )}
-                            style={{
-                              ...styles.cellData,
-                              ...params[colKey].customColumnCSS,
-                              ...params[colKey].customCellCSS,
-                            }}
-                            textStyle={{
-                              ...params[colKey].customColumnTextCSS,
-                              ...params[colKey].customCellTextCSS,
-                            }}
-                            width={params[colKey].tableWidth}
-                          />
+                            onLongPress={() => console.log(rowIndex)}
+                          >
+                            <Cell
+                              key={colIndex}
+                              data={cellValueMask(
+                                rowData[colKey],
+                                colKey as string
+                              )}
+                              style={{
+                                ...styles.cellData,
+                                ...params[colKey].customColumnCSS,
+                                ...params[colKey].customCellCSS,
+                              }}
+                              textStyle={{
+                                ...params[colKey].customColumnTextCSS,
+                                ...params[colKey].customCellTextCSS,
+                              }}
+                              width={params[colKey].tableWidth}
+                            />
+                          </Pressable>
                         ))}
                       </TableWrapper>
                     );
@@ -677,28 +695,33 @@ export default function TableComponent({
                   showsVerticalScrollIndicator={false}
                   nestedScrollEnabled={true}
                 >
-                  {moduleParam.dataTable.map((rowData:any, rowIndex:any) => {
+                  {moduleParam.dataTable.map((rowData: any, rowIndex: any) => {
                     return (
                       <TableWrapper key={rowIndex} style={styles.header}>
                         {(Array.from(colTable) as Array<keyof DataRow>).map(
                           (colKey, colIndex) => (
-                            <Cell
+                            <Pressable
                               key={colIndex}
-                              data={cellValueMask(
-                                rowData[colKey],
-                                colKey as string
-                              )}
-                              style={{
-                                ...styles.cellData,
-                                ...params[colKey].customColumnCSS,
-                                ...params[colKey].customCellCSS,
-                              }}
-                              textStyle={{
-                                ...params[colKey].customColumnTextCSS,
-                                ...params[colKey].customCellTextCSS,
-                              }}
-                              width={params[colKey].tableWidth}
-                            />
+                              onLongPress={() => console.log(rowIndex)}
+                            >
+                              <Cell
+                                key={colIndex}
+                                data={cellValueMask(
+                                  rowData[colKey],
+                                  colKey as string
+                                )}
+                                style={{
+                                  ...styles.cellData,
+                                  ...params[colKey].customColumnCSS,
+                                  ...params[colKey].customCellCSS,
+                                }}
+                                textStyle={{
+                                  ...params[colKey].customColumnTextCSS,
+                                  ...params[colKey].customCellTextCSS,
+                                }}
+                                width={params[colKey].tableWidth}
+                              />
+                            </Pressable>
                           )
                         )}
                       </TableWrapper>
@@ -766,7 +789,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   container: {
-    flex: 1,
     backgroundColor: "#000",
     alignItems: "center",
   },

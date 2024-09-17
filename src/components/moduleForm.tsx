@@ -626,7 +626,7 @@ export default function ModuleForm({
                     />
                   </Pressable>
                 )}
-                {formParam[field].function && (
+                {formParam[field].function && formParam[field].inputType !== "button" &&(
                   <Pressable
                     style={{
                       height: 30,
@@ -636,7 +636,7 @@ export default function ModuleForm({
                       justifyContent: "center",
                     }}
                     onPress={() =>
-                      executeFunction(formParam[field].function, formParam)
+                      callFatherButton(field)
                     }
                   >
                     <FontAwesome5 name="circle" size={18} color="white" />

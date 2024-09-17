@@ -189,9 +189,9 @@ export const modulesParamV2: ModuleParam = {
               isRequired: false,
               isEditable: false,
               table: {
-                dataTable: [],
+                dataTable: [{ item: "10", numero: "11", quantidade: "12" }],
                 dataOrigin: [],
-                tableSettings: { hasSearchBar: false, title: "Novo pedido" },
+                tableSettings: { hasSearchBar: false},
                 tableParam: {
                   numero: {
                     label: "Número do pedido",
@@ -232,50 +232,77 @@ export const modulesParamV2: ModuleParam = {
               value: "Cadastrar",
               function: {
                 functionCode: `console.log("primeira flag");
-                
+                console.log(appJson)
+                if (appJson.modules.pedido.pages.cadastro.components.numero.value !== ""
+                && appJson.modules.pedido.pages.cadastro.components.item.value !== ""
+                && appJson.modules.pedido.pages.cadastro.components.quantidade.value !== "") {
+                  
                 const newRow = [{
-  numero: appJson.modules.pedidos.pages.cadastro.components.numero.value,
-  item: appJson.modules.pedidos.pages.cadastro.components.item.value,
-  quantidade: appJson.modules.pedidos.pages.cadastro.components.quantidade.value,
+              numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
+              item: appJson.modules.pedido.pages.cadastro.components.item.value,
+              quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
               }];
-
-console.log("segunda flag");
-
-setAppJson((prevForm) => ({
-  ...prevForm,
-  modules: {
-    ...prevForm.modules,
-    pedidos: {
-      ...prevForm.modules.pedidos,
-      pages: {
-        ...prevForm.modules.pedidos.pages,
-        cadastro: {
-          ...prevForm.modules.pedidos.pages.cadastro,
-          components: {
-            ...prevForm.modules.pedidos.pages.cadastro.components,
-            table: {
-              ...prevForm.modules.pedidos.pages.cadastro.components.table,
-              table: {
-                ...prevForm.modules.pedidos.pages.cadastro.components.table.table,
-                dataOrigin: {
-                  ...prevForm.modules.pedidos.pages.cadastro.components.table.table.dataOrigin,
-                  ...newRow,
-                },
-                dataTable: {
-                  ...prevForm.modules.pedidos.pages.cadastro.components.table.table.dataTable,
-                  ...newRow,
-                },
+                } else {
+              Alert.alert("Preencha todos os campos");
+            return;   
+              }
+                
+              
+              console.log("segunda flag");
+              
+              setAppJson((prevForm) => ({
+              ...prevForm,
+              modules: {
+              ...prevForm.modules,
+              pedido: {
+              ...prevForm.modules.pedido,
+              pages: {
+              ...prevForm.modules.pedido.pages,
+              cadastro: {
+              ...prevForm.modules.pedido.pages.cadastro,
+              components: {
+              ...prevForm.modules.pedido.pages.cadastro.components,
+              numero: {
+              ...prevForm.modules.pedido.pages.cadastro.components.numero,
+              value: "",
               },
-            },
-          },
-        },
-      },
-    },
-  },
-}));`,
+              item: {
+              ...prevForm.modules.pedido.pages.cadastro.components.item,
+              value: "",
+              },
+              quantidade: {
+              ...prevForm.modules.pedido.pages.cadastro.components.quantidade,
+              value: "",
+              },
+              table: {
+              ...prevForm.modules.pedido.pages.cadastro.components.table,
+              table: {
+                ...prevForm.modules.pedido.pages.cadastro.components.table.table,
+                dataOrigin: [
+                  ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataOrigin,
+                  ...newRow,
+              ],
+                dataTable: [
+                  ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataTable,
+                  ...newRow,
+              ],
+              },
+              },
+              },
+              },
+              },
+              },
+              },
+              }));
+              
+              console.log("terceira flag");
+              console.log(newRow)
+              console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTable)`,
                 importedFunc: {
                   appJson: { import: "appJson", from: "variable" },
                   setAppJson: { import: "setAppJson", from: "setVariable" },
+                  
+                  alert: { import: "Alert", from: "react-native" },
                 },
               },
             },

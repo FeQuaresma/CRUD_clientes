@@ -1,4 +1,4 @@
-export const moduleMap: { [key: string]: () => Promise<any>} = {
+export const moduleMap: { [key: string]: () => Promise<any> } = {
   "react-native": () => import("react-native"),
-  "validateCPF": () => import("src/functions/validateCPF"),
+  validateCPF: () => import("src/functions/validateCPF"),
 };

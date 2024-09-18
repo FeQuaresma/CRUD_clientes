@@ -2,7 +2,7 @@ import { Pressable, ScrollView, Text } from "react-native";
 import { styles } from "../../constants/styles";
 import { useNavigationState } from "@react-navigation/native";
 
-export default function Home({ onCallBack, appJson, navigation }: any) {
+export default function Home({ onCallBack, appJson, setAppJson, navigation }: any) {
 
 
   const routes = useNavigationState((state) => state);
@@ -12,7 +12,7 @@ export default function Home({ onCallBack, appJson, navigation }: any) {
       <Pressable style={styles.button} onPress={() => console.log(appJson.modules.cliente.pages.cadastro)}>
         <Text>Teste</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => console.log(routes)}>
+      <Pressable style={styles.button} onPress={() => setAppJson()}>
         <Text>Refresh</Text>
       </Pressable>
     </ScrollView>

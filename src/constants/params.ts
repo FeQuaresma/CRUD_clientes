@@ -279,10 +279,10 @@ export const params: Param = {
     inputMode: "numeric",
     placeholder: "00000-000",
     masks: [[/^(\d{0,5})(\d{0,3})$/, "$1-$2", 1]],
-    value: "",
+    value: "03019000",
     isRequired: true,
     isEditable: true,
-    valueMasked: "",
+    valueMasked: "03019-000",
     maxLength: 9,
     link: {
       paramBeginning: "https://viacep.com.br/ws/",

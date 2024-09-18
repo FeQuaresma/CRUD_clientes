@@ -12,9 +12,16 @@ export interface FunctionJson {
   functionCode: string;
   importedFunc: { [key: string]: { import: string; from: string } };
 }
+
+export interface Location {
+  module: string;
+  page: string;
+  field: string;
+}
 const Drawer = createDrawerNavigator();
 
 export default function MyApp() {
+  const appJsonOrigin = modulesParamV2;
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
   const funcJsonTemp = `console.log("primeira flag");
@@ -56,8 +63,8 @@ table: {
   console.log("terceira Flag");
 `;
 
-const funcJsonTemp2: FunctionJson = {
-  functionCode: `console.log("primeira flag");
+  const funcJsonTemp2: FunctionJson = {
+    functionCode: `console.log("primeira flag");
   const newRow = [{
 numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
 item: appJson.modules.pedido.pages.cadastro.components.item.value,
@@ -102,11 +109,11 @@ table: {
 console.log("terceira flag");
 console.log(newRow)
 console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTable)`,
-  importedFunc: {
-    appJson: { import: "appJson", from: "variable" },
-    setAppJson: { import: "setAppJson", from: "setVariable" },
-  },
-};
+    importedFunc: {
+      appJson: { import: "appJson", from: "variable" },
+      setAppJson: { import: "setAppJson", from: "setVariable" },
+    },
+  };
 
   function handleCallBackTable(
     moduleObject: any,
@@ -136,10 +143,14 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
                       table: {
                         ...prevForm.modules[moduleObject].pages[page]
                           .components[field].table,
-                        dataOrigin: prevForm.modules[moduleObject].pages[page]
-                        .components[field].table?.dataOrigin?.concat(value),
-                        dataTable: prevForm.modules[moduleObject].pages[page]
-                        .components[field].table?.dataTable?.concat(value),
+                        dataOrigin:
+                          prevForm.modules[moduleObject].pages[page].components[
+                            field
+                          ].table?.dataOrigin?.concat(value),
+                        dataTable:
+                          prevForm.modules[moduleObject].pages[page].components[
+                            field
+                          ].table?.dataTable?.concat(value),
                       },
                     },
                   },
@@ -179,8 +190,43 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
           },
         }));
         break;
+      case "Remove":
+        console.log(value);
+        let newArray: any =
+          appJson.modules[moduleObject].pages[page].components[field].table
+            ?.dataTable;
+        newArray.splice(value, 1);
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          modules: {
+            ...prevForm.modules,
+            [moduleObject]: {
+              ...prevForm.modules[moduleObject],
+              pages: {
+                ...prevForm.modules[moduleObject].pages,
+                [page]: {
+                  ...prevForm.modules[moduleObject].pages[page],
+                  components: {
+                    ...prevForm.modules[moduleObject].pages[page].components,
+                    [field]: {
+                      ...prevForm.modules[moduleObject].pages[page].components[
+                        field
+                      ],
+                      table: {
+                        ...prevForm.modules[moduleObject].pages[page]
+                          .components[field].table,
+                        dataOrigin: newArray,
+                        dataTable: newArray,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }));
+        break;
     }
-    
   }
 
   function handleCallBack(
@@ -386,10 +432,18 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
   }
 
   function handleCallBackButton(moduleObject: any, page: any, field: any) {
-
     if (appJson.modules[moduleObject].pages[page].components[field].function) {
+
+      const location: Location = {
+        module: moduleObject,
+        page: page,
+        field: field,
+      };
       // Se houver função, executa
-      executeFunction(appJson.modules[moduleObject].pages[page].components[field].function);
+      executeFunction(
+        appJson.modules[moduleObject].pages[page].components[field].function,
+        location
+      );
     } else {
       console.error("No functionCode found in the component.");
     }
@@ -397,11 +451,11 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
 
   async function executeFunction(
     jsonImported: FunctionJson,
+    location: Location
   ) {
     const itemsArray: any[] = [];
     const itemsKeys: any[] = [];
-    let importedFunc:any;
-
+    let importedFunc: any;
 
     // try {
     //   // Criar e executar a função dinamicamente
@@ -415,36 +469,39 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
     for (const key of Object.keys(jsonImported.importedFunc)) {
       const { import: importName, from: importSource } =
         jsonImported.importedFunc[key];
-  
+
       try {
-  
         if (importSource === "variable") {
           importedFunc = appJson;
-        } else if(importSource === "setVariable"){
+        } else if (importSource === "setVariable") {
           importedFunc = setAppJson;
+
+        } else if (importSource === "location") {
+          importedFunc = location;
+          
         } else {
           const importedModule = await moduleMap[importSource]();
           importedFunc = importedModule[importName];
         }
-  
+
         if (!importedFunc && importedFunc !== "") {
           console.error(`Function ${importName} not found in ${importSource}`);
           continue;
         }
-  
+
         itemsArray.push(importedFunc);
         itemsKeys.push(importName);
-  
-  
       } catch (error) {
         console.error(`Import Error ${importSource}:`, error);
       }
     }
-    console.log(itemsArray,itemsKeys)
-    const func = new Function(...itemsKeys, jsonImported.functionCode);
-  
-    func(...itemsArray);
-
+    // console.log(itemsArray, itemsKeys);
+    try {
+      const func = new Function(...itemsKeys, jsonImported.functionCode);
+      func(...itemsArray);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function maskedValue(value: string, mask: any) {
@@ -484,7 +541,16 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
           headerShown: false,
         }}
       >
-        {(e: any) => <Home {...e} appJson={appJson} />}
+        {(e: any) => (
+          <Home
+            {...e}
+            appJson={appJson}
+            setAppJson={() => {
+              setAppJson(appJsonOrigin);
+              console.log("Refreshed!");
+            }}
+          />
+        )}
       </Drawer.Screen>
       <Drawer.Screen
         name="Calculadora"

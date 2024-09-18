@@ -1,42 +1,27 @@
-const newRow = {
-  numero: appJson.modules.pedidos.pages.cadastro.components.numero.value,
-  item: appJson.modules.pedidos.pages.cadastro.components.item.value,
-  quantidade:
-    appJson.modules.pedidos.pages.cadastro.components.quantidade.value,
+const exlink = {
+  paramBeginning: "https://viacep.com.br/ws/",
+  paramSize: 8,
+  paramEnd: "/json/",
+  type: "fillform",
+}
+const exvalue = "03019000"
+
+const callAPI = async (link, value) => {
+  let linkURL = `${link.paramBeginning}${value}${link.paramEnd}`;
+  console.log(linkURL);
+  try {
+    const response = await fetch(linkURL);
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error(error);
+  }
 };
 
-setAppJson((prevForm) => ({
-  ...prevForm,
-  modules: {
-    ...prevForm.modules,
-    pedidos: {
-      ...prevForm.modules.pedidos,
-      pages: {
-        ...prevForm.modules.pedidos.pages,
-        cadastro: {
-          ...prevForm.modules.pedidos.pages.cadastro,
-          components: {
-            ...prevForm.modules.pedidos.pages.cadastro.components,
-            table: {
-              ...prevForm.modules.pedidos.pages.cadastro.components.table,
-              table: {
-                ...prevForm.modules.pedidos.pages.cadastro.components.table
-                  .table,
-                dataOrigin: {
-                  ...prevForm.modules.pedidos.pages.cadastro.components.table
-                    .table.dataOrigin,
-                  newRow,
-                },
-                dataTable: {
-                  ...prevForm.modules.pedidos.pages.cadastro.components.table
-                    .table.dataTable,
-                  newRow,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-}));
+const fetchData = async () => {
+  const result = await callAPI(exlink, exvalue);
+  console.log("Result:", result);
+};
+
+fetchData()

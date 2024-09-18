@@ -1,6 +1,7 @@
 import { DataRow } from "../components/fields/table";
+
 import { FunctionJson } from "../functions/executeJsonFunctions";
-import { FormParam, params } from "./params";
+import { params } from "./params";
 
 export interface Param {
   label?: string;
@@ -124,6 +125,52 @@ export const modulesParamV2: ModuleParam = {
             contatotelefone: params.contatotelefone,
             contatotelefone2: params.contatotelefone2,
             contatoemail: params.contatoemail,
+            botao: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão X",
+              function: {
+                functionCode: `const test = enter8.getAllValues(appJson, location);
+console.log(test);
+if (test.cep !== "") {
+  console.log("Cep Preenchido", test.cep);
+  const link = {
+      paramBeginning: "https://viacep.com.br/ws/",
+      paramSize: 8,
+      paramEnd: "/json/",
+      type: "fillform",
+    }
+  const test2 = callAPI(link, test.cep);
+  console.log(test2);
+} else {
+  console.log("CEP Não Preenchido");
+}`,
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  location: { import: "location", from: "location" },
+                  allFunctions: {import: "enter8", from: "enter8"},
+                  callAPI: {import: "callAPI", from: "enter8"},
+
+                },
+              },
+            },
+            botaoX: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão Y",
+              function: {
+                functionCode: `
+                Alert.alertz("Y")
+                `,
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  appJsonx: { import: "appJson", from: "location" },
+                  alert: { import: "Alert", from: "react-native" },
+                },
+              },
+            },
           },
         },
         pageButton: {
@@ -189,9 +236,19 @@ export const modulesParamV2: ModuleParam = {
               isRequired: false,
               isEditable: false,
               table: {
-                dataTable: [{ item: "10", numero: "11", quantidade: "12" }],
-                dataOrigin: [],
-                tableSettings: { hasSearchBar: false},
+                dataTable: [
+                  { item: "Queijo", numero: "1", quantidade: "200" },
+                  { item: "Pão", numero: "2", quantidade: "6" },
+                  { item: "Presunto", numero: "3", quantidade: "150" },
+                  { item: "Refrigerante", numero: "4", quantidade: "2" },
+                  { item: "Peito de Peru", numero: "5", quantidade: "150" }],
+                dataOrigin: [
+                  { item: "Queijo", numero: "1", quantidade: "200" },
+                  { item: "Pão", numero: "2", quantidade: "6" },
+                  { item: "Presunto", numero: "3", quantidade: "150" },
+                  { item: "Refrigerante", numero: "4", quantidade: "2" },
+                  { item: "Peito de Peru", numero: "5", quantidade: "150" }],
+                tableSettings: { hasSearchBar: false },
                 tableParam: {
                   numero: {
                     label: "Número do pedido",
@@ -233,6 +290,7 @@ export const modulesParamV2: ModuleParam = {
               function: {
                 functionCode: `console.log("primeira flag");
                 console.log(appJson)
+                
                 if (appJson.modules.pedido.pages.cadastro.components.numero.value !== ""
                 && appJson.modules.pedido.pages.cadastro.components.item.value !== ""
                 && appJson.modules.pedido.pages.cadastro.components.quantidade.value !== "") {
@@ -242,6 +300,7 @@ export const modulesParamV2: ModuleParam = {
               item: appJson.modules.pedido.pages.cadastro.components.item.value,
               quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
               }];
+
                 } else {
               Alert.alert("Preencha todos os campos");
             return;   
@@ -301,7 +360,7 @@ export const modulesParamV2: ModuleParam = {
                 importedFunc: {
                   appJson: { import: "appJson", from: "variable" },
                   setAppJson: { import: "setAppJson", from: "setVariable" },
-                  
+
                   alert: { import: "Alert", from: "react-native" },
                 },
               },

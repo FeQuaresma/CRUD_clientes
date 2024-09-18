@@ -1,4 +1,4 @@
-const callAPI = async (link: any, value: any) => {
+export const callAPI = async (link: any, value: any) => {
   let linkURL = `${link.paramBeginning}${value}${link.paramEnd}`;
   console.log(linkURL);
   try {
@@ -10,5 +10,3 @@ const callAPI = async (link: any, value: any) => {
     console.error(error);
   }
 };
-
-export default callAPI;

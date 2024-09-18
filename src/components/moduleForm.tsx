@@ -475,7 +475,6 @@ export default function ModuleForm({
             borderColor: "yellow",
           }}
         >
-
           {Object.keys(formParam).map((field) => (
             <View
               key={field}
@@ -495,7 +494,7 @@ export default function ModuleForm({
                     alignItems: "center",
                     width: "100%",
                     borderWidth: 1,
-                    borderColor: "grey"
+                    borderColor: "grey",
                   }}
                 >
                   <Text style={styles.inputLabel}>
@@ -596,7 +595,10 @@ export default function ModuleForm({
                   <Table
                     moduleParam={formParam[field].table}
                     urlParam={formParam[field].table.tableSettings.tableURL}
-                    onValueChange={(e: any, whichTable: string) => callFatherTable(e, field, whichTable)}
+                    onValueChange={(e: any, whichTable: string) => {
+                      callFatherTable(e, field, whichTable);
+                      // console.log(e,field, whichTable)
+                    }}
                   />
                 )}
                 {formParam[field].inputType === "button" && (
@@ -626,27 +628,33 @@ export default function ModuleForm({
                     />
                   </Pressable>
                 )}
-                {formParam[field].function && formParam[field].inputType !== "button" &&(
-                  <Pressable
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: "red",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                    onPress={() =>
-                      callFatherButton(field)
-                    }
-                  >
-                    <FontAwesome5 name="circle" size={18} color="white" />
-                  </Pressable>
-                )}
+
+
+
+
+                {formParam[field].function &&
+                  formParam[field].inputType !== "button" && (
+                    <Pressable
+                      style={{
+                        height: 30,
+                        width: 30,
+                        backgroundColor: "red",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      onPress={() => callFatherButton(field)}
+                    >
+                      <FontAwesome5 name="circle" size={18} color="white" />
+                    </Pressable>
+                  )}
+
+
+
+                  
               </View>
             </View>
           ))}
-        
-      </View>
+        </View>
       </ScrollView>
       {/* <View style={{ width: "100%", alignItems: "center" }}>
         {formMode === "register" && (

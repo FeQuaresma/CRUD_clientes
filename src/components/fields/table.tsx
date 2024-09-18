@@ -702,7 +702,7 @@ export default function TableComponent({
                           (colKey, colIndex) => (
                             <Pressable
                               key={colIndex}
-                              onLongPress={() => console.log(rowIndex)}
+                              onLongPress={() => onValueChange(rowIndex,"Remove")}
                             >
                               <Cell
                                 key={colIndex}

@@ -104,6 +104,74 @@ export const modulesParamV2: ModuleParam = {
           pageName: "Cadastro",
           components: {
             // table: params.table,
+            botao: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão X",
+              function: {
+                functionCode: `
+                enter8.contador += 1
+                console.log(enter8.contador)
+                const test = enter8.getAllValues(appJson, location);
+                
+if (test.cep !== "") {
+  enter8.alert("Cep Preenchido", test.cep);
+  const link = {
+    paramBeginning: "https://viacep.com.br/ws/",
+    paramEnd: "/json/",
+  };
+
+enter8.callAPI(link, test.cep).then((resolve)=>{
+
+console.log(resolve)
+
+});
+
+} else {
+  enter8.alert("CEP Não Preenchido");
+}`,
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  location: { import: "location", from: "location" },
+                  allFunctions: { import: "enter8", from: "enter8" },
+                },
+              },
+            },
+            botao2: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão Y",
+              function: {
+                functionCode: `
+                enter8.contador += 1
+                console.log(enter8.contador)
+                const test = enter8.getAllValues(appJson, location);
+                
+if (test.cep !== "") {
+  enter8.alert("Cep Preenchido", test.cep);
+  const link = {
+    paramBeginning: "https://viacep.com.br/ws/",
+    paramEnd: "/json/",
+  };
+
+enter8.callAPI(link, test.cep).then((resolve)=>{
+
+console.log(resolve)
+
+});
+
+} else {
+  enter8.alert("CEP Não Preenchido");
+}`,
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  location: { import: "location", from: "location" },
+                  allFunctions: { import: "enter8", from: "enter8" },
+                },
+              },
+            },
             cnpjcpf: params.cnpjcpf,
             idestrageiro: params.idestrageiro,
             suframa: params.suframa,
@@ -125,36 +193,7 @@ export const modulesParamV2: ModuleParam = {
             contatotelefone: params.contatotelefone,
             contatotelefone2: params.contatotelefone2,
             contatoemail: params.contatoemail,
-            botao: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,
-              value: "Botão X",
-              function: {
-                functionCode: `const test = enter8.getAllValues(appJson, location);
-console.log(test);
-if (test.cep !== "") {
-  console.log("Cep Preenchido", test.cep);
-  const link = {
-      paramBeginning: "https://viacep.com.br/ws/",
-      paramSize: 8,
-      paramEnd: "/json/",
-      type: "fillform",
-    }
-  const test2 = callAPI(link, test.cep);
-  console.log(test2);
-} else {
-  console.log("CEP Não Preenchido");
-}`,
-                importedFunc: {
-                  appJson: { import: "appJson", from: "variable" },
-                  location: { import: "location", from: "location" },
-                  allFunctions: {import: "enter8", from: "enter8"},
-                  callAPI: {import: "callAPI", from: "enter8"},
 
-                },
-              },
-            },
             botaoX: {
               inputType: "button",
               isEditable: false,
@@ -241,13 +280,15 @@ if (test.cep !== "") {
                   { item: "Pão", numero: "2", quantidade: "6" },
                   { item: "Presunto", numero: "3", quantidade: "150" },
                   { item: "Refrigerante", numero: "4", quantidade: "2" },
-                  { item: "Peito de Peru", numero: "5", quantidade: "150" }],
+                  { item: "Peito de Peru", numero: "5", quantidade: "150" },
+                ],
                 dataOrigin: [
                   { item: "Queijo", numero: "1", quantidade: "200" },
                   { item: "Pão", numero: "2", quantidade: "6" },
                   { item: "Presunto", numero: "3", quantidade: "150" },
                   { item: "Refrigerante", numero: "4", quantidade: "2" },
-                  { item: "Peito de Peru", numero: "5", quantidade: "150" }],
+                  { item: "Peito de Peru", numero: "5", quantidade: "150" },
+                ],
                 tableSettings: { hasSearchBar: false },
                 tableParam: {
                   numero: {

@@ -497,8 +497,10 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
     }
     // console.log(itemsArray, itemsKeys);
     try {
-      const func = new Function(...itemsKeys, jsonImported.functionCode);
+      const  func = new Function(...itemsKeys, jsonImported.functionCode);
+
       func(...itemsArray);
+
     } catch (e) {
       console.error(e);
     }
@@ -534,7 +536,7 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
 
   return (
     <Drawer.Navigator backBehavior="history">
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="Home"
         options={{
           title: "home",
@@ -559,7 +561,7 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
           title: "calculator",
           headerShown: false,
         }}
-      />
+      /> */}
 
       {Object.keys(appJson.modules).map((moduleObject) => (
         <Drawer.Screen

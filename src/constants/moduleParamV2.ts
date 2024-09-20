@@ -90,12 +90,37 @@ export type Module = {
   };
 };
 
+export type AppFunctions = {functionCode: string, functionParams: string[]};
+
 export type ModuleParam = {
   globalSettings?: { CSS?: {} };
+  appFunctions?: { [key: string]: AppFunctions};
   modules: { [key: string]: Module };
 };
 
 export const modulesParamV2: ModuleParam = {
+  appFunctions: {
+    validateCPF: {
+      functionCode: `if (cpf.length != 11) {
+    return false;
+  } else {
+    let firstDigit = 0;
+    let secondDigit = 0;
+    for (let i = 0; i < 10; i++) {
+      i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
+      secondDigit += Number(cpf[i]) * i;
+    }
+    firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+    secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+    if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
+      return false;
+    } else {
+      return true;
+    }
+  }`,
+      functionParams: ["cpf"]
+    },
+  },
   modules: {
     cliente: {
       moduleName: "Clientes",
@@ -104,40 +129,6 @@ export const modulesParamV2: ModuleParam = {
           pageName: "Cadastro",
           components: {
             // table: params.table,
-            botao: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,
-              value: "Botão X",
-              function: {
-                functionCode: `
-                enter8.contador += 1
-                console.log(enter8.contador)
-                const test = enter8.getAllValues(appJson, location);
-                
-if (test.cep !== "") {
-  enter8.alert("Cep Preenchido", test.cep);
-  const link = {
-    paramBeginning: "https://viacep.com.br/ws/",
-    paramEnd: "/json/",
-  };
-
-enter8.callAPI(link, test.cep).then((resolve)=>{
-
-console.log(resolve)
-
-});
-
-} else {
-  enter8.alert("CEP Não Preenchido");
-}`,
-                importedFunc: {
-                  appJson: { import: "appJson", from: "variable" },
-                  location: { import: "location", from: "location" },
-                  allFunctions: { import: "enter8", from: "enter8" },
-                },
-              },
-            },
             botao2: {
               inputType: "button",
               isEditable: false,
@@ -147,18 +138,18 @@ console.log(resolve)
                 functionCode: `
                 enter8.contador += 1
                 console.log(enter8.contador)
-                const test = enter8.getAllValues(appJson, location);
+                const variables = enter8.getAllValues(appJson, location);
                 
-if (test.cep !== "") {
-  enter8.alert("Cep Preenchido", test.cep);
+if (variables.cep !== "") {
+  enter8.alert("Cep Preenchido", variables.cep);
   const link = {
     paramBeginning: "https://viacep.com.br/ws/",
     paramEnd: "/json/",
   };
 
-enter8.callAPI(link, test.cep).then((resolve)=>{
+enter8.callAPI(link, variables.cep).then((resolve)=>{
 
-console.log(resolve)
+enter8.fillForm(appJson, setAppJson, resolve, location)
 
 });
 
@@ -167,8 +158,28 @@ console.log(resolve)
 }`,
                 importedFunc: {
                   appJson: { import: "appJson", from: "variable" },
+                  setAppJson: { import: "setAppJson", from: "setVariable" },
                   location: { import: "location", from: "location" },
                   allFunctions: { import: "enter8", from: "enter8" },
+                },
+              },
+            },
+            botaoCPF: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão CPF",
+              function: {
+                functionCode: `
+                const variables = enter8.getAllValues(appJson, location);
+                
+                if(appFunctions.validateCPF(variables.cnpjcpf)){
+                console.log("Deu certo")}else{console.log("Deu errado")}`,
+                importedFunc: {
+                  appJson: { import: "appJson", from: "variable" },
+                  allFunctions: { import: "enter8", from: "enter8" },
+                  location: { import: "location", from: "location" },
+                  appFunctions: {import: "appFunctions", from: "appFunctions"},
                 },
               },
             },
@@ -181,13 +192,12 @@ console.log(resolve)
             consumidorfinal: params.consumidorfinal,
             razaosocial: params.razaosocial,
             cep: params.cep,
-            endereco: params.endereco,
-            endereconome: params.endereconome,
+            logradouro: params.endereconome,
             endereconumero: params.endereconumero,
-            enderecocomplemento: params.enderecocomplemento,
-            enderecobairro: params.enderecobairro,
-            enderecoestado: params.enderecoestado,
-            enderecocidade: params.enderecocidade,
+            complemento: params.enderecocomplemento,
+            bairro: params.enderecobairro,
+            uf: params.enderecoestado,
+            localidade: params.enderecocidade,
             enderecopais: params.enderecopais,
             contatonome: params.contatonome,
             contatotelefone: params.contatotelefone,

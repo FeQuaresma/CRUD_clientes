@@ -1,5 +1,5 @@
 export const moduleMap: { [key: string]: () => Promise<any> } = {
   "react-native": () => import("react-native"),
-  validateCPF: () => import("src/functions/validateCPF"),
+  appFunctions: () => import("src/functions/appFunctions"),
   enter8: () => import("src/functions/enter8"),
 };

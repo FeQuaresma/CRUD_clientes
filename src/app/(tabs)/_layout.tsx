@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import Home from ".";
-import Calculator from "./calc";
 import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
-import ModuleIndex from "@/src/components/moduleIndex";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import { moduleMap } from "@/src/constants/importModules";
+import { appFunctions } from "@/src/functions/appFunctions";
 
 export interface FunctionJson {
   functionCode: string;
@@ -21,99 +19,25 @@ export interface Location {
 const Drawer = createDrawerNavigator();
 
 export default function MyApp() {
-  const appJsonOrigin = modulesParamV2;
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
-  const funcJsonTemp = `console.log("primeira flag");
+  useEffect(() => {
+    console.log(appFunctions)
+    appJson.appFunctions &&
+      Object.keys(appJson.appFunctions).forEach((functionName) => {
+        if (appJson.appFunctions) {
+          const func = new Function(
+            ...appJson.appFunctions[functionName].functionParams,
+            appJson.appFunctions[functionName].functionCode
+          );
+          addFunction(functionName, (...args: any[]) => func(...args));
+        }
+      });
+  },[]);
 
-  const newRow = [{
-numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
-item: appJson.modules.pedido.pages.cadastro.components.item.value,
-quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
-}];
-
-console.log("segunda flag");
-
-setAppJson((prevForm) => ({
-...prevForm,
-modules: {
-...prevForm.modules,
-pedido: {
-...prevForm.modules.pedido,
-pages: {
-...prevForm.modules.pedido.pages,
-cadastro: {
-...prevForm.modules.pedido.pages.cadastro,
-components: {
-...prevForm.modules.pedido.pages.cadastro.components,
-tableNomeProprio: {
-...prevForm.modules.pedido.pages.cadastro.components.table,
-table: {
-  ...prevForm.modules.pedido.pages.cadastro.components.table.table,
-  dataOrigin: prevForm.modules.pedido.pages.cadastro.components.table.table.dataOrigin.concat(newRow),
-  dataTable: prevForm.modules.pedido.pages.cadastro.components.table.table.dataTable.concat(newRow),
-},
-},
-},
-},
-},
-},
-},
-}));
-  console.log("terceira Flag");
-`;
-
-  const funcJsonTemp2: FunctionJson = {
-    functionCode: `console.log("primeira flag");
-  const newRow = [{
-numero: appJson.modules.pedido.pages.cadastro.components.numero.value,
-item: appJson.modules.pedido.pages.cadastro.components.item.value,
-quantidade: appJson.modules.pedido.pages.cadastro.components.quantidade.value,
-}];
-
-console.log("segunda flag");
-
-setAppJson((prevForm) => ({
-...prevForm,
-modules: {
-...prevForm.modules,
-pedido: {
-...prevForm.modules.pedido,
-pages: {
-...prevForm.modules.pedido.pages,
-cadastro: {
-...prevForm.modules.pedido.pages.cadastro,
-components: {
-...prevForm.modules.pedido.pages.cadastro.components,
-table: {
-...prevForm.modules.pedido.pages.cadastro.components.table,
-table: {
-  ...prevForm.modules.pedido.pages.cadastro.components.table.table,
-  dataOrigin: [
-    ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataOrigin,
-    ...newRow,
-],
-  dataTable: [
-    ...prevForm.modules.pedido.pages.cadastro.components.table.table.dataTable,
-    ...newRow,
-],
-},
-},
-},
-},
-},
-},
-},
-}));
-
-console.log("terceira flag");
-console.log(newRow)
-console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTable)`,
-    importedFunc: {
-      appJson: { import: "appJson", from: "variable" },
-      setAppJson: { import: "setAppJson", from: "setVariable" },
-    },
-  };
+  function addFunction(name: string, func: Function) {
+    appFunctions[name] = func;
+  }
 
   function handleCallBackTable(
     moduleObject: any,
@@ -433,7 +357,6 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
 
   function handleCallBackButton(moduleObject: any, page: any, field: any) {
     if (appJson.modules[moduleObject].pages[page].components[field].function) {
-
       const location: Location = {
         module: moduleObject,
         page: page,
@@ -457,15 +380,6 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
     const itemsKeys: any[] = [];
     let importedFunc: any;
 
-    // try {
-    //   // Criar e executar a função dinamicamente
-    //   const func = new Function("appJson", "setAppJson", jsonImported);
-    //   console.log("Executing Function: ", func.toString());
-    //   func(appJson, setAppJson);
-    // } catch (error) {
-    //   console.error("Error executing functionCode: ", error);
-    // }
-
     for (const key of Object.keys(jsonImported.importedFunc)) {
       const { import: importName, from: importSource } =
         jsonImported.importedFunc[key];
@@ -475,10 +389,8 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
           importedFunc = appJson;
         } else if (importSource === "setVariable") {
           importedFunc = setAppJson;
-
         } else if (importSource === "location") {
           importedFunc = location;
-          
         } else {
           const importedModule = await moduleMap[importSource]();
           importedFunc = importedModule[importName];
@@ -497,10 +409,9 @@ console.log(appJson.modules.pedido.pages.cadastro.components.table.table.dataTab
     }
     // console.log(itemsArray, itemsKeys);
     try {
-      const  func = new Function(...itemsKeys, jsonImported.functionCode);
+      const func = new Function(...itemsKeys, jsonImported.functionCode);
 
       func(...itemsArray);
-
     } catch (e) {
       console.error(e);
     }

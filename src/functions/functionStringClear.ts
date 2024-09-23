@@ -1,4 +1,4 @@
-function extractFunctions(code) {
+export function extractFunctions(code:any) {
   const functionRegex = /function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
   const functionsArray = [];
 
@@ -50,71 +50,3 @@ function extractFunctions(code) {
 
   return functionsArray;
 }
-
-const appFunctions = [
-  `
-
-  /* Função para validarCPF ou validar CPNJ */
-
-  function validateCPF(cpf) {
-    if (cpf.length != 11) {
-      return false;
-    } else {
-      let firstDigit = 0;
-      let secondDigit = 0;
-      for (let i = 0; i < 10; i++) {
-        i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
-        secondDigit += Number(cpf[i]) * i;
-      }
-      firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-      secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-      if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-  }
-
-  function validateCNPJ(cnpj) {
-    if (cnpj.length != 11) {
-      return false;
-    } else {
-      let firstDigit = 0;
-      let secondDigit = 0;
-      for (let i = 0; i < 10; i++) {
-        i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
-        secondDigit += Number(cnpj[i]) * i;
-      }
-      firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-      secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-      if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-  }
-
-  function validateDocumento(value) {
-    if (value.length == 11) return validateCPF(value);
-    else if (value.length == 14) return validateCNPJ(value);
-    else return false;
-  }
-  `,`
-  function funcTeste(value) {
-    console.log(value)
-  }
-  `
-];
-
-const functionsList = [];
-
-// Itera sobre cada string no appFunctions para extrair as funções
-appFunctions.forEach((arr) => {
-  extractFunctions(arr).forEach((arry) => {
-    functionsList.push(arry);
-  });
-});
-
-console.log(functionsList);

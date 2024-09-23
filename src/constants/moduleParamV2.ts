@@ -90,41 +90,107 @@ export type Module = {
   };
 };
 
-export type AppFunctions = {functionCode: string, functionParams: string[]};
+export type AppFunctions = { functionCode: string; functionParams: string[] };
 
 export type ModuleParam = {
   globalSettings?: { CSS?: {} };
-  appFunctions?: { [key: string]: AppFunctions};
+  appFunctions?: string[];
   modules: { [key: string]: Module };
 };
 
 export const modulesParamV2: ModuleParam = {
-  appFunctions: {
-    validateCPF: {
-      functionCode: `if (cpf.length != 11) {
-    return false;
-  } else {
-    let firstDigit = 0;
-    let secondDigit = 0;
-    for (let i = 0; i < 10; i++) {
-      i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
-      secondDigit += Number(cpf[i]) * i;
+  appFunctions: [
+    `
+  
+    /* Função para validarCPF ou validar CPNJ */
+  
+    function validateCPF(cpf) {
+      if (cpf.length != 11) {
+        return false;
+      } else {
+        let firstDigit = 0;
+        let secondDigit = 0;
+        for (let i = 0; i < 10; i++) {
+          i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
+          secondDigit += Number(cpf[i]) * i;
+        }
+        firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+        secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+        if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
+          return false;
+        } else {
+          return true;
+        }
+      }
     }
-    firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-    secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-    if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
-      return false;
-    } else {
-      return true;
+  
+    function validateCNPJ(cnpj) {
+      if (cnpj.length != 11) {
+        return false;
+      } else {
+        let firstDigit = 0;
+        let secondDigit = 0;
+        for (let i = 0; i < 10; i++) {
+          i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
+          secondDigit += Number(cnpj[i]) * i;
+        }
+        firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+        secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+        if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
+          return false;
+        } else {
+          return true;
+        }
+      }
     }
-  }`,
-      functionParams: ["cpf"]
-    },
-  },
+  
+    function validateDocumento(cpf) {
+      if (cpf.length === 11) return validateCPF(cpf);
+      else if (cpf.length === 14) return validateCNPJ(cnpj);
+      else return false;
+    }
+    `,
+    `
+    function funcTeste(value) {
+    console.log(value)
+    }
+    `,
+  ],
+
   modules: {
     cliente: {
       moduleName: "Clientes",
       pages: {
+        pageTeste: {
+          pageName: "Page Teste",
+          components: {
+            botao1: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 1",
+              function: {
+                functionCode: `console.log(appFunctions.validateDocumento("44456945842",appFunctions))`,
+                importedFunc: {
+                  appFunctions: {
+                    import: "appFunctions",
+                    from: "appFunctions",
+                  },
+                },
+              },
+            },
+            botao2: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 2",
+              function: {
+                functionCode: `teste2()`,
+                importedFunc: {},
+              },
+            },
+          },
+        },
         cadastro: {
           pageName: "Cadastro",
           components: {
@@ -179,7 +245,10 @@ enter8.fillForm(appJson, setAppJson, resolve, location)
                   appJson: { import: "appJson", from: "variable" },
                   allFunctions: { import: "enter8", from: "enter8" },
                   location: { import: "location", from: "location" },
-                  appFunctions: {import: "appFunctions", from: "appFunctions"},
+                  appFunctions: {
+                    import: "appFunctions",
+                    from: "appFunctions",
+                  },
                 },
               },
             },

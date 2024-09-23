@@ -5,6 +5,7 @@ import ModuleForm from "@/src/components/moduleForm";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import { moduleMap } from "@/src/constants/importModules";
 import { appFunctions } from "@/src/functions/appFunctions";
+import { extractFunctions } from "@/src/functions/functionStringClear";
 
 export interface FunctionJson {
   functionCode: string;
@@ -22,18 +23,25 @@ export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
   useEffect(() => {
-    console.log(appFunctions)
-    appJson.appFunctions &&
-      Object.keys(appJson.appFunctions).forEach((functionName) => {
-        if (appJson.appFunctions) {
-          const func = new Function(
-            ...appJson.appFunctions[functionName].functionParams,
-            appJson.appFunctions[functionName].functionCode
-          );
-          addFunction(functionName, (...args: any[]) => func(...args));
-        }
+    console.log(appJson.appFunctions);
+
+    const functionsList: [][] = [];
+
+    appJson.appFunctions?.forEach((arr: any) => {
+      extractFunctions(arr).forEach((arry: any) => {
+        functionsList.push(arry);
       });
-  },[]);
+    });
+
+    console.log(functionsList);
+
+    functionsList.forEach((functionArray: any) => {
+      const func = new Function(...functionArray[1], functionArray[2]);
+      addFunction(functionArray[0], (...args: any[]) => func(...args));
+    });
+
+    console.log(appFunctions)
+  }, []);
 
   function addFunction(name: string, func: Function) {
     appFunctions[name] = func;

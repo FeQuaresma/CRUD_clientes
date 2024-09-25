@@ -1,1 +1,1 @@
-export const appFunctions: { [key:string]: Function} = {}
+export const appFunctions: { [key:string]: any} = {}

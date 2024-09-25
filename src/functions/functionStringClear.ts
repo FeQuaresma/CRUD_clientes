@@ -1,9 +1,15 @@
-export function extractFunctions(code:any) {
-  const functionRegex = /function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
+export function extractFunctions(appFunctionsArray: string[]) {
+
+  let code:string = "";
+  for (let index = 0; index < appFunctionsArray.length; index++) {
+    code = code + appFunctionsArray[index];
+  }
+  console.log(code)
+  const functionRegex = / function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
   const functionsArray = [];
 
   // Armazena todos os nomes de funções encontradas
-  const functionNames = [];
+  const functionNames: string[] = [];
 
   // Primeira passagem: captura apenas os nomes das funções
   let match;
@@ -33,20 +39,26 @@ export function extractFunctions(code:any) {
 
     let body = code.slice(functionBodyStart, functionBodyEnd - 1).trim();
 
-    // Substituir referências de funções no corpo por appFunctions.[nome da função]
-    functionNames.forEach(fnName => {
-      const regex = new RegExp(`\\b${fnName}\\b`, 'g');
-      if (body.match(regex)) {
-        body = body.replace(regex, `appFunctions.${fnName}`);
-        // Se a função faz referência a outra função, adicionar "appFunctions" aos parâmetros
-        if (!params.includes('appFunctions')) {
-          params.push('appFunctions');
-        }
-      }
-    });
-
     functionsArray.push([functionName, params, body]);
   }
+
+      // Substituir referências de funções no corpo por appFunctions.[nome da função]
+
+      functionsArray.forEach((functionCode: any[]) => {
+
+        functionNames.forEach(fnName => {
+          const regex = new RegExp(`\\b${fnName}\\b`, 'g');
+          if (functionCode[2].match(regex)) {
+            functionCode[2] = functionCode[2].replace(regex, `appFunctions.${fnName}`);
+            // Se a função faz referência a outra função, adicionar "appFunctions" aos parâmetros
+            if (!functionCode[1].includes('appFunctions')) {
+              functionCode[1].push('appFunctions');
+            }
+          }
+        });
+
+
+      })
 
   return functionsArray;
 }

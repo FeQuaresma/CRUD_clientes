@@ -185,7 +185,17 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "Botão 2",
               function: {
-                functionCode: `teste2()`,
+                functionCode: `console.log("flag1");global.teste = () => {console.log("global flag")}`,
+                importedFunc: {},
+              },
+            },
+            botao3: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 3",
+              function: {
+                functionCode: `teste()`,
                 importedFunc: {},
               },
             },

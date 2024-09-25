@@ -22,28 +22,23 @@ const Drawer = createDrawerNavigator();
 export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
+
   useEffect(() => {
     console.log(appJson.appFunctions);
 
-    const functionsList: [][] = [];
-
-    appJson.appFunctions?.forEach((arr: any) => {
-      extractFunctions(arr).forEach((arry: any) => {
-        functionsList.push(arry);
-      });
-    });
-
-    console.log(functionsList);
+    const functionsList: any = appJson.appFunctions
+      ? extractFunctions(appJson.appFunctions)
+      : "";
 
     functionsList.forEach((functionArray: any) => {
       const func = new Function(...functionArray[1], functionArray[2]);
       addFunction(functionArray[0], (...args: any[]) => func(...args));
     });
 
-    console.log(appFunctions)
+    console.log(appFunctions);
   }, []);
 
-  function addFunction(name: string, func: Function) {
+  function addFunction(name: string, func: any) {
     appFunctions[name] = func;
   }
 

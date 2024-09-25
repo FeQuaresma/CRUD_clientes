@@ -1,5 +1,11 @@
-function extractFunctions(code) {
-  const functionRegex = /function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
+function extractFunctions(appFunctionsArray) {
+
+  let code;
+  for (let index = 0; index < appFunctionsArray.length; index++) {
+    code = code + appFunctionsArray[index];
+  }
+  console.log(code)
+  const functionRegex = / function\s+([a-zA-Z0-9_]+)\s*\(([^)]*)\)\s*\{/g;
   const functionsArray = [];
 
   // Armazena todos os nomes de funções encontradas
@@ -33,34 +39,53 @@ function extractFunctions(code) {
 
     let body = code.slice(functionBodyStart, functionBodyEnd - 1).trim();
 
-    // Substituir referências de funções no corpo por appFunctions.[nome da função]
-    functionNames.forEach(fnName => {
-      const regex = new RegExp(`\\b${fnName}\\b`, 'g');
-      if (body.match(regex)) {
-        body = body.replace(regex, `appFunctions.${fnName}`);
-        // Se a função faz referência a outra função, adicionar "appFunctions" aos parâmetros
-        if (!params.includes('appFunctions')) {
-          params.push('appFunctions');
-        }
-      }
-    });
-
     functionsArray.push([functionName, params, body]);
   }
 
+      // Substituir referências de funções no corpo por appFunctions.[nome da função]
+
+      functionsArray.forEach((functionCode) => {
+
+        functionNames.forEach(fnName => {
+          const regex = new RegExp(`\\b${fnName}\\b`, 'g');
+          if (functionCode[2].match(regex)) {
+            functionCode[2] = functionCode[2].replace(regex, `appFunctions.${fnName}`);
+            // Se a função faz referência a outra função, adicionar "appFunctions" aos parâmetros
+            if (!functionCode[1].includes('appFunctions')) {
+              functionCode[1].push('appFunctions');
+            }
+          }
+        });
+
+
+      })
+
   return functionsArray;
 }
+
 
 const appFunctions = [
   `
 
   /* Função para validarCPF ou validar CPNJ */
 
+      function validateDocumento(cpf) {
+    if (cpf.length === 11) return validateCPF(cpf);
+    else if (cpf.length === 14) return validateCNPJ(cnpj);
+    else return false;
+  }
+
+  /*function validateDocumentov2(cpf) {
+    if (cpf.length === 11) return validateCPF(cpf);
+    else if (cpf.length === 14) return validateCNPJ(cnpj);
+    else return false;
+  }*/
+
   function validateCPF(cpf) {
     if (cpf.length != 11) {
       return false;
     } else {
-      let firstDigit = 0;
+      let appFun.firstDigit = 0;
       let secondDigit = 0;
       for (let i = 0; i < 10; i++) {
         i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
@@ -96,25 +121,22 @@ const appFunctions = [
     }
   }
 
-  function validateDocumento(value) {
-    if (value.length == 11) return validateCPF(value);
-    else if (value.length == 14) return validateCNPJ(value);
-    else return false;
-  }
-  `,`
-  function funcTeste(value) {
-    console.log(value)
-  }
+
+  `,
   `
-];
+  function funcTeste(value) {
+  console.log(value)
+  }
+  `,
+]
 
-const functionsList = [];
+console.log(extractFunctions(appFunctions));
 
-// Itera sobre cada string no appFunctions para extrair as funções
-appFunctions.forEach((arr) => {
-  extractFunctions(arr).forEach((arry) => {
-    functionsList.push(arry);
-  });
-});
 
-console.log(functionsList);
+
+
+
+
+function x(getvalues){
+  getvalues()
+}

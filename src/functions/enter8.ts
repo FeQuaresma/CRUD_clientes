@@ -29,6 +29,12 @@ export function getAllValues(appJson: ModuleParam, location: Location) {
   return exportedObject;
 }
 
+export function getValue(appJson: ModuleParam, location: Location) {
+  return appJson.modules[location.module].pages[location.page].components[
+    location.field
+  ].value;
+}
+
 export function fillForm(
   appJson: ModuleParam,
   setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>,
@@ -107,6 +113,9 @@ export function validateCPF(cpf: string) {
 export const enter8 = {
   getAllValues: (appJson: ModuleParam, location: Location) =>
     getAllValues(appJson, location),
+
+  getValue: (appJson: ModuleParam, location: Location) =>
+    getValue(appJson, location),
 
   callAPI: (link: any, value: any) => callAPI(link, value),
 

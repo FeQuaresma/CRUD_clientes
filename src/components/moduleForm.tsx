@@ -35,7 +35,9 @@ export default function ModuleForm({
   callFatherTable,
   callFatherButton,
   setFormParam,
+  formName,
 }: any) {
+  console.log(formParam)
   // const [form, setForm] = useState(formParam);
 
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
@@ -453,7 +455,7 @@ export default function ModuleForm({
         )}
         {formMode === "register" && (
           <Text style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}>
-            Cadastro
+            {formName}
           </Text>
         )}
         <View style={{ width: 30 }} />

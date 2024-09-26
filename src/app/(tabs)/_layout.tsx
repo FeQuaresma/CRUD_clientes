@@ -6,6 +6,8 @@ import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import { moduleMap } from "@/src/constants/importModules";
 import { appFunctions } from "@/src/functions/appFunctions";
 import { extractFunctions } from "@/src/functions/functionStringClear";
+import ModuleIndex from "@/src/components/moduleIndex";
+import { enter8 } from "@/src/functions/enter8";
 
 export interface FunctionJson {
   functionCode: string;
@@ -22,25 +24,25 @@ const Drawer = createDrawerNavigator();
 export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
 
-
   useEffect(() => {
-    console.log(appJson.appFunctions);
-
-    const functionsList: any = appJson.appFunctions
-      ? extractFunctions(appJson.appFunctions)
-      : "";
-
-    functionsList.forEach((functionArray: any) => {
-      const func = new Function(...functionArray[1], functionArray[2]);
-      addFunction(functionArray[0], (...args: any[]) => func(...args));
-    });
-
-    console.log(appFunctions);
+    setAppJson((prevForm: ModuleParam) => ({
+      ...prevForm,
+      ...enter8,
+      setAppJson: setAppJson,
+    }));
   }, []);
 
-  function addFunction(name: string, func: any) {
-    appFunctions[name] = func;
-  }
+  useEffect(() => {
+    appJson.setAppJson &&
+      appJson.setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        teste: 1,
+      }));
+  }, [appJson.setAppJson]);
+
+  useEffect(() => {
+    console.log(appJson);
+  }, [appJson]);
 
   function handleCallBackTable(
     moduleObject: any,
@@ -375,49 +377,85 @@ export default function MyApp() {
     }
   }
 
-  async function executeFunction(
-    jsonImported: FunctionJson,
-    location: Location
-  ) {
+  async function executeFunction(jsonImported: string, location: Location) {
     const itemsArray: any[] = [];
     const itemsKeys: any[] = [];
-    let importedFunc: any;
 
-    for (const key of Object.keys(jsonImported.importedFunc)) {
-      const { import: importName, from: importSource } =
-        jsonImported.importedFunc[key];
-
-      try {
-        if (importSource === "variable") {
-          importedFunc = appJson;
-        } else if (importSource === "setVariable") {
-          importedFunc = setAppJson;
-        } else if (importSource === "location") {
-          importedFunc = location;
-        } else {
-          const importedModule = await moduleMap[importSource]();
-          importedFunc = importedModule[importName];
-        }
-
-        if (!importedFunc && importedFunc !== "") {
-          console.error(`Function ${importName} not found in ${importSource}`);
-          continue;
-        }
-
-        itemsArray.push(importedFunc);
-        itemsKeys.push(importName);
-      } catch (error) {
-        console.error(`Import Error ${importSource}:`, error);
-      }
-    }
-    // console.log(itemsArray, itemsKeys);
     try {
-      const func = new Function(...itemsKeys, jsonImported.functionCode);
+      console.log(clearFunctionString(jsonImported, location.module));
 
-      func(...itemsArray);
+      const func = new Function(
+        ...itemsKeys,
+        "appJson",
+        clearFunctionString(jsonImported, location.module)
+      );
+
+      func(...itemsArray, appJson);
     } catch (e) {
       console.error(e);
     }
+
+    // for (const key of Object.keys(jsonImported.importedFunc)) {
+    //   const { import: importName, from: importSource } =
+    //     jsonImported.importedFunc[key];
+
+    //   try {
+    //     if (importSource === "variable") {
+    //       importedFunc = appJson;
+    //     } else if (importSource === "setVariable") {
+    //       importedFunc = setAppJson;
+    //     } else if (importSource === "location") {
+    //       importedFunc = location;
+    //     } else {
+    //       const importedModule = await moduleMap[importSource]();
+    //       importedFunc = importedModule[importName];
+    //     }
+
+    //     if (!importedFunc && importedFunc !== "") {
+    //       console.error(`Function ${importName} not found in ${importSource}`);
+    //       continue;
+    //     }
+
+    //     itemsArray.push(importedFunc);
+    //     itemsKeys.push(importName);
+    //   } catch (error) {
+    //     console.error(`Import Error ${importSource}:`, error);
+    //   }
+    // }
+    // // console.log(itemsArray, itemsKeys);
+    // try {
+    //   const func = new Function(...itemsKeys, jsonImported.functionCode);
+
+    //   func(...itemsArray);
+    // } catch (e) {
+    //   console.error(e);
+    // }
+  }
+
+  function clearFunctionString(funcString: string, moduleName: string) {
+    if (appJson.modules.cliente.functions) {
+      Object.keys(appJson.modules.cliente.functions).forEach((fnName: any) => {
+        const regex = new RegExp(`\\b${fnName}\\b`, "g");
+        if (funcString.match(regex)) {
+          funcString = funcString.replace(
+            regex,
+            `appJson.modules.${moduleName}.functions.${fnName}`
+          );
+        }
+      });
+    }
+    if (appJson.modules.cliente.variables) {
+      Object.keys(appJson.modules.cliente.variables).forEach((varName: any) => {
+        const regex = new RegExp(`\\b${varName}\\b`, "g");
+        if (funcString.match(regex)) {
+          funcString = funcString.replace(
+            regex,
+            `appJson.modules.${moduleName}.variables.${varName}`
+          );
+        }
+      });
+    }
+    return funcString;
   }
 
   function maskedValue(value: string, mask: any) {
@@ -496,7 +534,7 @@ export default function MyApp() {
             //   }}
             // />
             <Drawer.Navigator screenOptions={{ drawerPosition: "right" }}>
-              {/* <Drawer.Screen
+              <Drawer.Screen
                 name={`${appJson.modules[moduleObject].moduleName}Home`}
                 options={{
                   title: `${appJson.modules[moduleObject].moduleName}Home`,
@@ -507,9 +545,12 @@ export default function MyApp() {
                   <ModuleIndex
                     {...e}
                     moduleName={appJson.modules[moduleObject].moduleName}
+                    appJson={appJson}
+                    moduleObject={moduleObject}
+                    setAppJson={setAppJson}
                   />
                 )}
-              </Drawer.Screen> */}
+              </Drawer.Screen>
 
               {Object.keys(appJson.modules[moduleObject].pages).map((page) => (
                 <Drawer.Screen
@@ -523,6 +564,9 @@ export default function MyApp() {
                   {(e) => (
                     <ModuleForm
                       {...e}
+                      formName={
+                        appJson.modules[moduleObject].pages[page].pageName
+                      }
                       formParam={
                         appJson.modules[moduleObject].pages[page].components
                       }

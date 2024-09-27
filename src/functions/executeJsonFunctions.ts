@@ -1,4 +1,3 @@
-import { Alert } from "react-native";
 import { moduleMap } from "../constants/importModules";
 
 export interface FunctionJson {

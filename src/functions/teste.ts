@@ -1,11 +1,13 @@
-export const stringArray = 
+const stringArray = 
   `
 
   /* Função para validarCPF ou validar CPNJ */
 
-  var teste = 1
+  let teste = 1
 
-  function validateCPF(cpf) {
+  const testeX= (x) => {console.log(x)}
+
+  /* function validateCPF(cpf) {
     if (cpf.length != 11) {
       return false;
     } else {
@@ -24,7 +26,7 @@ export const stringArray =
         return true;
       }
     }
-  }
+  } */
 
   function validateCNPJ(cnpj) {
      if (cnpj.length != 11) {
@@ -52,3 +54,32 @@ export const stringArray =
     else return false;
   }
   `
+
+ export function testeF(){
+    let acorn = require("acorn");
+    const test = acorn.parse(stringArray, {ecmaVersion: 2020});
+    const x = test.body
+    const stringArray2 = []
+    for (let i = 0; i < x.length; i++) {
+      switch(x[i].type) {
+        case "VariableDeclaration":
+          varDisect();
+          break; 
+        case "FunctionDeclaration":
+          funcDisect();
+          break; 
+      }      
+      console.log(Object.keys(x[i].type))
+      const stringDec = stringArray.slice(x[i].start,x[i].end)
+      stringArray2.push(stringDec)
+    }
+    // console.log(stringArray2)
+  }
+
+  function varDisect(){
+
+  }
+
+  function funcDisect(){
+
+  }

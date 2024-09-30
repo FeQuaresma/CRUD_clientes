@@ -7,10 +7,7 @@ import { stringArray} from "../functions/teste";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  useEffect(()=>{
-    let acorn = require("acorn");
-    console.log(acorn.parse(stringArray, {ecmaVersion: 2020}).body[4]);
-  },[])
+
 
   return (
     <Stack.Navigator

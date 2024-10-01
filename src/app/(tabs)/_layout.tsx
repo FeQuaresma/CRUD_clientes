@@ -3,9 +3,6 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
-import { moduleMap } from "@/src/constants/importModules";
-import { appFunctions } from "@/src/functions/appFunctions";
-import { extractFunctions } from "@/src/functions/functionStringClear";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
 

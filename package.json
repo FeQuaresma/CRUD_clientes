@@ -21,6 +21,7 @@
     "@react-navigation/drawer": "^6.7.1",
     "@react-navigation/native": "^6.0.2",
     "acorn": "^8.12.1",
+    "acorn-loose": "^8.4.0",
     "date-fns": "^3.6.0",
     "expo": "~51.0.14",
     "expo-constants": "~16.0.2",

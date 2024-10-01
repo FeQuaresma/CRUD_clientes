@@ -172,7 +172,7 @@ function extractFunctions(appFunctionsArray, moduleName) {
       if (functionCode[2].match(regex)) {
         functionCode[2] = functionCode[2].replace(
           regex,
-          `appJson.modules.${moduleName}.variables.${varName}($1, appJson)`
+          `appJson.modules.${moduleName}.variables.${varName}`
         );
       }
     });

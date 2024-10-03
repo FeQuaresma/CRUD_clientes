@@ -29,18 +29,6 @@ export default function MyApp() {
     }));
   }, []);
 
-  useEffect(() => {
-    appJson.setAppJson &&
-      appJson.setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        teste: 1,
-      }));
-  }, [appJson.setAppJson]);
-
-  useEffect(() => {
-    console.log(appJson);
-  }, [appJson]);
-
   function handleCallBackTable(
     moduleObject: any,
     page: any,

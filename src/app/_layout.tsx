@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Index from ".";
 import MyApp from "./(tabs)/_layout";
 import { useEffect } from "react";
-import { stringArray} from "../functions/teste";
+import { stringArray} from "../functions/extractFunctions";
 
 const Stack = createNativeStackNavigator();
 

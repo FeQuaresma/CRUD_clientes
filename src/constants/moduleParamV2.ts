@@ -79,7 +79,7 @@ export interface TableParam extends Param {
 }
 
 export type Module = {
-  variables?: any,
+  variables?: any;
   stringFunctions?: string[];
   functions?: any;
   moduleName: string;
@@ -160,6 +160,7 @@ export const modulesParamV2: ModuleParam = {
         console.log(value)
         }
         `,
+        `https://caae.org.br/teste/functions.js?03x1`,
       ],
       moduleName: "Clientes",
       pages: {

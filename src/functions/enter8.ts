@@ -130,5 +130,4 @@ export const enter8 = {
 
   validateCPF: (cpf: string) => validateCPF(cpf),
 
-  contador: 1,
 };

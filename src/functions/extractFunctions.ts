@@ -1,113 +1,113 @@
 import * as acorn from "acorn-loose";
 
-export function teste(link:string) {
+export function catchTextJs(link: string) {
   return fetch(link)
-    .then(response => response.text())
-    .catch(error => {
-      console.error('Erro:', error);
+    .then((response) => response.text())
+    .catch((error) => {
+      console.error("Erro:", error);
     });
 }
 
-export function teste2(e:any){
-  console.log(typeof e)
+export function teste2(e: any) {
+  console.log(typeof e);
 }
 
-// export async function extractFunctions(link: string, moduleName: string) {
-//   try {
+export async function extractFunctions(
+  stringArray: string,
+  moduleName: string
+) {
+  try {
+    let funcNames: string[] = [];
+    let varNames: string[] = [];
 
-//     if (stringArray) {
-//       // console.log(stringArray)
-//       let funcNames: string[] = [];
-//       let varNames: string[] = [];
+    let funcArray: [string, string[], string][] = [];
+    let varObj: { [key: string]: any } = {};
 
-//       let funcArray: [string, string[], string][] = [];
-//       let varArray: [string, any][] = [];
+    function varDisect(declaration: any) {
+      for (let i = 0; i < declaration.declarations.length; i++) {
+        if (declaration.declarations[i].init === null) {
+          varNames.push(declaration.declarations[i].id.name);
+          varObj[declaration.declarations[i].id.name] = undefined;
+        } else if (
+          declaration.declarations[i].init.type !== "ArrowFunctionExpression"
+        ) {
+          varNames.push(declaration.declarations[i].id.name);
+          varObj[declaration.declarations[i].id.name] =
+            declaration.declarations[i].init.value;
+        } else {
+          declaration.declarations[i].init.id = declaration.declarations[i].id;
+          funcDisect(declaration.declarations[i].init);
+        }
+      }
+    }
 
-//       function varDisect(declaration: any) {
-//         for (let i = 0; i < declaration.declarations.length; i++) {
-//           if (declaration.declarations[i].init === null) {
-//             varNames.push(declaration.declarations[i].id.name);
-//             varArray.push([declaration.declarations[i].id.name, undefined]);
-//           } else if (
-//             declaration.declarations[i].init.type !== "ArrowFunctionExpression"
-//           ) {
-//             varNames.push(declaration.declarations[i].id.name);
-//             varArray.push([
-//               declaration.declarations[i].id.name,
-//               declaration.declarations[i].init.value,
-//             ]);
-//           } else {
-//             declaration.declarations[i].init.id =
-//               declaration.declarations[i].id;
-//             funcDisect(declaration.declarations[i].init);
-//           }
-//         }
-//       }
+    function funcDisect(declaration: any) {
+      if (stringArray) {
+        let funcName = declaration.id.name;
+        let funcParam: string[] = declaration.params.map(
+          (item: any) => item.name
+        );
+        let funcBody = stringArray
+          .slice(declaration.body.start + 1, declaration.body.end - 1)
+          .trim();
+        funcNames.push(funcName);
+        funcArray.push([funcName, funcParam, funcBody]);
+      }
+    }
 
-//       function funcDisect(declaration: any) {
-//         if (stringArray) {
-//           let funcName = declaration.id.name;
-//           let funcParam: string[] = declaration.params.map(
-//             (item: any) => item.name
-//           );
-//           let funcBody = stringArray
-//             .slice(declaration.body.start + 1, declaration.body.end - 1)
-//             .trim();
-//           funcNames.push(funcName);
-//           funcArray.push([funcName, funcParam, "funcBody"]);
-//         }
-//       }
+    const commentRegex = /\/\*[\s\S]*?\*\/|\/\/.*/g;
+    stringArray = stringArray.replace(commentRegex, "");
 
-//       const commentRegex = /\/\*[\s\S]*?\*\/|\/\/.*/g;
-//       stringArray = stringArray.replace(commentRegex, "");
+    // let acorn = require("acorn");
+    const acornObject = acorn.parse(stringArray, {
+      ecmaVersion: "latest",
+    }).body;
 
-//       // let acorn = require("acorn");
-//       const acornObject = acorn.parse(stringArray, { ecmaVersion: "latest" }).body;
+    for (let i = 0; i < acornObject.length; i++) {
+      switch (acornObject[i].type) {
+        case "VariableDeclaration":
+          varDisect(acornObject[i]);
+          break;
+        case "FunctionDeclaration":
+          funcDisect(acornObject[i]);
+          break;
+      }
+    }
 
-//       for (let i = 0; i < acornObject.length; i++) {
-//         switch (acornObject[i].type) {
-//           case "VariableDeclaration":
-//             varDisect(acornObject[i]);
-//             break;
-//           case "FunctionDeclaration":
-//             funcDisect(acornObject[i]);
-//             break;
-//         }
+    funcArray.forEach((functionCode) => {
+      funcNames.forEach((fnName) => {
+        const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
+        if (functionCode[2].match(regex)) {
+          functionCode[2] = functionCode[2].replace(
+            regex,
+            `appJson.modules.${moduleName}.functions.${fnName}($1, appJson)`
+          );
+        }
+      });
 
-//       }
+      varNames.forEach((varName) => {
+        const regex = new RegExp(`\\b${varName}\\((.*?)\\)`, "g");
+        if (functionCode[2].match(regex)) {
+          functionCode[2] = functionCode[2].replace(
+            regex,
+            `appJson.modules.${moduleName}.variables.${varName}`
+          );
+        }
+      });
 
-//       funcArray.forEach((functionCode) => {
-//         funcNames.forEach((fnName) => {
-//           const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
-//           if (functionCode[2].match(regex)) {
-//             functionCode[2] = functionCode[2].replace(
-//               regex,
-//               `appJson.modules.${moduleName}.functions.${fnName}($1, appJson)`
-//             );
-//           }
-//         });
-//         varNames.forEach((varName) => {
-//           const regex = new RegExp(`\\b${varName}\\((.*?)\\)`, "g");
-//           if (functionCode[2].match(regex)) {
-//             functionCode[2] = functionCode[2].replace(
-//               regex,
-//               `appJson.modules.${moduleName}.variables.${varName}`
-//             );
-//           }
-//         });
-//         if (!functionCode[1].includes("appJson")) {
-//           functionCode[1].push("appJson");
-//         }
-//       });
 
-//       console.log("vars: ", varNames);
-//       // console.log("vars: ", varArray);
-//       console.log("funcs: ", funcNames);
-//       // console.log("funcs: ", funcArray);
-//       // console.log({ variables: varArray, functions: funcArray });
-//       // return { variables: varArray, functions: funcArray };
-//     }
-//   } catch (e) {
-//     console.error("catch e:", e);
-//   }
-// }
+      if (!functionCode[1].includes("appJson")) {
+        functionCode[1].push("appJson");
+      }
+    });
+
+    // console.log("vars: ", varNames);
+    // console.log("vars: ", varObj);
+    // console.log("funcs: ", funcNames);
+    // console.log("funcs: ", funcArray);
+    // console.log({ variables: varArray, functions: funcArray });
+    return { variables: varObj, functions: funcArray, varNames, funcNames };
+  } catch (e) {
+    console.error("catch e:", e);
+  }
+}

@@ -79,6 +79,8 @@ export interface TableParam extends Param {
 }
 
 export type Module = {
+  varNames?: string[];
+  funcNames?: string[];
   variables?: any;
   stringFunctions?: string[];
   functions?: any;
@@ -106,6 +108,12 @@ export const modulesParamV2: ModuleParam = {
     cliente: {
       stringFunctions: [
         `
+        let contador = 1;
+
+        function plusCount(){
+          contador++
+          console.log(contador)
+        }
       
         /* Função para validarCPF ou validar CPNJ */
       
@@ -160,13 +168,27 @@ export const modulesParamV2: ModuleParam = {
         console.log(value)
         }
         `,
-        `https://caae.org.br/teste/functions.js?03x1`,
+        `https://caae.org.br/teste/functions.js?03x13`,
       ],
       moduleName: "Clientes",
       pages: {
         pageTeste: {
           pageName: "Page Teste",
           components: {
+            botaoTeste: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão Teste",
+              function: `contador++; appJson.setVarValue(contador)`,
+            },
+            botaoTeste2: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,    
+              value: "Botão Teste2",
+              function: `appJson.setField("cliente", "pageTeste", "botao1", ["value", "isEditable"], ["Funcionou"+contador, false])`,
+            },
             botao1: {
               inputType: "button",
               isEditable: false,

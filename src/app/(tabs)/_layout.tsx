@@ -25,9 +25,63 @@ export default function MyApp() {
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
+      setVarValue,
+      setField,
       setAppJson: setAppJson,
     }));
   }, []);
+
+  function setVarValue(variable: any, value: any) {
+    console.log("contador: ", variable, value);
+    // setAppJson((prevForm: ModuleParam) => ({
+    //   ...prevForm,
+    //   modules: {
+    //     ...prevForm.modules,
+    //     [moduleObject]: {
+    //       ...prevForm.modules[moduleObject],
+    //       variables: {
+    //         ...prevForm.modules[moduleObject].pages,
+    //         [variable]: value,
+    //       },
+    //     },
+    //   },
+    // }));
+  }
+
+  function setField(
+    moduleName: string,
+    page: string,
+    field: string,
+    param: string[],
+    value: any[]
+  ) {
+    for (let i = 0; i < param.length; i++) {
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        modules: {
+          ...prevForm.modules,
+          [moduleName]: {
+            ...prevForm.modules[moduleName],
+            pages: {
+              ...prevForm.modules[moduleName].pages,
+              [page]: {
+                ...prevForm.modules[moduleName].pages[page],
+                components: {
+                  ...prevForm.modules[moduleName].pages[page].components,
+                  [field]: {
+                    ...prevForm.modules[moduleName].pages[page].components[
+                      field
+                    ],
+                    [param[i]]: value[i],
+                  },
+                },
+              },
+            },
+          },
+        },
+      }));
+    }
+  }
 
   function handleCallBackTable(
     moduleObject: any,
@@ -369,52 +423,37 @@ export default function MyApp() {
     try {
       console.log(clearFunctionString(jsonImported, location.module));
 
+      appJson.modules[location.module].funcNames?.forEach((fnName) => {
+        const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
+        if (jsonImported.match(regex)) {
+          jsonImported = jsonImported.replace(
+            regex,
+            `appJson.modules.${location.module}.functions.${fnName}($1, appJson)`
+          );
+        }
+      });
+
+      appJson.modules[location.module].varNames?.forEach((varName) => {
+        const regex = new RegExp(`\\b${varName}\\((.*?)\\)`, "g");
+        if (jsonImported.match(regex)) {
+          jsonImported = jsonImported.replace(
+            regex,
+            `appJson.modules.${location.module}.variables.${varName}`
+          );
+        }
+      });
+
       const func = new Function(
         ...itemsKeys,
         "appJson",
+        "location",
         clearFunctionString(jsonImported, location.module)
       );
 
-      func(...itemsArray, appJson);
+      func(...itemsArray, appJson, location);
     } catch (e) {
       console.error(e);
     }
-
-    // for (const key of Object.keys(jsonImported.importedFunc)) {
-    //   const { import: importName, from: importSource } =
-    //     jsonImported.importedFunc[key];
-
-    //   try {
-    //     if (importSource === "variable") {
-    //       importedFunc = appJson;
-    //     } else if (importSource === "setVariable") {
-    //       importedFunc = setAppJson;
-    //     } else if (importSource === "location") {
-    //       importedFunc = location;
-    //     } else {
-    //       const importedModule = await moduleMap[importSource]();
-    //       importedFunc = importedModule[importName];
-    //     }
-
-    //     if (!importedFunc && importedFunc !== "") {
-    //       console.error(`Function ${importName} not found in ${importSource}`);
-    //       continue;
-    //     }
-
-    //     itemsArray.push(importedFunc);
-    //     itemsKeys.push(importName);
-    //   } catch (error) {
-    //     console.error(`Import Error ${importSource}:`, error);
-    //   }
-    // }
-    // // console.log(itemsArray, itemsKeys);
-    // try {
-    //   const func = new Function(...itemsKeys, jsonImported.functionCode);
-
-    //   func(...itemsArray);
-    // } catch (e) {
-    //   console.error(e);
-    // }
   }
 
   function clearFunctionString(funcString: string, moduleName: string) {

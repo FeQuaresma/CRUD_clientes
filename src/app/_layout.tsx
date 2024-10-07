@@ -1,13 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Index from ".";
-import MyApp from "./(tabs)/_layout";
-import { useEffect } from "react";
-import { stringArray} from "../functions/extractFunctions";
+import MyApp from "./(modules)/_layout";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
 
   return (
     <Stack.Navigator
@@ -19,7 +16,7 @@ export default function App() {
       }}
     >
       <Stack.Screen name="index" component={Index} />
-      <Stack.Screen name="(tabs)" component={MyApp} />
+      <Stack.Screen name="(modules)" component={MyApp} />
     </Stack.Navigator>
   );
 }

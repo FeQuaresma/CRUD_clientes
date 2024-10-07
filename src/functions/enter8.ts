@@ -41,11 +41,6 @@ export function fillForm(
   formData: any,
   location: Location
 ) {
-  // console.log("appJson", appJson);
-  // console.log("setAppJson", setAppJson);
-  // console.log("formData", formData);
-  // console.log("location", location);
-
   console.log(
     Object.keys(
       appJson.modules[location.module].pages[location.page].components

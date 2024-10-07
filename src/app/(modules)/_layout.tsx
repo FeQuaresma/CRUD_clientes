@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { modulesParam } from "@/src/constants/moduleParam";
 import ModuleForm from "@/src/components/moduleForm";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import ModuleIndex from "@/src/components/moduleIndex";
@@ -25,62 +24,134 @@ export default function MyApp() {
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
-      setVarValue,
       setField,
-      setAppJson: setAppJson,
     }));
   }, []);
 
-  function setVarValue(variable: any, value: any) {
-    console.log("contador: ", variable, value);
-    // setAppJson((prevForm: ModuleParam) => ({
-    //   ...prevForm,
-    //   modules: {
-    //     ...prevForm.modules,
-    //     [moduleObject]: {
-    //       ...prevForm.modules[moduleObject],
-    //       variables: {
-    //         ...prevForm.modules[moduleObject].pages,
-    //         [variable]: value,
-    //       },
-    //     },
-    //   },
-    // }));
-  }
+  // function setField(
+  //   moduleName: string,
+  //   page: string,
+  //   field: string,
+  //   param: string[],
+  //   value: any[]
+  // ) {
+  //   for (let i = 0; i < param.length; i++) {
+  //     setAppJson((prevForm: ModuleParam) => ({
+  //       ...prevForm,
+  //       modules: {
+  //         ...prevForm.modules,
+  //         [moduleName]: {
+  //           ...prevForm.modules[moduleName],
+  //           pages: {
+  //             ...prevForm.modules[moduleName].pages,
+  //             [page]: {
+  //               ...prevForm.modules[moduleName].pages[page],
+  //               components: {
+  //                 ...prevForm.modules[moduleName].pages[page].components,
+  //                 [field]: {
+  //                   ...prevForm.modules[moduleName].pages[page].components[
+  //                     field
+  //                   ],
+  //                   [param[i]]: value[i],
+  //                 },
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }));
+  //   }
+  // }
 
-  function setField(
-    moduleName: string,
-    page: string,
-    field: string,
-    param: string[],
-    value: any[]
-  ) {
-    for (let i = 0; i < param.length; i++) {
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        modules: {
-          ...prevForm.modules,
-          [moduleName]: {
-            ...prevForm.modules[moduleName],
-            pages: {
-              ...prevForm.modules[moduleName].pages,
-              [page]: {
-                ...prevForm.modules[moduleName].pages[page],
-                components: {
-                  ...prevForm.modules[moduleName].pages[page].components,
-                  [field]: {
-                    ...prevForm.modules[moduleName].pages[page].components[
-                      field
-                    ],
-                    [param[i]]: value[i],
-                  },
+  function setField(setFieldObj: any) {
+    Object.keys(setFieldObj).forEach((modName) => {
+      if (modName === "css") {
+        setAppJson((prevForm: ModuleParam) => ({
+          ...prevForm,
+          css: {...prevForm.css, ...setFieldObj[modName]},
+        }));
+      } else if (setFieldObj[modName]) {
+        Object.keys(setFieldObj[modName]).forEach((pageName) => {
+          if (pageName === "css") {
+            setAppJson((prevForm: ModuleParam) => ({
+              ...prevForm,
+              modules: {
+                ...prevForm.modules,
+                [modName]: {
+                  ...prevForm.modules[modName],
+                  css: {...prevForm.modules[modName].css, ...setFieldObj[modName][pageName]},
                 },
               },
-            },
-          },
-        },
-      }));
-    }
+            }));
+          } else if (setFieldObj[modName][pageName]) {
+            Object.keys(setFieldObj[modName][pageName]).forEach((fieldName) => {
+              if (fieldName === "css") {
+                setAppJson((prevForm: ModuleParam) => ({
+                  ...prevForm,
+                  modules: {
+                    ...prevForm.modules,
+                    [modName]: {
+                      ...prevForm.modules[modName],
+                      pages: {
+                        ...prevForm.modules[modName].pages,
+                        [pageName]: {
+                          ...prevForm.modules[modName].pages[pageName],
+                          css: {...prevForm.modules[modName].pages.css,...setFieldObj[modName][pageName][fieldName]},
+                        },
+                      },
+                    },
+                  },
+                }));
+              } else if (setFieldObj[modName][pageName][fieldName]) {
+                Object.keys(setFieldObj[modName][pageName][fieldName]).forEach(
+                  (propName) => {
+                    if (setFieldObj[modName][pageName][fieldName][propName]) {
+                      setAppJson((prevForm: ModuleParam) => ({
+                        ...prevForm,
+                        modules: {
+                          ...prevForm.modules,
+                          [modName]: {
+                            ...prevForm.modules[modName],
+                            pages: {
+                              ...prevForm.modules[modName].pages,
+                              [pageName]: {
+                                ...prevForm.modules[modName].pages[pageName],
+                                components: {
+                                  ...prevForm.modules[modName].pages[pageName]
+                                    .components,
+                                  [fieldName]: {
+                                    ...prevForm.modules[modName].pages[pageName]
+                                      .components[fieldName],
+                                    [propName]:
+                                      setFieldObj[modName][pageName][fieldName][
+                                        propName
+                                      ],
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      }));
+                    } else {
+                      console.error(
+                        `${modName}.${pageName}.${fieldName}.${propName} not found`
+                      );
+                    }
+                  }
+                );
+              } else {
+                console.error(`${modName}.${pageName}.${fieldName} not found`);
+              }
+            });
+          } else {
+            console.error(`${modName}.${pageName} not found`);
+          }
+        });
+      } else {
+        console.error(`${modName} not found`);
+      }
+    });
   }
 
   function handleCallBackTable(
@@ -421,8 +492,6 @@ export default function MyApp() {
     const itemsKeys: any[] = [];
 
     try {
-      console.log(clearFunctionString(jsonImported, location.module));
-
       appJson.modules[location.module].funcNames?.forEach((fnName) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
         if (jsonImported.match(regex)) {
@@ -530,21 +599,14 @@ export default function MyApp() {
           />
         )}
       </Drawer.Screen>
-      <Drawer.Screen
-        name="Calculadora"
-        component={Calculator}
-        options={{
-          title: "calculator",
-          headerShown: false,
-        }}
-      /> */}
+       */}
 
       {Object.keys(appJson.modules).map((moduleObject) => (
         <Drawer.Screen
           key={moduleObject}
           name={moduleObject}
           options={{
-            title: modulesParam[moduleObject].moduleName,
+            title: appJson.modules[moduleObject].moduleName,
             headerShown: false,
           }}
         >

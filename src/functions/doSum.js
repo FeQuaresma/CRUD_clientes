@@ -1,1 +1,0 @@
-const doSum = (a, b) => a + b;

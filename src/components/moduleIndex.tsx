@@ -39,13 +39,13 @@ export default function ModuleIndex({
     }
   }, []);
 
-  useEffect(() => {
-    const appJsonTemp: ModuleParam = appJson;
-    if (appJsonTemp.modules[moduleObject]) {
-      console.log(appJsonTemp.modules[moduleObject].functions);
-      console.log(appJsonTemp.modules[moduleObject].variables);
-    }
-  }, [appJson]);
+  // useEffect(() => {
+  //   const appJsonTemp: ModuleParam = appJson;
+  //   if (appJsonTemp.modules[moduleObject]) {
+  //     console.log(appJsonTemp.modules[moduleObject].functions);
+  //     console.log(appJsonTemp.modules[moduleObject].variables);
+  //   }
+  // }, [appJson]);
 
   async function createStringFunc() {
     let finalString = "";

@@ -1,4 +1,4 @@
-import * as acorn from "acorn-loose";
+import * as acorn from "acorn";
 
 export function catchTextJs(link: string) {
   return fetch(link)

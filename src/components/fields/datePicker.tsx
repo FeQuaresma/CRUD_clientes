@@ -1,14 +1,11 @@
-import * as React from "react";
 import { useEffect, useState } from "react";
 import {
   View,
   TextInput,
   Pressable,
-  Platform,
   Text,
   Modal,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles, stylesModal } from "../../constants/styles";
 import { Ionicons } from "@expo/vector-icons";
 import CalendarPicker from "react-native-calendar-picker";
@@ -36,24 +33,6 @@ export default function DatePicker({ field, onValueChange, dateOrder }: any) {
       }
     }
   }, [showPicker]);
-
-  // function onChange(e: Date, type: string) {
-  //   console.log(e);
-  //   if (e) {
-  //     switch (type) {
-  //       case "START_DATE":
-  //         type = "start";
-  //         break;
-  //       case "END_DATE":
-  //         type = "end";
-  //         toggleDatePicker()
-  //         break;
-  //     }
-  //     console.log(e,type)
-  //     onValueChange(formatDate(e), type);
-
-  //   }
-  // }
 
   function onChange(e: Date, type: string) {
     let dateArrayTemp = dateArray;

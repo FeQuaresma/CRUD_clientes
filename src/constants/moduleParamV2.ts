@@ -1,6 +1,4 @@
 import { DataRow } from "../components/fields/table";
-
-import { FunctionJson } from "../functions/executeJsonFunctions";
 import { params } from "./params";
 
 export interface Param {
@@ -23,7 +21,7 @@ export interface Param {
   valueMasked?: string | { start: string; end: string };
   maxLength?: number;
   options?: { label: string; value: string }[];
-  customInputCSS?: object;
+  css?: object;
   isNumber?: boolean;
   zeroTrim?: boolean;
   isCurrency?: boolean;
@@ -85,7 +83,7 @@ export type Module = {
   stringFunctions?: string[];
   functions?: any;
   moduleName: string;
-  moduleSettings?: { CSS: {} };
+  css?: {[key: string]: any};
   pages: {
     [key: string]: {
       pageName: string;
@@ -95,11 +93,11 @@ export type Module = {
   };
 };
 
-export type AppFunctions = { functionCode: string; functionParams: string[] };
 
 export type ModuleParam = {
-  globalSettings?: { CSS?: {} };
+  css?: {[key: string]: any};
   modules: { [key: string]: Module };
+  consolelog?: string;
   [key: string]: any;
 };
 
@@ -180,41 +178,21 @@ export const modulesParamV2: ModuleParam = {
               isEditable: false,
               isRequired: true,
               value: "Botão Teste",
-              function: `contador++; appJson.setVarValue(contador)`,
+              function: `contador++; console.log("contador: ", contador)`,
             },
             botaoTeste2: {
               inputType: "button",
               isEditable: false,
               isRequired: true,    
               value: "Botão Teste2",
-              function: `appJson.setField("cliente", "pageTeste", "botao1", ["value", "isEditable"], ["Funcionou"+contador, false])`,
+              function: `contador++;appJson.setField({cliente:{pageTeste:{botao1: {value: "Funcionou2 "+contador, inputType: "input"}}}})`,
             },
             botao1: {
               inputType: "button",
               isEditable: false,
               isRequired: true,
               value: "Botão 1",
-              function: `appJson.alert("Teste222");funcTeste("TesteJSONJS")`,
-            },
-            botao2: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,
-              value: "Botão 2",
-              function: {
-                functionCode: `console.log("flag1");global.teste = () => {console.log("global flag")}`,
-                importedFunc: {},
-              },
-            },
-            botao3: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,
-              value: "Botão 3",
-              function: {
-                functionCode: `teste()`,
-                importedFunc: {},
-              },
+              function: `appJson.alert(String(contador));`,
             },
           },
         },

@@ -1,30 +1,5 @@
-import { FunctionJson } from "../functions/executeJsonFunctions";
-import { pageParam, TableInterface } from "./moduleParamV2";
+import { pageParam } from "./moduleParamV2";
 
-export interface FormParam {
-  label?: string;
-  inputType: string;
-  inputMode?: string;
-  value: string;
-  placeholder?: string;
-  masks?: string[];
-  valueMasked?: string;
-  maxLength?: number;
-  isRequired: boolean;
-  isEditable: boolean;
-  isLocked?: boolean;
-  customInputCSS?: object;
-  function?: FunctionJson;
-  options?: { label: string; value: string }[];
-  link?: {
-    paramBeginning: string;
-    paramSize: number;
-    paramEnd: string;
-    type: "fillform" | "errorMsg" | null;
-  };
-  quebraDeLinha?: boolean;
-  table?: TableInterface;
-}
 
 export type Param = {
   [key: string]: pageParam;
@@ -45,7 +20,7 @@ export const params: Param = {
     maxLength: 18,
     isRequired: true,
     isEditable: false,
-    customInputCSS: { width: 220 },
+    css: { width: 220 },
     function: {
       functionCode: `
       if(!validateCPF(appJson.modules.cliente.pages.cadastro.components.cnpjcpf.value)){
@@ -157,7 +132,7 @@ export const params: Param = {
             [/^(\d{0,5})(\d{0,4})$/, "$1-$2", 9],
             [/^(\d{0,4})(\d{0,4})$/, "$1-$2", 1],
           ],
-          customInputCSS: { width: 160 },
+          css: { width: 160 },
           value: "",
           valueMasked: "",
           maxLength: 13,
@@ -176,7 +151,7 @@ export const params: Param = {
             [/^(\d{0,5})(\d{0,4})$/, "$1-$2", 9],
             [/^(\d{0,4})(\d{0,4})$/, "$1-$2", 1],
           ],
-          customInputCSS: { width: 160 },
+          css: { width: 160 },
           value: "",
           valueMasked: "",
           maxLength: 13,
@@ -353,7 +328,7 @@ export const params: Param = {
     value: "",
     isRequired: true,
     isEditable: true,
-    customInputCSS: {border: 1},
+    css: {border: 1},
   },
   enderecouf: {
     label: "Estado",

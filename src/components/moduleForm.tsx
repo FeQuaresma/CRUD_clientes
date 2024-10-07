@@ -3,7 +3,6 @@ import {
   Text,
   View,
   Pressable,
-  Modal,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
@@ -21,9 +20,7 @@ import {
 } from "./fields";
 import { styles } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { executeFunction } from "../functions/executeJsonFunctions";
 import Button from "./fields/button";
 
 export default function ModuleForm({
@@ -37,9 +34,6 @@ export default function ModuleForm({
   setFormParam,
   formName,
 }: any) {
-  console.log(formParam)
-  // const [form, setForm] = useState(formParam);
-
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
   useEffect(() => {

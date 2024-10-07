@@ -1,4 +1,4 @@
-import { Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { styles } from "@/src/constants/styles";
 
 export default function Grid({ field, onValueChange }: any) {

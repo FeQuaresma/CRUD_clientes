@@ -25,6 +25,7 @@ export interface Param {
   isNumber?: boolean;
   zeroTrim?: boolean;
   isCurrency?: boolean;
+  class?: string;
 }
 
 export interface pageParam extends Param {
@@ -41,6 +42,7 @@ export interface pageParam extends Param {
   quebraDeLinha?: boolean;
   table?: TableInterface;
   errorMsg?: string;
+  class?: string;
 }
 
 export interface TableInterface {
@@ -98,6 +100,7 @@ export type ModuleParam = {
   css?: {[key: string]: any};
   modules: { [key: string]: Module };
   consolelog?: string;
+  class?: {[key: string]: {[key: string]: string | number}};
   [key: string]: any;
 };
 
@@ -177,6 +180,7 @@ export const modulesParamV2: ModuleParam = {
               inputType: "button",
               isEditable: false,
               isRequired: true,
+              class: "button",
               value: "Botão Teste",
               function: `contador++; console.log("contador: ", contador)`,
             },

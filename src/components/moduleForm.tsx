@@ -33,6 +33,7 @@ export default function ModuleForm({
   callFatherButton,
   setFormParam,
   formName,
+  classes,
 }: any) {
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
@@ -80,6 +81,7 @@ export default function ModuleForm({
             <Date
               field={formParam[field]}
               dateOrder="start"
+              classes={classes}
               onValueChange={(e: any, type: any) =>
                 handleInputChange(e, field, undefined, undefined, type)
               }
@@ -87,6 +89,7 @@ export default function ModuleForm({
             <Date
               field={formParam[field]}
               dateOrder="end"
+              classes={classes}
               onValueChange={(e: any, type: any) => {
                 handleInputChange(e, field, undefined, undefined, type);
               }}
@@ -97,6 +100,7 @@ export default function ModuleForm({
         return (
           <Date
             field={formParam[field].value}
+            classes={classes}
             onValueChange={(e: any) => handleInputChange(e, field)}
           />
         );
@@ -548,22 +552,26 @@ export default function ModuleForm({
                     onValueChange={(e: any, fillForm: any, errorMsg: any) =>
                       callFather(e, field)
                     }
+                    classes={classes}
                   />
                 )}
                 {formParam[field].inputType === "select" && (
                   <Select
                     field={formParam[field]}
+                    classes={classes}
                     onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "multiSelect" && (
                   <MultiSelect
+                    classes={classes}
                     field={formParam[field]}
                     onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
                 {formParam[field].inputType === "boolean" && (
                   <Boolean
+                    classes={classes}
                     field={formParam[field]}
                     onValueChange={(e: any) => callFather(e, field)}
                   />
@@ -571,6 +579,7 @@ export default function ModuleForm({
                 {formParam[field].inputType === "textBox" && (
                   <TextBox
                     field={formParam[field]}
+                    classes={classes}
                     onValueChange={(e: any) => callFather(e, field)}
                   />
                 )}
@@ -579,17 +588,20 @@ export default function ModuleForm({
                   <File
                     field={formParam[field]}
                     onValueChange={(e: any) => callFather(e, field)}
+                    classes={classes}
                   />
                 )}
                 {formParam[field].inputType === "grid" && (
                   <Grid
                     field={formParam[field]}
                     onValueChange={(e: any) => callFather(e, field)}
+                    classes={classes}
                   />
                 )}
                 {formParam[field].inputType === "table" && (
                   <Table
                     moduleParam={formParam[field].table}
+                    classes={classes}
                     urlParam={formParam[field].table.tableSettings.tableURL}
                     onValueChange={(e: any, whichTable: string) => {
                       callFatherTable(e, field, whichTable);
@@ -600,6 +612,7 @@ export default function ModuleForm({
                 {formParam[field].inputType === "button" && (
                   <Button
                     field={formParam[field]}
+                    classes={classes}
                     onPress={() => {
                       callFatherButton(field);
                     }}
@@ -625,9 +638,6 @@ export default function ModuleForm({
                   </Pressable>
                 )}
 
-
-
-
                 {formParam[field].function &&
                   formParam[field].inputType !== "button" && (
                     <Pressable
@@ -643,10 +653,6 @@ export default function ModuleForm({
                       <FontAwesome5 name="circle" size={18} color="white" />
                     </Pressable>
                   )}
-
-
-
-                  
               </View>
             </View>
           ))}

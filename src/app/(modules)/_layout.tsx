@@ -4,6 +4,7 @@ import ModuleForm from "@/src/components/moduleForm";
 import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
+import * as cssjson from "cssjson";
 
 export interface FunctionJson {
   functionCode: string;
@@ -25,8 +26,16 @@ export default function MyApp() {
       ...prevForm,
       ...enter8,
       setField,
+      class: {
+        ...prevForm.class,
+        ...cssReader(),
+      },
     }));
   }, []);
+
+  useEffect(()=>{
+    console.log(appJson.class)
+  },[appJson.class])
 
   // function setField(
   //   moduleName: string,
@@ -63,12 +72,110 @@ export default function MyApp() {
   //   }
   // }
 
+  function cssReader() {
+    const css = `
+
+    .button {
+    width: 250;
+    backgroundColor: #007aff;
+    padding: 10;
+    borderRadius: 5;
+    marginTop: 10;
+    justifyContent: center;
+    alignItems: center;
+    textAlign: center;
+    color: #ffffff;
+    fontSize: 20;
+    fontWeight: bold;
+  }
+
+/* Classe 1 */
+#classe1 {
+  background-color: #FF5733;
+  font-size: 16px;
+  margin: 10px;
+}
+
+/* Classe 2 */
+.classe2 {
+  color: #2ECC71;
+  padding: 20px;
+  border: 2px solid #000;
+}
+
+/* Classe 3 */
+.classe3 {
+  text-align: center;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+/* Classe 4 */
+.classe4 {
+  background-image: url('imagem.jpg');
+  opacity: 0.8;
+  height: 100vh;
+}
+
+/* Classe 5 */
+.classe5 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Classe 6 */
+.classe6 {
+  position: absolute;
+  top: 50px;
+  left: 100px;
+}
+
+/* Classe 7 */
+.classe7 {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Classe 8 */
+.classe8 {
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 999;
+}
+
+/* Classe 9 */
+.classe9 {
+  list-style: none;
+  text-decoration: underline;
+  letter-spacing: 2px;
+}
+
+/* Classe 10 */
+.classe10 {
+  filter: grayscale(100%);
+  transform: rotate(45deg);
+  width: 200px;
+}
+`;
+
+    const cssObj = cssjson.toJSON(css).children;
+    const newCss: any = {};
+
+    Object.keys(cssObj).forEach((className) => {
+      let cleanClassName = className.substring(1);
+      newCss[cleanClassName] = cssObj[className].attributes;
+    });
+    return newCss;
+  }
+
   function setField(setFieldObj: any) {
     Object.keys(setFieldObj).forEach((modName) => {
       if (modName === "css") {
         setAppJson((prevForm: ModuleParam) => ({
           ...prevForm,
-          css: {...prevForm.css, ...setFieldObj[modName]},
+          css: { ...prevForm.css, ...setFieldObj[modName] },
         }));
       } else if (setFieldObj[modName]) {
         Object.keys(setFieldObj[modName]).forEach((pageName) => {
@@ -79,7 +186,10 @@ export default function MyApp() {
                 ...prevForm.modules,
                 [modName]: {
                   ...prevForm.modules[modName],
-                  css: {...prevForm.modules[modName].css, ...setFieldObj[modName][pageName]},
+                  css: {
+                    ...prevForm.modules[modName].css,
+                    ...setFieldObj[modName][pageName],
+                  },
                 },
               },
             }));
@@ -96,7 +206,10 @@ export default function MyApp() {
                         ...prevForm.modules[modName].pages,
                         [pageName]: {
                           ...prevForm.modules[modName].pages[pageName],
-                          css: {...prevForm.modules[modName].pages.css,...setFieldObj[modName][pageName][fieldName]},
+                          css: {
+                            ...prevForm.modules[modName].pages.css,
+                            ...setFieldObj[modName][pageName][fieldName],
+                          },
                         },
                       },
                     },
@@ -656,6 +769,7 @@ export default function MyApp() {
                       formParam={
                         appJson.modules[moduleObject].pages[page].components
                       }
+                      classes={appJson.class}
                       setFormParam={setAppJson}
                       formMode="register"
                       callFather={(value: any, field: any) => {

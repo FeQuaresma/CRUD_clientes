@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 
-const fontSizeDefault = 20;
-const widthDefault = 250;
+export const fontSizeDefault = 20;
+export const widthDefault = 250;
 
 export const styles = StyleSheet.create({
   containerView: {

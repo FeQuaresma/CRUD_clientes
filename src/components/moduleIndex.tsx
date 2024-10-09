@@ -1,7 +1,6 @@
 import { Pressable, ScrollView, Text, TextInput } from "react-native";
 import { styles } from "../constants/styles";
 import { useEffect, useState } from "react";
-// import { extractFunctions } from "../functions/functionStringClear";
 import { Module, ModuleParam } from "../constants/moduleParamV2";
 import { catchTextJs, extractFunctions } from "../functions/extractFunctions";
 

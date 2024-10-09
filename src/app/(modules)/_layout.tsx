@@ -26,6 +26,7 @@ export default function MyApp() {
       ...prevForm,
       ...enter8,
       setField,
+      getClasses,
       class: {
         ...prevForm.class,
         ...cssReader(),
@@ -33,141 +34,51 @@ export default function MyApp() {
     }));
   }, []);
 
-  useEffect(()=>{
-    console.log(appJson.class)
-  },[appJson.class])
+  useEffect(() => {
+    console.log(appJson.class);
+  }, [appJson.class]);
 
-  // function setField(
-  //   moduleName: string,
-  //   page: string,
-  //   field: string,
-  //   param: string[],
-  //   value: any[]
-  // ) {
-  //   for (let i = 0; i < param.length; i++) {
-  //     setAppJson((prevForm: ModuleParam) => ({
-  //       ...prevForm,
-  //       modules: {
-  //         ...prevForm.modules,
-  //         [moduleName]: {
-  //           ...prevForm.modules[moduleName],
-  //           pages: {
-  //             ...prevForm.modules[moduleName].pages,
-  //             [page]: {
-  //               ...prevForm.modules[moduleName].pages[page],
-  //               components: {
-  //                 ...prevForm.modules[moduleName].pages[page].components,
-  //                 [field]: {
-  //                   ...prevForm.modules[moduleName].pages[page].components[
-  //                     field
-  //                   ],
-  //                   [param[i]]: value[i],
-  //                 },
-  //               },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }));
-  //   }
-  // }
-
-  function cssReader() {
-    const css = `
-
-    .button {
-    width: 250;
-    backgroundColor: #007aff;
-    padding: 10;
-    borderRadius: 5;
-    marginTop: 10;
-    justifyContent: center;
-    alignItems: center;
-    textAlign: center;
-    color: #ffffff;
-    fontSize: 20;
-    fontWeight: bold;
+  function getClasses(id: string | string[]) {
+    if (typeof id === "string") {
+      processClass(id);
+    } else if (typeof id === "object") {
+      id.forEach((idIndex) => {
+        processClass(idIndex);
+      });
+    }
+    function processClass(idString: string) {
+      console.log(idString);
+    }
   }
 
-/* Classe 1 */
-#classe1 {
-  background-color: #FF5733;
-  font-size: 16px;
-  margin: 10px;
-}
+  function setClass() {}
 
-/* Classe 2 */
-.classe2 {
-  color: #2ECC71;
-  padding: 20px;
-  border: 2px solid #000;
-}
+  function cssReader() {
+    if (appJson.classString) {
+      let css = "";
+      for (let i = 0; i < appJson.classString.length; i++) {
+        css += appJson.classString[i] + "\n";
+      }
 
-/* Classe 3 */
-.classe3 {
-  text-align: center;
-  font-weight: bold;
-  line-height: 1.5;
-}
+      const cssObj = cssjson.toJSON(css).children;
+      const newCss: any = {};
 
-/* Classe 4 */
-.classe4 {
-  background-image: url('imagem.jpg');
-  opacity: 0.8;
-  height: 100vh;
-}
-
-/* Classe 5 */
-.classe5 {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* Classe 6 */
-.classe6 {
-  position: absolute;
-  top: 50px;
-  left: 100px;
-}
-
-/* Classe 7 */
-.classe7 {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-
-/* Classe 8 */
-.classe8 {
-  overflow: hidden;
-  cursor: pointer;
-  z-index: 999;
-}
-
-/* Classe 9 */
-.classe9 {
-  list-style: none;
-  text-decoration: underline;
-  letter-spacing: 2px;
-}
-
-/* Classe 10 */
-.classe10 {
-  filter: grayscale(100%);
-  transform: rotate(45deg);
-  width: 200px;
-}
-`;
-
-    const cssObj = cssjson.toJSON(css).children;
-    const newCss: any = {};
-
-    Object.keys(cssObj).forEach((className) => {
-      let cleanClassName = className.substring(1);
-      newCss[cleanClassName] = cssObj[className].attributes;
-    });
-    return newCss;
+      Object.keys(cssObj).forEach((className) => {
+        Object.keys(cssObj[className].attributes).forEach((attribute) => {
+          if (!isNaN(Number(cssObj[className].attributes[attribute]))) {
+            cssObj[className].attributes[attribute] = Number(
+              cssObj[className].attributes[attribute]
+            );
+          }
+        });
+        let cleanClassName = className.substring(1);
+        newCss[cleanClassName] = cssObj[className].attributes;
+      });
+      // console.log(newCss);
+      return newCss;
+    } else {
+      return {};
+    }
   }
 
   function setField(setFieldObj: any) {

@@ -100,11 +100,32 @@ export type ModuleParam = {
   css?: {[key: string]: any};
   modules: { [key: string]: Module };
   consolelog?: string;
+  classString?: string[];
   class?: {[key: string]: {[key: string]: string | number}};
   [key: string]: any;
 };
 
 export const modulesParamV2: ModuleParam = {
+  classString: [`
+
+    .button {
+    width: 250;
+    backgroundColor: #007aff;
+    padding: 10;
+    borderRadius: 5;
+    marginTop: 10;
+    justifyContent: center;
+    alignItems: center;
+    textAlign: center;
+    color: #ffffff;
+    fontSize: 20;
+    fontWeight: bold;
+  }
+        .yellow {
+    backgroundColor: #ffd900;
+  }
+
+`],
   modules: {
     cliente: {
       stringFunctions: [
@@ -182,21 +203,39 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               class: "button",
               value: "Botão Teste",
-              function: `contador++; console.log("contador: ", contador)`,
+              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Red", css: {backgroundColor: "#d40000e0"}}}}})`,
             },
             botaoTeste2: {
               inputType: "button",
               isEditable: false,
               isRequired: true,    
               value: "Botão Teste2",
-              function: `contador++;appJson.setField({cliente:{pageTeste:{botao1: {value: "Funcionou2 "+contador, inputType: "input"}}}})`,
+              class: "button",
+              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Green", css: {backgroundColor: "#0abf00"}}}}})`,
+            },
+            botaoTeste3: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,    
+              value: "Botão Teste3",
+              class: "button",
+              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Yellow", class: "button yellow", css: {}}}}})`,
             },
             botao1: {
               inputType: "button",
               isEditable: false,
               isRequired: true,
               value: "Botão 1",
-              function: `appJson.alert(String(contador));`,
+              class: "button",
+              function: `appJson.getClasses("cliente.pageTeste.botao1");`,
+            },
+            botao12: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 2",
+              class: "button",
+              function: `appJson.getClasses(["cliente.pageTeste.botao1","cliente.pageTeste.botao2"]);`,
             },
           },
         },

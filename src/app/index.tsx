@@ -1,7 +1,16 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Index({ navigation }: any) {
+  const [state, setState] = useState("Pão");
+
+  function queije() {
+    setState("Queijo");
+  }
+
+  function isQueijo() {
+    return state === "Queijo" ? true : false;
+  }
 
   return (
     <View style={styles.containerScrollView}>
@@ -10,6 +19,12 @@ export default function Index({ navigation }: any) {
         onPress={() => navigation.navigate("(modules)")}
       >
         <Text style={styles.buttonText}>Versão 1</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={() => queije()}>
+        <Text style={styles.buttonText}>1</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={() => console.log(state)}>
+        <Text style={styles.buttonText}>2</Text>
       </Pressable>
     </View>
   );
@@ -40,9 +55,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
 
-  buttonText: {
-
-  },
+  buttonText: {},
   buttonText2: {
     color: "red",
     fontSize: fontSizeDefault,

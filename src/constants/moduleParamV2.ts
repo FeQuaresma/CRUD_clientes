@@ -1,5 +1,7 @@
+import { Input } from "../components/fields";
 import { DataRow } from "../components/fields/table";
 import { params } from "./params";
+import { fontSizeDefault, widthDefault } from "./styles";
 
 export interface Param {
   label?: string;
@@ -85,7 +87,7 @@ export type Module = {
   stringFunctions?: string[];
   functions?: any;
   moduleName: string;
-  css?: {[key: string]: any};
+  css?: { [key: string]: any };
   pages: {
     [key: string]: {
       pageName: string;
@@ -95,18 +97,18 @@ export type Module = {
   };
 };
 
-
 export type ModuleParam = {
-  css?: {[key: string]: any};
+  css?: { [key: string]: any };
   modules: { [key: string]: Module };
   consolelog?: string;
   classString?: string[];
-  class?: {[key: string]: {[key: string]: string | number}};
+  class?: { [key: string]: { [key: string]: string | number } };
   [key: string]: any;
 };
 
 export const modulesParamV2: ModuleParam = {
-  classString: [`
+  classString: [
+    `
 
     .button {
     width: 250;
@@ -125,7 +127,24 @@ export const modulesParamV2: ModuleParam = {
     backgroundColor: #ffd900;
   }
 
-`],
+        .blue {
+    backgroundColor: #0040ff;
+  }
+
+          .red {
+    backgroundColor: #ce0000;
+  }
+
+    .input {
+    fontSize: fontSizeDefault;
+    height: 30;
+    backgroundColor: #ffffff;
+    color: #000000;
+    width: 250;
+  },
+
+`,
+  ],
   modules: {
     cliente: {
       stringFunctions: [
@@ -197,29 +216,14 @@ export const modulesParamV2: ModuleParam = {
         pageTeste: {
           pageName: "Page Teste",
           components: {
-            botaoTeste: {
-              inputType: "button",
+            input1: {
+              label: "input 1",
+              inputType: "input",
               isEditable: false,
               isRequired: true,
-              class: "button",
-              value: "Botão Teste",
-              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Red", css: {backgroundColor: "#d40000e0"}}}}})`,
-            },
-            botaoTeste2: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,    
-              value: "Botão Teste2",
-              class: "button",
-              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Green", css: {backgroundColor: "#0abf00"}}}}})`,
-            },
-            botaoTeste3: {
-              inputType: "button",
-              isEditable: false,
-              isRequired: true,    
-              value: "Botão Teste3",
-              class: "button",
-              function: `appJson.setField({cliente:{pageTeste:{botao1: {value: "Yellow", class: "button yellow", css: {}}}}})`,
+              value: "",
+              class: "input",
+
             },
             botao1: {
               inputType: "button",
@@ -227,15 +231,31 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "Botão 1",
               class: "button",
-              function: `appJson.getClasses("cliente.pageTeste.botao1");`,
+              function: `appJson.setField({cliente:{pageTeste:{input1:{isEditable:true}}}})`,
             },
-            botao12: {
+            botao2: {
               inputType: "button",
               isEditable: false,
               isRequired: true,
               value: "Botão 2",
               class: "button",
-              function: `appJson.getClasses(["cliente.pageTeste.botao1","cliente.pageTeste.botao2"]);`,
+              function: `appJson.setField({cliente:{pageTeste:{input1:{isEditable:false}}}})`,
+            },
+            botao3: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 3",
+              class: "button",
+              function: `appJson.setClassCss(["cliente.pageTeste.botao1", "cliente.pageTeste.botao2", "cliente.pageTeste.botao3"],"button")`,
+            },
+            botao4: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Botão 4",
+              class: "button",
+              function: `console.log(appJson.getClassCss(["cliente.pageTeste.botao1", "cliente.pageTeste.botao2", "cliente.pageTeste.botao3"]))`,
             },
           },
         },

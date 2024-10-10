@@ -26,7 +26,8 @@ export default function MyApp() {
       ...prevForm,
       ...enter8,
       setField,
-      getClasses,
+      getClassCss,
+      setClassCss,
       class: {
         ...prevForm.class,
         ...cssReader(),
@@ -34,11 +35,28 @@ export default function MyApp() {
     }));
   }, []);
 
-  useEffect(() => {
-    console.log(appJson.class);
-  }, [appJson.class]);
+  function getClassCss(
+    id: string | string[],
+    appJsonRefreshed: ModuleParam
+  ): string | string[] {
+    let classList: any[] = [];
 
-  function getClasses(id: string | string[]) {
+    function processClass(idString: string) {
+      let idArray = idString.split(".");
+
+      if (
+        appJsonRefreshed.modules[idArray[0]].pages[idArray[1]].components[
+          idArray[2]
+        ]
+      ) {
+        classList.push(
+          appJsonRefreshed.modules[idArray[0]].pages[idArray[1]].components[
+            idArray[2]
+          ].class
+        );
+      }
+    }
+
     if (typeof id === "string") {
       processClass(id);
     } else if (typeof id === "object") {
@@ -46,12 +64,54 @@ export default function MyApp() {
         processClass(idIndex);
       });
     }
-    function processClass(idString: string) {
-      console.log(idString);
-    }
+    return classList.length > 1 ? classList : classList[0];
   }
 
-  function setClass() {}
+  function setClassCss(
+    id: string | string[],
+    classes: string | string[],
+  ) {
+    function processClass(idString: string, classString: string) {
+      let idArray = idString.split(".");
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        modules: {
+          ...prevForm.modules,
+          [idArray[0]]: {
+            ...prevForm.modules[idArray[0]],
+            pages: {
+              ...prevForm.modules[idArray[0]].pages,
+              [idArray[1]]: {
+                ...prevForm.modules[idArray[0]].pages[idArray[1]],
+                components: {
+                  ...prevForm.modules[idArray[0]].pages[idArray[1]].components,
+                  [idArray[2]]: {
+                    ...prevForm.modules[idArray[0]].pages[idArray[1]]
+                      .components[idArray[2]],
+                    class: classString,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }));
+    }
+    if (typeof id === "string") {
+      id = [id];
+    }
+    if (typeof classes === "string") {
+      id.forEach((_, i) => {
+        processClass(id[i], classes);
+      });
+    } else {
+      id.forEach((_, i) => {
+        if (classes[i]) {
+          processClass(id[i], classes[i]);
+        }
+      });
+    }
+  }
 
   function cssReader() {
     if (appJson.classString) {
@@ -512,9 +572,6 @@ export default function MyApp() {
   }
 
   async function executeFunction(jsonImported: string, location: Location) {
-    const itemsArray: any[] = [];
-    const itemsKeys: any[] = [];
-
     try {
       appJson.modules[location.module].funcNames?.forEach((fnName) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
@@ -522,6 +579,16 @@ export default function MyApp() {
           jsonImported = jsonImported.replace(
             regex,
             `appJson.modules.${location.module}.functions.${fnName}($1, appJson)`
+          );
+        }
+      });
+
+      Object.keys(appJson).forEach((fnName: any) => {
+        const regex = new RegExp(`\\bappJson\\.${fnName}\\((.*?)\\)`, "g");
+        if (jsonImported.match(regex)) {
+          jsonImported = jsonImported.replace(
+            regex,
+            `appJson.${fnName}($1, appJson)`
           );
         }
       });
@@ -536,43 +603,12 @@ export default function MyApp() {
         }
       });
 
-      const func = new Function(
-        ...itemsKeys,
-        "appJson",
-        "location",
-        clearFunctionString(jsonImported, location.module)
-      );
+      const func = new Function("appJson", "location", jsonImported);
 
-      func(...itemsArray, appJson, location);
+      func(appJson, location);
     } catch (e) {
       console.error(e);
     }
-  }
-
-  function clearFunctionString(funcString: string, moduleName: string) {
-    if (appJson.modules.cliente.functions) {
-      Object.keys(appJson.modules.cliente.functions).forEach((fnName: any) => {
-        const regex = new RegExp(`\\b${fnName}\\b`, "g");
-        if (funcString.match(regex)) {
-          funcString = funcString.replace(
-            regex,
-            `appJson.modules.${moduleName}.functions.${fnName}`
-          );
-        }
-      });
-    }
-    if (appJson.modules.cliente.variables) {
-      Object.keys(appJson.modules.cliente.variables).forEach((varName: any) => {
-        const regex = new RegExp(`\\b${varName}\\b`, "g");
-        if (funcString.match(regex)) {
-          funcString = funcString.replace(
-            regex,
-            `appJson.modules.${moduleName}.variables.${varName}`
-          );
-        }
-      });
-    }
-    return funcString;
   }
 
   function maskedValue(value: string, mask: any) {

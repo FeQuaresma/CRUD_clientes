@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Index({ navigation }: any) {
-  const [state, setState] = useState("Pão");
+  const [state, setState] = useState({state: true});
 
-  function queije() {
-    setState("Queijo");
+  useEffect(()=>{console.log(state)},[state])
+
+  function setFalse() {
+    setState((prevForm) => ({...prevForm, state: false}));
   }
 
-  function isQueijo() {
-    return state === "Queijo" ? true : false;
+  function setTrue() {
+    setState((prevForm) => ({...prevForm, state: true}));
   }
 
   return (
@@ -20,11 +22,11 @@ export default function Index({ navigation }: any) {
       >
         <Text style={styles.buttonText}>Versão 1</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => queije()}>
-        <Text style={styles.buttonText}>1</Text>
+      <Pressable style={styles.button} onPress={() => setFalse()}>
+        <Text style={styles.buttonText}>False</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => console.log(state)}>
-        <Text style={styles.buttonText}>2</Text>
+      <Pressable style={styles.button} onPress={() => setTrue()}>
+        <Text style={styles.buttonText}>True</Text>
       </Pressable>
     </View>
   );

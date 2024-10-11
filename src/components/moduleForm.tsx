@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {
-  Text,
+  Text as TextRN,
   View,
   Pressable,
   ScrollView,
@@ -17,13 +17,17 @@ import {
   TextBox,
   Grid,
   Table,
+  Image,
+  Button,
+  Text,
 } from "./fields";
 import { styles } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { FontAwesome5 } from "@expo/vector-icons";
-import Button from "./fields/button";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
+import { sumClass } from "../functions/sumClass";
 
 export default function ModuleForm({
+  pageSettings,
   formParam,
   formMode,
   navigation,
@@ -40,6 +44,10 @@ export default function ModuleForm({
   useEffect(() => {
     handleFilterCallBack(route.params);
   }, [route.params]);
+
+  useEffect(()=>{
+    console.log(pageSettings)
+  },[])
 
   function setErrorMsg() {
     Object.keys(formParam).map((field: string) => {
@@ -430,8 +438,13 @@ export default function ModuleForm({
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
-      style={styles.containerView}
+      style={pageSettings && pageSettings.mainView && {
+        ...sumClass(pageSettings.mainView.class, classes),
+        ...pageSettings.mainView.styles,
+      }}
     >
+
+
       <View
         style={{
           flexDirection: "row",
@@ -447,18 +460,23 @@ export default function ModuleForm({
           <Ionicons name="arrow-back-outline" size={30} color="white" />
         </Pressable>
         {formMode === "filter" && (
-          <Text style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}>
+          <TextRN
+            style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}
+          >
             Filtro
-          </Text>
+          </TextRN>
         )}
         {formMode === "register" && (
-          <Text style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}>
+          <TextRN
+            style={{ ...styles.inputLabel, flex: 1, textAlign: "center", color: "red" }}
+          >
             {formName}
-          </Text>
+          </TextRN>
         )}
         <View style={{ width: 30 }} />
-        <Text></Text>
       </View>
+
+
       <ScrollView
         contentContainerStyle={{
           ...styles.containerScrollView,
@@ -485,7 +503,7 @@ export default function ModuleForm({
                 alignItems: "center",
               }}
             >
-              {formParam[field].label && (
+              {/* {formParam[field].label && (
                 <View
                   style={{
                     margin: 2,
@@ -497,10 +515,10 @@ export default function ModuleForm({
                     borderColor: "grey",
                   }}
                 >
-                  <Text style={styles.inputLabel}>
+                  <TextRN style={styles.inputLabel}>
                     {formParam[field].label}
                     {formParam[field].isRequired && "*"}
-                  </Text>
+                  </TextRN>
                   {formMode === "filter" && (
                     <View style={{ flexDirection: "row" }}>
                       {formParam[field].isVisible && (
@@ -540,7 +558,7 @@ export default function ModuleForm({
                     </View>
                   )}
                 </View>
-              )}
+              )} */}
 
               {formParam[field].errorMsg && (
                 <Text style={styles.errorMsg}>{formParam[field].errorMsg}</Text>
@@ -618,6 +636,12 @@ export default function ModuleForm({
                     }}
                   />
                 )}
+                {formParam[field].inputType === "image" && (
+                  <Image field={formParam[field]} classes={classes} />
+                )}
+                {formParam[field].inputType === "text" && (
+                  <Text field={formParam[field]} classes={classes} />
+                )}
 
                 {formParam[field].searchSign && (
                   <Pressable
@@ -658,15 +682,15 @@ export default function ModuleForm({
           ))}
         </View>
       </ScrollView>
-      {/* <View style={{ width: "100%", alignItems: "center" }}>
+      <View style={{ width: "100%", alignItems: "center" }}>
         {formMode === "register" && (
           <Pressable
             style={styles.button}
             onPress={() => {
-              console.log(formParam);
+              console.log(formParam.text1);
             }}
           >
-            <Text style={styles.buttonText}>Enviar Formulário</Text>
+            <TextRN style={styles.buttonText}>Enviar Formulário</TextRN>
           </Pressable>
         )}
 
@@ -676,7 +700,7 @@ export default function ModuleForm({
               style={styles.button}
               onPress={() => handleFilterNavigation()}
             >
-              <Text style={styles.buttonText}>Filtrar</Text>
+              <TextRN style={styles.buttonText}>Filtrar</TextRN>
             </Pressable>
             <Pressable
               style={{
@@ -708,7 +732,7 @@ export default function ModuleForm({
             </Pressable>
           </View>
         )}
-      </View> */}
+      </View>
     </KeyboardAvoidingView>
   );
 }

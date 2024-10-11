@@ -1,13 +1,14 @@
 import { styles } from "@/src/constants/styles";
+import { sumClass } from "@/src/functions/sumClass";
 import { MultiSelect as DropdownMulti } from "react-native-element-dropdown";
 
-export default function MultiSelect({ field, onValueChange }: any) {
+export default function MultiSelect({ field, onValueChange, classes }: any) {
   return (
     <DropdownMulti
       itemTextStyle={styles.dropdown}
       selectedTextStyle={styles.dropdownMulti}
       placeholderStyle={styles.dropdown}
-      style={styles.input}
+      style={{ ...sumClass(field.class, classes), ...field.style }}
       data={field.options}
       placeholder="Selecione"
       labelField="label"

@@ -111,6 +111,7 @@ export const stylesModal = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 50,
   },
   modalText: {
     marginBottom: 15,

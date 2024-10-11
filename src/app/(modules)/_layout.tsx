@@ -35,6 +35,10 @@ export default function MyApp() {
     }));
   }, []);
 
+  useEffect(() => {
+    console.log(appJson.modules.cliente.pages.pageTeste.components.input1);
+  }, [appJson.modules.cliente.pages.pageTeste.components.input1]);
+
   function getClassCss(
     id: string | string[],
     appJsonRefreshed: ModuleParam
@@ -67,10 +71,7 @@ export default function MyApp() {
     return classList.length > 1 ? classList : classList[0];
   }
 
-  function setClassCss(
-    id: string | string[],
-    classes: string | string[],
-  ) {
+  function setClassCss(id: string | string[], classes: string | string[]) {
     function processClass(idString: string, classString: string) {
       let idArray = idString.split(".");
       setAppJson((prevForm: ModuleParam) => ({
@@ -142,14 +143,14 @@ export default function MyApp() {
   }
 
   function setField(setFieldObj: any) {
-    Object.keys(setFieldObj).forEach((modName) => {
+    Object.keys(setFieldObj).forEach((modName: any) => {
       if (modName === "css") {
         setAppJson((prevForm: ModuleParam) => ({
           ...prevForm,
-          css: { ...prevForm.css, ...setFieldObj[modName] },
+          style: { ...prevForm.style, ...setFieldObj[modName] },
         }));
-      } else if (setFieldObj[modName]) {
-        Object.keys(setFieldObj[modName]).forEach((pageName) => {
+      } else if (appJson.modules[modName]) {
+        Object.keys(setFieldObj[modName]).forEach((pageName: any) => {
           if (pageName === "css") {
             setAppJson((prevForm: ModuleParam) => ({
               ...prevForm,
@@ -157,77 +158,77 @@ export default function MyApp() {
                 ...prevForm.modules,
                 [modName]: {
                   ...prevForm.modules[modName],
-                  css: {
-                    ...prevForm.modules[modName].css,
+                  style: {
+                    ...prevForm.modules[modName].moduleSettings,
                     ...setFieldObj[modName][pageName],
                   },
                 },
               },
             }));
-          } else if (setFieldObj[modName][pageName]) {
-            Object.keys(setFieldObj[modName][pageName]).forEach((fieldName) => {
-              if (fieldName === "css") {
-                setAppJson((prevForm: ModuleParam) => ({
-                  ...prevForm,
-                  modules: {
-                    ...prevForm.modules,
-                    [modName]: {
-                      ...prevForm.modules[modName],
-                      pages: {
-                        ...prevForm.modules[modName].pages,
-                        [pageName]: {
-                          ...prevForm.modules[modName].pages[pageName],
-                          css: {
-                            ...prevForm.modules[modName].pages.css,
-                            ...setFieldObj[modName][pageName][fieldName],
+          } else if (appJson.modules[modName].pages[pageName]) {
+            Object.keys(setFieldObj[modName][pageName]).forEach(
+              (fieldName: any) => {
+                if (fieldName === "css") {
+                  setAppJson((prevForm: ModuleParam) => ({
+                    ...prevForm,
+                    modules: {
+                      ...prevForm.modules,
+                      [modName]: {
+                        ...prevForm.modules[modName],
+                        pages: {
+                          ...prevForm.modules[modName].pages,
+                          [pageName]: {
+                            ...prevForm.modules[modName].pages[pageName],
+                            style: {
+                              ...prevForm.modules[modName].pages.style,
+                              ...setFieldObj[modName][pageName][fieldName],
+                            },
                           },
                         },
                       },
                     },
-                  },
-                }));
-              } else if (setFieldObj[modName][pageName][fieldName]) {
-                Object.keys(setFieldObj[modName][pageName][fieldName]).forEach(
-                  (propName) => {
-                    if (setFieldObj[modName][pageName][fieldName][propName]) {
-                      setAppJson((prevForm: ModuleParam) => ({
-                        ...prevForm,
-                        modules: {
-                          ...prevForm.modules,
-                          [modName]: {
-                            ...prevForm.modules[modName],
-                            pages: {
-                              ...prevForm.modules[modName].pages,
-                              [pageName]: {
-                                ...prevForm.modules[modName].pages[pageName],
-                                components: {
+                  }));
+                } else if (
+                  appJson.modules[modName].pages[pageName].components[fieldName]
+                ) {
+                  Object.keys(
+                    setFieldObj[modName][pageName][fieldName]
+                  ).forEach((propName: any) => {
+                    setAppJson((prevForm: ModuleParam) => ({
+                      ...prevForm,
+                      modules: {
+                        ...prevForm.modules,
+                        [modName]: {
+                          ...prevForm.modules[modName],
+                          pages: {
+                            ...prevForm.modules[modName].pages,
+                            [pageName]: {
+                              ...prevForm.modules[modName].pages[pageName],
+                              components: {
+                                ...prevForm.modules[modName].pages[pageName]
+                                  .components,
+                                [fieldName]: {
                                   ...prevForm.modules[modName].pages[pageName]
-                                    .components,
-                                  [fieldName]: {
-                                    ...prevForm.modules[modName].pages[pageName]
-                                      .components[fieldName],
-                                    [propName]:
-                                      setFieldObj[modName][pageName][fieldName][
-                                        propName
-                                      ],
-                                  },
+                                    .components[fieldName],
+                                  [propName]:
+                                    setFieldObj[modName][pageName][fieldName][
+                                      propName
+                                    ],
                                 },
                               },
                             },
                           },
                         },
-                      }));
-                    } else {
-                      console.error(
-                        `${modName}.${pageName}.${fieldName}.${propName} not found`
-                      );
-                    }
-                  }
-                );
-              } else {
-                console.error(`${modName}.${pageName}.${fieldName} not found`);
+                      },
+                    }));
+                  });
+                } else {
+                  console.error(
+                    `${modName}.${pageName}.${fieldName} not found`
+                  );
+                }
               }
-            });
+            );
           } else {
             console.error(`${modName}.${pageName} not found`);
           }
@@ -710,6 +711,7 @@ export default function MyApp() {
                   {(e) => (
                     <ModuleForm
                       {...e}
+                      pageSettings={appJson.modules[moduleObject].pages[page].pageSettings}
                       formName={
                         appJson.modules[moduleObject].pages[page].pageName
                       }

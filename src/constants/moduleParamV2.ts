@@ -1,7 +1,31 @@
-import { Input } from "../components/fields";
 import { DataRow } from "../components/fields/table";
 import { params } from "./params";
-import { fontSizeDefault, widthDefault } from "./styles";
+
+export type ModuleParam = {
+  style?: { [key: string]: any };
+  modules: { [key: string]: Module };
+  consolelog?: string;
+  classString?: string[];
+  class?: { [key: string]: { [key: string]: string | number } };
+  [key: string]: any;
+};
+
+export type Module = {
+  varNames?: string[];
+  funcNames?: string[];
+  variables?: any;
+  stringFunctions?: string[];
+  functions?: any;
+  moduleName: string;
+  moduleSettings?: {navBar?: {classCss?: string, styles?: {}}, navBarText?: {classCss?: string, styles?: {}}};
+  pages: {
+    [key: string]: {
+      pageName: string;
+      pageSettings?: { mainView?: { style?: any; class?: string } };
+      components: { [key: string]: pageParam };
+    };
+  };
+};
 
 export interface Param {
   label?: string;
@@ -15,7 +39,9 @@ export interface Param {
     | "grid"
     | "table"
     | "button"
-    | "textBox";
+    | "textBox"
+    | "image"
+    | "text";
   inputMode?: "numeric" | "text" | "tel";
   value: string | { start: string; end: string };
   placeholder?: string;
@@ -23,11 +49,12 @@ export interface Param {
   valueMasked?: string | { start: string; end: string };
   maxLength?: number;
   options?: { label: string; value: string }[];
-  css?: object;
+  style?: object;
   isNumber?: boolean;
   zeroTrim?: boolean;
   isCurrency?: boolean;
   class?: string;
+  source?: string;
 }
 
 export interface pageParam extends Param {
@@ -80,37 +107,9 @@ export interface TableParam extends Param {
   searchSign?: "equals" | "greater-than" | "less-than";
 }
 
-export type Module = {
-  varNames?: string[];
-  funcNames?: string[];
-  variables?: any;
-  stringFunctions?: string[];
-  functions?: any;
-  moduleName: string;
-  css?: { [key: string]: any };
-  pages: {
-    [key: string]: {
-      pageName: string;
-      pageSettings?: { CSS: {} };
-      components: { [key: string]: pageParam };
-    };
-  };
-};
-
-export type ModuleParam = {
-  css?: { [key: string]: any };
-  modules: { [key: string]: Module };
-  consolelog?: string;
-  classString?: string[];
-  class?: { [key: string]: { [key: string]: string | number } };
-  [key: string]: any;
-};
-
 export const modulesParamV2: ModuleParam = {
   classString: [
-    `
-
-    .button {
+    `.button {
     width: 250;
     backgroundColor: #007aff;
     padding: 10;
@@ -126,23 +125,42 @@ export const modulesParamV2: ModuleParam = {
         .yellow {
     backgroundColor: #ffd900;
   }
-
         .blue {
     backgroundColor: #0040ff;
   }
-
           .red {
     backgroundColor: #ce0000;
   }
-
     .input {
-    fontSize: fontSizeDefault;
+    fontSize: 20;
     height: 30;
     backgroundColor: #ffffff;
     color: #000000;
     width: 250;
-  },
+  }
+    .textStyle {
+    color: white;
+    fontWeight: bold;
+    textAlign: center;
+    fontSize: 20;
+  }
+    .tinyLogo {
+    width: 100;
+    height: 100;
+  }
+      .containerView {
+    flex: 1;
+    paddingTop: 25;
+    backgroundColor: black;
+  }
 
+  .navBar {
+  backgroundcolor: red;
+  }
+
+  .navBarText {
+  color: white;
+  }
 `,
   ],
   modules: {
@@ -212,10 +230,29 @@ export const modulesParamV2: ModuleParam = {
         `https://caae.org.br/teste/functions.js?03x13`,
       ],
       moduleName: "Clientes",
+      moduleSettings: {navBar:{classCss:"navBar"},navBarText:{classCss:"navBarText"}},
       pages: {
         pageTeste: {
           pageName: "Page Teste",
+          pageSettings: {mainView:{class:"containerView"}},
           components: {
+            text1: {
+              label: "Text1",
+              inputType: "text",
+              isEditable: false,
+              isRequired: true,
+              value: "Teste 123456",
+              class: "textStyle",
+            },
+            image1: {
+              label: "Image 1",
+              inputType: "image",
+              isEditable: false,
+              isRequired: true,
+              value: "",
+              source: "https://reactnative.dev/img/tiny_logo.png",
+              class: "tinyLogo",
+            },
             input1: {
               label: "input 1",
               inputType: "input",
@@ -223,7 +260,6 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "",
               class: "input",
-
             },
             botao1: {
               inputType: "button",

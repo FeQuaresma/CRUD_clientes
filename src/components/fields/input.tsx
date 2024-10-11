@@ -9,7 +9,7 @@ export default function Input({ field, onValueChange, classes }: any) {
     <TextInput
       placeholder={field.placeholder}     
       editable={field.isEditable}
-      style={{...sumClass(field.class, classes), ...field.css}}
+    style={{...sumClass(field.class, classes), ...field.style}}
       value={field.valueMasked ? field.valueMasked : field.value}
       inputMode={field.inputMode}
       maxLength={field.maxLength}

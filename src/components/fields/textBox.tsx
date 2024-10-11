@@ -1,11 +1,11 @@
 import { TextInput } from "react-native";
-import { styles } from "@/src/constants/styles";
+import { sumClass } from "@/src/functions/sumClass";
 
-export default function TextBox({ field, onValueChange }: any) {
+export default function TextBox({ field, onValueChange, classes }: any) {
   return (
     <TextInput
       multiline
-      style={styles.inputBox}
+      style={{ ...sumClass(field.class, classes), ...field.style }}
       value={field ? field.value : null}
       inputMode={field.inputMode}
       maxLength={field.maxLength}

@@ -1,5 +1,5 @@
 import { Alert } from "react-native";
-import { Location } from "../app/(tabs)/_layout";
+import { Location } from "../app/(modules)/_layout";
 import { ModuleParam } from "../constants/moduleParamV2";
 import React from "react";
 

@@ -20,6 +20,7 @@ import {
   Image,
   Button,
   Text,
+  Video,
 } from "./fields";
 import { styles } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -45,9 +46,7 @@ export default function ModuleForm({
     handleFilterCallBack(route.params);
   }, [route.params]);
 
-  useEffect(()=>{
-    console.log(pageSettings)
-  },[])
+
 
   function setErrorMsg() {
     Object.keys(formParam).map((field: string) => {
@@ -642,6 +641,10 @@ export default function ModuleForm({
                 {formParam[field].inputType === "text" && (
                   <Text field={formParam[field]} classes={classes} />
                 )}
+                {formParam[field].inputType === "video" && (
+                  <Video field={formParam[field]} classes={classes} />
+                )}
+                
 
                 {formParam[field].searchSign && (
                   <Pressable

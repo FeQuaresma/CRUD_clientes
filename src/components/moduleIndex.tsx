@@ -34,6 +34,7 @@ export default function ModuleIndex({
           },
         }));
       }
+
       functionList();
     }
   }, []);
@@ -62,7 +63,7 @@ export default function ModuleIndex({
         finalString += appJson.modules[moduleObject].stringFunctions[i] + "\n";
       }
     }
-    return extractFunctions(finalString, moduleName);
+    return extractFunctions(finalString, moduleObject);
   }
 
   function isValidUrl(e: string) {

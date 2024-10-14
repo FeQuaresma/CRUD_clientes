@@ -1,18 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Index({ navigation }: any) {
-  const [state, setState] = useState({state: true});
 
-  useEffect(()=>{console.log(state)},[state])
 
-  function setFalse() {
-    setState((prevForm) => ({...prevForm, state: false}));
-  }
-
-  function setTrue() {
-    setState((prevForm) => ({...prevForm, state: true}));
-  }
 
   return (
     <View style={styles.containerScrollView}>
@@ -22,12 +13,7 @@ export default function Index({ navigation }: any) {
       >
         <Text style={styles.buttonText}>Versão 1</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => setFalse()}>
-        <Text style={styles.buttonText}>False</Text>
-      </Pressable>
-      <Pressable style={styles.button} onPress={() => setTrue()}>
-        <Text style={styles.buttonText}>True</Text>
-      </Pressable>
+
     </View>
   );
 }

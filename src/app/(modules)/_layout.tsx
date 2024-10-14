@@ -35,9 +35,7 @@ export default function MyApp() {
     }));
   }, []);
 
-  useEffect(() => {
-    console.log(appJson.modules.cliente.pages.pageTeste.components.input1);
-  }, [appJson.modules.cliente.pages.pageTeste.components.input1]);
+
 
   function getClassCss(
     id: string | string[],
@@ -576,12 +574,16 @@ export default function MyApp() {
     try {
       appJson.modules[location.module].funcNames?.forEach((fnName) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
-        if (jsonImported.match(regex)) {
-          jsonImported = jsonImported.replace(
-            regex,
-            `appJson.modules.${location.module}.functions.${fnName}($1, appJson)`
-          );
-        }
+        jsonImported = jsonImported.replace(regex, (_, group1) => {
+          // Verifica se o primeiro grupo de captura (os parâmetros) está vazio
+          if (group1.trim() === "") {
+            // Se vazio, retorna a substituição sem parâmetros adicionais
+            return `appJson.modules.${location.module}.functions.${fnName}(appJson)`;
+          } else {
+            // Caso contrário, insere os parâmetros capturados e o appJson
+            return `appJson.modules.${location.module}.functions.${fnName}(${group1}, appJson)`;
+          }
+        });
       });
 
       Object.keys(appJson).forEach((fnName: any) => {
@@ -595,7 +597,7 @@ export default function MyApp() {
       });
 
       appJson.modules[location.module].varNames?.forEach((varName) => {
-        const regex = new RegExp(`\\b${varName}\\((.*?)\\)`, "g");
+        const regex = new RegExp(`\\b${varName}\\b`, "g");
         if (jsonImported.match(regex)) {
           jsonImported = jsonImported.replace(
             regex,
@@ -605,7 +607,6 @@ export default function MyApp() {
       });
 
       const func = new Function("appJson", "location", jsonImported);
-
       func(appJson, location);
     } catch (e) {
       console.error(e);

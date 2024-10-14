@@ -41,7 +41,8 @@ export interface Param {
     | "button"
     | "textBox"
     | "image"
-    | "text";
+    | "text"
+    | "video";
   inputMode?: "numeric" | "text" | "tel";
   value: string | { start: string; end: string };
   placeholder?: string;
@@ -167,67 +168,81 @@ export const modulesParamV2: ModuleParam = {
     cliente: {
       stringFunctions: [
         `
-        let contador = 1;
+        let contador = 0;
 
-        function plusCount(){
-          contador++
-          console.log(contador)
-        }
+function timeOutTeste() {
+  if(contador < 120){
+      appJson.setField({cliente:{pageTeste:{botao2:{value:contador}}}});
+      contador++;
+      console.log(contador);
+      setTimeout(() => timeOutTeste(), 1000);
+  }
+}
+
+
+  function testeteste(param) {
+  console.log(param);
+  console.log(appJson);
+  };
+  `
+// ,
+// `
+
+//         function plusCount(){
+//           contador++
+//           console.log(contador)
+//         }
       
-        /* Função para validarCPF ou validar CPNJ */
       
-        function validateCPF(cpf) {
-          if (cpf.length != 11) {
-            return false;
-          } else {
-            let firstDigit = 0;
-            let secondDigit = 0;
-            for (let i = 0; i < 10; i++) {
-              i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
-              secondDigit += Number(cpf[i]) * i;
-            }
-            firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-            secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-            if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
-              return false;
-            } else {
-              return true;
-            }
-          }
-        }
+//         /* Função para validarCPF ou validar CPNJ */
       
-        function validateCNPJ(cnpj) {
-          if (cnpj.length != 11) {
-            return false;
-          } else {
-            let firstDigit = 0;
-            let secondDigit = 0;
-            for (let i = 0; i < 10; i++) {
-              i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
-              secondDigit += Number(cnpj[i]) * i;
-            }
-            firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-            secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-            if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
-              return false;
-            } else {
-              return true;
-            }
-          }
-        }
+//         function validateCPF(cpf) {
+//           if (cpf.length != 11) {
+//             return false;
+//           } else {
+//             let firstDigit = 0;
+//             let secondDigit = 0;
+//             for (let i = 0; i < 10; i++) {
+//               i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
+//               secondDigit += Number(cpf[i]) * i;
+//             }
+//             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+//             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+//             if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
+//               return false;
+//             } else {
+//               return true;
+//             }
+//           }
+//         }
       
-        function validateDocumento(cpf) {
-          if (cpf.length === 11) return validateCPF(cpf);
-          else if (cpf.length === 14) return validateCNPJ(cnpj);
-          else return false;
-        }
-        `,
-        `
-        function funcTeste(value) {
-        console.log(value)
-        }
-        `,
-        `https://caae.org.br/teste/functions.js?03x13`,
+//         function validateCNPJ(cnpj) {
+//           if (cnpj.length != 11) {
+//             return false;
+//           } else {
+//             let firstDigit = 0;
+//             let secondDigit = 0;
+//             for (let i = 0; i < 10; i++) {
+//               i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
+//               secondDigit += Number(cnpj[i]) * i;
+//             }
+//             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+//             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+//             if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
+//               return false;
+//             } else {
+//               return true;
+//             }
+//           }
+//         }
+      
+//         function validateDocumento(cpf) {
+//           if (cpf.length === 11) return validateCPF(cpf);
+//           else if (cpf.length === 14) return validateCNPJ(cnpj);
+//           else return false;
+//         }
+//         `,
+        // `https://caae.org.br/teste/functions.js?03x13`,
       ],
       moduleName: "Clientes",
       moduleSettings: {navBar:{classCss:"navBar"},navBarText:{classCss:"navBarText"}},
@@ -236,23 +251,6 @@ export const modulesParamV2: ModuleParam = {
           pageName: "Page Teste",
           pageSettings: {mainView:{class:"containerView"}},
           components: {
-            text1: {
-              label: "Text1",
-              inputType: "text",
-              isEditable: false,
-              isRequired: true,
-              value: "Teste 123456",
-              class: "textStyle",
-            },
-            image1: {
-              label: "Image 1",
-              inputType: "image",
-              isEditable: false,
-              isRequired: true,
-              value: "",
-              source: "https://reactnative.dev/img/tiny_logo.png",
-              class: "tinyLogo",
-            },
             input1: {
               label: "input 1",
               inputType: "input",
@@ -267,7 +265,11 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "Botão 1",
               class: "button",
-              function: `appJson.setField({cliente:{pageTeste:{input1:{isEditable:true}}}})`,
+              // function: `timeOutTeste();`,
+              function: `
+              contador = 0
+timeOutTeste();
+              `,
             },
             botao2: {
               inputType: "button",
@@ -275,7 +277,7 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "Botão 2",
               class: "button",
-              function: `appJson.setField({cliente:{pageTeste:{input1:{isEditable:false}}}})`,
+              function: `testeteste("teste ok")`,
             },
             botao3: {
               inputType: "button",
@@ -292,6 +294,12 @@ export const modulesParamV2: ModuleParam = {
               value: "Botão 4",
               class: "button",
               function: `console.log(appJson.getClassCss(["cliente.pageTeste.botao1", "cliente.pageTeste.botao2", "cliente.pageTeste.botao3"]))`,
+            },
+            video1: {
+              inputType: "video",
+              isEditable: false,
+              isRequired: true,
+              value: "",
             },
           },
         },

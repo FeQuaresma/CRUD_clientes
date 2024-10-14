@@ -10,4 +10,5 @@ export { default as Table } from "./table";
 export { default as Image } from "./image";
 export { default as Button } from "./button";
 export { default as Text } from "./text";
-
+export { default as Video } from "./video";
+export { default as Sound } from "./sound";

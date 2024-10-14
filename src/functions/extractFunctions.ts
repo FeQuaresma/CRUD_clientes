@@ -8,10 +8,6 @@ export function catchTextJs(link: string) {
     });
 }
 
-export function teste2(e: any) {
-  console.log(typeof e);
-}
-
 export async function extractFunctions(
   stringArray: string,
   moduleName: string
@@ -78,15 +74,23 @@ export async function extractFunctions(
       funcNames.forEach((fnName) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
         if (functionCode[2].match(regex)) {
-          functionCode[2] = functionCode[2].replace(
-            regex,
-            `appJson.modules.${moduleName}.functions.${fnName}($1, appJson)`
-          );
+          
+          functionCode[2] = functionCode[2].replace(regex, (match, group1) => {
+              // Verifica se o primeiro grupo de captura (os parâmetros) está vazio
+              if (group1.trim() === "") {
+                // Se vazio, retorna a substituição sem parâmetros adicionais
+                return `appJson.modules.${moduleName}.functions.${fnName}(appJson)`;
+              } else {
+                // Caso contrário, insere os parâmetros capturados e o appJson
+                return `appJson.modules.${moduleName}.functions.${fnName}(${group1}, appJson)`;
+              }
+            });
         }
       });
 
       varNames.forEach((varName) => {
-        const regex = new RegExp(`\\b${varName}\\((.*?)\\)`, "g");
+        console.log(varName)
+        const regex = new RegExp(`\\b${varName}\\b`, "g");
         if (functionCode[2].match(regex)) {
           functionCode[2] = functionCode[2].replace(
             regex,
@@ -104,7 +108,7 @@ export async function extractFunctions(
     // console.log("vars: ", varNames);
     // console.log("vars: ", varObj);
     // console.log("funcs: ", funcNames);
-    // console.log("funcs: ", funcArray);
+    console.log("funcs: ", funcArray);
     // console.log({ variables: varArray, functions: funcArray });
     return { variables: varObj, functions: funcArray, varNames, funcNames };
   } catch (e) {

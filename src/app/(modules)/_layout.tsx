@@ -712,6 +712,7 @@ export default function MyApp() {
                   {(e) => (
                     <ModuleForm
                       {...e}
+                      consoleRN={appJson.console}
                       pageSettings={appJson.modules[moduleObject].pages[page].pageSettings}
                       formName={
                         appJson.modules[moduleObject].pages[page].pageName

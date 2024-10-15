@@ -1,10 +1,11 @@
+import { useRef } from "react";
 import { DataRow } from "../components/fields/table";
 import { params } from "./params";
 
 export type ModuleParam = {
   style?: { [key: string]: any };
   modules: { [key: string]: Module };
-  consolelog?: string;
+  console?: { log: string; isVisible: boolean };
   classString?: string[];
   class?: { [key: string]: { [key: string]: string | number } };
   [key: string]: any;
@@ -17,7 +18,10 @@ export type Module = {
   stringFunctions?: string[];
   functions?: any;
   moduleName: string;
-  moduleSettings?: {navBar?: {classCss?: string, styles?: {}}, navBarText?: {classCss?: string, styles?: {}}};
+  moduleSettings?: {
+    navBar?: { classCss?: string; styles?: {} };
+    navBarText?: { classCss?: string; styles?: {} };
+  };
   pages: {
     [key: string]: {
       pageName: string;
@@ -42,7 +46,8 @@ export interface Param {
     | "textBox"
     | "image"
     | "text"
-    | "video";
+    | "video"
+    | "sound";
   inputMode?: "numeric" | "text" | "tel";
   value: string | { start: string; end: string };
   placeholder?: string;
@@ -109,6 +114,16 @@ export interface TableParam extends Param {
 }
 
 export const modulesParamV2: ModuleParam = {
+  console: {
+    isVisible: false,
+    log: `ERROR
+    TESTE
+    A
+    B
+    C
+    D
+    E`,
+  },
   classString: [
     `.button {
     width: 250;
@@ -172,10 +187,10 @@ export const modulesParamV2: ModuleParam = {
 
 function timeOutTeste() {
   if(contador < 120){
-      appJson.setField({cliente:{pageTeste:{botao2:{value:contador}}}});
-      contador++;
-      console.log(contador);
-      setTimeout(() => timeOutTeste(), 1000);
+    contador++;
+    appJson.setField({cliente:{pageTeste:{botao2:{value:contador}}}});
+    console.log(contador);
+    setTimeout(() => timeOutTeste(), 1000);
   }
 }
 
@@ -184,73 +199,84 @@ function timeOutTeste() {
   console.log(param);
   console.log(appJson);
   };
-  `
-// ,
-// `
+  `,
+        // ,
+        // `
 
-//         function plusCount(){
-//           contador++
-//           console.log(contador)
-//         }
-      
-      
-//         /* Função para validarCPF ou validar CPNJ */
-      
-//         function validateCPF(cpf) {
-//           if (cpf.length != 11) {
-//             return false;
-//           } else {
-//             let firstDigit = 0;
-//             let secondDigit = 0;
-//             for (let i = 0; i < 10; i++) {
-//               i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
-//               secondDigit += Number(cpf[i]) * i;
-//             }
-//             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-//             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-//             if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
-//               return false;
-//             } else {
-//               return true;
-//             }
-//           }
-//         }
-      
-//         function validateCNPJ(cnpj) {
-//           if (cnpj.length != 11) {
-//             return false;
-//           } else {
-//             let firstDigit = 0;
-//             let secondDigit = 0;
-//             for (let i = 0; i < 10; i++) {
-//               i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
-//               secondDigit += Number(cnpj[i]) * i;
-//             }
-//             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
-//             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
-//             if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
-//               return false;
-//             } else {
-//               return true;
-//             }
-//           }
-//         }
-      
-//         function validateDocumento(cpf) {
-//           if (cpf.length === 11) return validateCPF(cpf);
-//           else if (cpf.length === 14) return validateCNPJ(cnpj);
-//           else return false;
-//         }
-//         `,
+        //         function plusCount(){
+        //           contador++
+        //           console.log(contador)
+        //         }
+
+        //         /* Função para validarCPF ou validar CPNJ */
+
+        //         function validateCPF(cpf) {
+        //           if (cpf.length != 11) {
+        //             return false;
+        //           } else {
+        //             let firstDigit = 0;
+        //             let secondDigit = 0;
+        //             for (let i = 0; i < 10; i++) {
+        //               i < 9 ? (firstDigit += Number(cpf[i]) * (i + 1)) : null;
+        //               secondDigit += Number(cpf[i]) * i;
+        //             }
+        //             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+        //             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+        //             if (String(firstDigit) != cpf[9] || String(secondDigit) != cpf[10]) {
+        //               return false;
+        //             } else {
+        //               return true;
+        //             }
+        //           }
+        //         }
+
+        //         function validateCNPJ(cnpj) {
+        //           if (cnpj.length != 11) {
+        //             return false;
+        //           } else {
+        //             let firstDigit = 0;
+        //             let secondDigit = 0;
+        //             for (let i = 0; i < 10; i++) {
+        //               i < 9 ? (firstDigit += Number(cnpj[i]) * (i + 1)) : null;
+        //               secondDigit += Number(cnpj[i]) * i;
+        //             }
+        //             firstDigit = firstDigit % 11 >= 10 ? 0 : firstDigit % 11;
+        //             secondDigit = secondDigit % 11 >= 10 ? 0 : secondDigit % 11;
+        //             if (String(firstDigit) != cnpj[9] || String(secondDigit) != cnpj[10]) {
+        //               return false;
+        //             } else {
+        //               return true;
+        //             }
+        //           }
+        //         }
+
+        //         function validateDocumento(cpf) {
+        //           if (cpf.length === 11) return validateCPF(cpf);
+        //           else if (cpf.length === 14) return validateCNPJ(cnpj);
+        //           else return false;
+        //         }
+        //         `,
         // `https://caae.org.br/teste/functions.js?03x13`,
       ],
       moduleName: "Clientes",
-      moduleSettings: {navBar:{classCss:"navBar"},navBarText:{classCss:"navBarText"}},
+      moduleSettings: {
+        navBar: { classCss: "navBar" },
+        navBarText: { classCss: "navBarText" },
+      },
       pages: {
         pageTeste: {
           pageName: "Page Teste",
-          pageSettings: {mainView:{class:"containerView"}},
+          pageSettings: { mainView: { class: "containerView" } },
           components: {
+            sound2: {
+              inputType: "sound",
+              isEditable: true,
+              isRequired: false,
+              value: "",
+              class: "button red",
+              source:
+                "https://www.myinstants.com/media/sounds/eu-finjo-que-nao-percebo-mas-tudo-esta-sendo-obs.mp3",
+            },
             input1: {
               label: "input 1",
               inputType: "input",
@@ -295,12 +321,14 @@ timeOutTeste();
               class: "button",
               function: `console.log(appJson.getClassCss(["cliente.pageTeste.botao1", "cliente.pageTeste.botao2", "cliente.pageTeste.botao3"]))`,
             },
-            video1: {
-              inputType: "video",
-              isEditable: false,
-              isRequired: true,
-              value: "",
-            },
+            // video1: {
+            //   inputType: "video",
+            //   isEditable: false,
+            //   isRequired: true,
+            //   value: "",
+            //   source:
+            //     "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            // },
           },
         },
         cadastro: {

@@ -6,6 +6,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from "react-native";
 import {
   Date,
@@ -21,6 +22,7 @@ import {
   Button,
   Text,
   Video,
+  Sound,
 } from "./fields";
 import { styles } from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -39,14 +41,13 @@ export default function ModuleForm({
   setFormParam,
   formName,
   classes,
+  consoleRN,
 }: any) {
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
   useEffect(() => {
     handleFilterCallBack(route.params);
   }, [route.params]);
-
-
 
   function setErrorMsg() {
     Object.keys(formParam).map((field: string) => {
@@ -437,13 +438,14 @@ export default function ModuleForm({
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
-      style={pageSettings && pageSettings.mainView && {
-        ...sumClass(pageSettings.mainView.class, classes),
-        ...pageSettings.mainView.styles,
-      }}
+      style={
+        pageSettings &&
+        pageSettings.mainView && {
+          ...sumClass(pageSettings.mainView.class, classes),
+          ...pageSettings.mainView.styles,
+        }
+      }
     >
-
-
       <View
         style={{
           flexDirection: "row",
@@ -467,14 +469,18 @@ export default function ModuleForm({
         )}
         {formMode === "register" && (
           <TextRN
-            style={{ ...styles.inputLabel, flex: 1, textAlign: "center", color: "red" }}
+            style={{
+              ...styles.inputLabel,
+              flex: 1,
+              textAlign: "center",
+              color: "red",
+            }}
           >
             {formName}
           </TextRN>
         )}
         <View style={{ width: 30 }} />
       </View>
-
 
       <ScrollView
         contentContainerStyle={{
@@ -644,7 +650,9 @@ export default function ModuleForm({
                 {formParam[field].inputType === "video" && (
                   <Video field={formParam[field]} classes={classes} />
                 )}
-                
+                {formParam[field].inputType === "sound" && (
+                  <Sound field={formParam[field]} classes={classes} />
+                )}
 
                 {formParam[field].searchSign && (
                   <Pressable
@@ -736,6 +744,31 @@ export default function ModuleForm({
           </View>
         )}
       </View>
+      {consoleRN.isVisible && (
+        <View style={{height: 100, backgroundColor: "white"}}>
+          <TextRN style={{color:"black"}}>{consoleRN.log}</TextRN>
+        </View>
+      )}
+      <Pressable
+        style={{
+          position: "absolute",
+          bottom: 20, // Distância do botão até o canto inferior
+          right: 20, // Distância do botão até o canto direito
+          backgroundColor: "red",
+          padding: 10,
+          borderRadius: 5,
+          marginTop: 10,
+          marginLeft: 10,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        onPress={() => console.log(consoleRN.isVisible)}
+        onLongPress={() => console.log(consoleRN.log)}
+      >
+        <MaterialCommunityIcons name="circle" size={26} color="white" />
+      </Pressable>
+
+
     </KeyboardAvoidingView>
   );
 }

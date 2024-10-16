@@ -13,7 +13,10 @@
         "./*"
       ]
     },
-    "typeRoots": ["./node_modules/@types", "./declarations"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./declarations"
+    ]
   },
   "include": [
     "**/*.ts",

@@ -42,6 +42,7 @@ export default function ModuleForm({
   formName,
   classes,
   consoleRN,
+  openLog,
 }: any) {
   const [errorCheckComplete, setErrorCheckComplete] = useState(false);
 
@@ -744,29 +745,6 @@ export default function ModuleForm({
           </View>
         )}
       </View>
-      {consoleRN.isVisible && (
-        <View style={{height: 100, backgroundColor: "white"}}>
-          <TextRN style={{color:"black"}}>{consoleRN.log}</TextRN>
-        </View>
-      )}
-      <Pressable
-        style={{
-          position: "absolute",
-          bottom: 20, // Distância do botão até o canto inferior
-          right: 20, // Distância do botão até o canto direito
-          backgroundColor: "red",
-          padding: 10,
-          borderRadius: 5,
-          marginTop: 10,
-          marginLeft: 10,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-        onPress={() => console.log(consoleRN.isVisible)}
-        onLongPress={() => console.log(consoleRN.log)}
-      >
-        <MaterialCommunityIcons name="circle" size={26} color="white" />
-      </Pressable>
 
 
     </KeyboardAvoidingView>

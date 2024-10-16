@@ -5,6 +5,8 @@ import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
 import * as cssjson from "cssjson";
+import Log from "./log";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface FunctionJson {
   functionCode: string;
@@ -20,8 +22,12 @@ const Drawer = createDrawerNavigator();
 
 export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
+  let consoleMessages = "";
+
+
 
   useEffect(() => {
+    captureConsoleMessages();
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
@@ -35,7 +41,31 @@ export default function MyApp() {
     }));
   }, []);
 
+  useEffect(()=>{
+    console.log(appJson)
+    // storeData(appJson)
+    // console.log(getData())
+  },[appJson])
 
+  async function storeData(value:any) {
+    try {
+      const jsonValue = JSON.stringify(value);
+      console.log(jsonValue)
+      // await AsyncStorage.setItem('myAppJson', jsonValue);
+    } catch (e) {
+      console.error(e)
+    }
+  };
+
+  async function getData(): Promise<ModuleParam> {
+    try {
+      const jsonValue = await AsyncStorage.getItem('myAppJson');
+      return jsonValue != null ? JSON.parse(jsonValue) : modulesParamV2;
+    } catch (e) {
+      console.error(e)
+      return modulesParamV2;
+    }
+  }
 
   function getClassCss(
     id: string | string[],
@@ -572,7 +602,7 @@ export default function MyApp() {
 
   async function executeFunction(jsonImported: string, location: Location) {
     try {
-      appJson.modules[location.module].funcNames?.forEach((fnName) => {
+      appJson.modules[location.module].funcNames?.forEach((fnName:string) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
         jsonImported = jsonImported.replace(regex, (_, group1) => {
           // Verifica se o primeiro grupo de captura (os parâmetros) está vazio
@@ -596,7 +626,7 @@ export default function MyApp() {
         }
       });
 
-      appJson.modules[location.module].varNames?.forEach((varName) => {
+      appJson.modules[location.module].varNames?.forEach((varName:string) => {
         const regex = new RegExp(`\\b${varName}\\b`, "g");
         if (jsonImported.match(regex)) {
           jsonImported = jsonImported.replace(
@@ -641,28 +671,78 @@ export default function MyApp() {
     return dataObjectTemp;
   }
 
-  return (
-    <Drawer.Navigator backBehavior="history">
-      {/* <Drawer.Screen
-        name="Home"
-        options={{
-          title: "home",
-          headerShown: false,
-        }}
-      >
-        {(e: any) => (
-          <Home
-            {...e}
-            appJson={appJson}
-            setAppJson={() => {
-              setAppJson(appJsonOrigin);
-              console.log("Refreshed!");
-            }}
-          />
-        )}
-      </Drawer.Screen>
-       */}
+  function openLog() {
+    setAppJson((prevForm: ModuleParam) => ({
+      ...prevForm,
+      console: {
+        ...prevForm.console,
+        isVisible: !prevForm.console.isVisible,
+      },
+    }));
+  }
 
+  const captureConsoleMessages = () => {
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    // Sobrescrevendo console.log
+    console.log = function (...args) {
+      consoleMessages += appJson.console.log + "[LOG] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalLog.apply(console, args); // Chama o console.log original
+    };
+
+    // Sobrescrevendo console.warn
+    console.warn = function (...args) {
+      consoleMessages +=
+        appJson.console.log + "[WARN] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalWarn.apply(console, args); // Chama o console.warn original
+    };
+
+    // Sobrescrevendo console.error
+    console.error = function (...args) {
+      consoleMessages +=
+        appJson.console.log + "[ERROR] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalError.apply(console, args); // Chama o console.error original
+    };
+  };
+
+  return (
+    <Drawer.Navigator
+      backBehavior="history"
+      screenOptions={{
+        drawerStyle: { borderColor: "red", borderWidth: 1 },
+        drawerContentStyle: { borderColor: "blue", borderWidth: 1 },
+        drawerContentContainerStyle: { borderColor: "blue", borderWidth: 1, flex: 1 }
+      }}
+    >
       {Object.keys(appJson.modules).map((moduleObject) => (
         <Drawer.Screen
           key={moduleObject}
@@ -712,8 +792,11 @@ export default function MyApp() {
                   {(e) => (
                     <ModuleForm
                       {...e}
+                      openLog={openLog}
                       consoleRN={appJson.console}
-                      pageSettings={appJson.modules[moduleObject].pages[page].pageSettings}
+                      pageSettings={
+                        appJson.modules[moduleObject].pages[page].pageSettings
+                      }
                       formName={
                         appJson.modules[moduleObject].pages[page].pageName
                       }
@@ -750,6 +833,20 @@ export default function MyApp() {
           )}
         </Drawer.Screen>
       ))}
+
+      <Drawer.Screen
+        name="LOG"
+        options={{
+          title: "LOG",
+          headerShown: false,
+          drawerActiveBackgroundColor: "green",
+          drawerActiveTintColor: "white",
+          drawerLabelStyle: {color: "black"},
+          drawerItemStyle: { position: "absolute", bottom: 1, width: 250, alignSelf: "center"},
+        }}
+      >
+        {(e: any) => <Log {...e} logString={appJson.console.log} />}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 }

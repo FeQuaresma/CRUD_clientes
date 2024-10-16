@@ -1,11 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Index from ".";
-import MyApp from "./(modules)/_layout";
+import MyApp from "./modules/_layout";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
   return (
     <Stack.Navigator
       initialRouteName="teste"
@@ -15,8 +14,8 @@ export default function App() {
         gestureEnabled: false,
       }}
     >
-      <Stack.Screen name="index" component={Index} />
-      <Stack.Screen name="(modules)" component={MyApp} />
+      <Stack.Screen name="index">{(e) => <Index {...e} e={e}/>}</Stack.Screen>
+      <Stack.Screen name="modules" component={MyApp} />
     </Stack.Navigator>
   );
 }

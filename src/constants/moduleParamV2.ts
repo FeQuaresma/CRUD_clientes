@@ -1,11 +1,10 @@
-import { useRef } from "react";
 import { DataRow } from "../components/fields/table";
 import { params } from "./params";
 
 export type ModuleParam = {
   style?: { [key: string]: any };
   modules: { [key: string]: Module };
-  console?: { log: string; isVisible: boolean };
+  console: { log: string; isVisible: boolean };
   classString?: string[];
   class?: { [key: string]: { [key: string]: string | number } };
   [key: string]: any;
@@ -116,13 +115,7 @@ export interface TableParam extends Param {
 export const modulesParamV2: ModuleParam = {
   console: {
     isVisible: false,
-    log: `ERROR
-    TESTE
-    A
-    B
-    C
-    D
-    E`,
+    log: ``,
   },
   classString: [
     `.button {
@@ -303,7 +296,7 @@ timeOutTeste();
               isRequired: true,
               value: "Botão 2",
               class: "button",
-              function: `testeteste("teste ok")`,
+              function: `testeerro("teste ok")`,
             },
             botao3: {
               inputType: "button",

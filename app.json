@@ -33,8 +33,7 @@
         {
           "iCloudContainerEnvironment": "Production"
         }
-      ],
-      "expo-video"
+      ]
     ],
     "experiments": {
       "typedRoutes": true

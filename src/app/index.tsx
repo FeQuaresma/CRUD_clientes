@@ -1,7 +1,6 @@
-import { useEffect} from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
-export default function Index({ navigation }: any) {
+export default function Index({ navigation, e }: any) {
 
 
 
@@ -9,7 +8,14 @@ export default function Index({ navigation }: any) {
     <View style={styles.containerScrollView}>
       <Pressable
         style={styles.button}
-        onPress={() => navigation.navigate("(modules)")}
+        onPress={() => navigation.navigate("modules")}
+      >
+        <Text style={styles.buttonText}>Versão 1</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={() => console.log(e)}
       >
         <Text style={styles.buttonText}>Versão 1</Text>
       </Pressable>

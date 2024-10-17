@@ -6,7 +6,13 @@ import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
 import * as cssjson from "cssjson";
 import Log from "./log";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  catchTextJs,
+  extractFunctions,
+} from "@/src/functions/extractFunctions";
+import { parse } from "date-fns";
+import modules from ".";
 
 export interface FunctionJson {
   functionCode: string;
@@ -18,16 +24,104 @@ export interface Location {
   page: string;
   field: string;
 }
+
 const Drawer = createDrawerNavigator();
 
 export default function MyApp() {
   const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
+  const [isReady, setIsReady] = useState(false);
   let consoleMessages = "";
 
+  const initializeAppJson = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("myAppJson");
+      const storedAppJson = jsonValue ? JSON.parse(jsonValue) : modulesParamV2;
 
+      // Reintegra as funções personalizadas ao objeto restaurado
+      const reintegratedAppJson = reintegrateFunctions(storedAppJson);
+
+      setAppJson(reintegratedAppJson);
+    } catch (e) {
+      console.error(e);
+      setAppJson(modulesParamV2); // Em caso de erro, use o valor padrão
+    } finally {
+      setIsReady(true); // Marca como pronto
+    }
+  };
+
+  const reintegrateFunctions = (data: ModuleParam) => {
+    // Exemplo de reintegração de funções, depende do que precisa ser reintegrado
+    data.setField = setField;
+    data.getClassCss = getClassCss;
+    data.setClassCss = setClassCss;
+
+    // Itera sobre os módulos e reintegra funções se necessário
+    Object.keys(data.modules).forEach((moduleObject) => {
+      const module = data.modules[moduleObject];
+      if (module.funcNames) {
+        const functions: { [key: string]: any } = {}; // Suponha que você reconfigure as funções aqui
+        module.funcNames.forEach((fnName) => {
+          functions[fnName] = new Function("args", `${fnName}(args)`); // Exemplo de reintegração de função
+        });
+        module.functions = functions;
+      }
+    });
+    console.log(data.modules.cliente.funcNames)
+    return data;
+  };
 
   useEffect(() => {
-    captureConsoleMessages();
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    // Sobrescrevendo console.log
+    console.log = function (...args) {
+      consoleMessages += appJson.console.log + "[LOG] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalLog.apply(console, args); // Chama o console.log original
+    };
+
+    // Sobrescrevendo console.warn
+    console.warn = function (...args) {
+      consoleMessages +=
+        appJson.console.log + "[WARN] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalWarn.apply(console, args); // Chama o console.warn original
+    };
+
+    // Sobrescrevendo console.error
+    console.error = function (...args) {
+      consoleMessages +=
+        appJson.console.log + "[ERROR] " + args.join(" ") + "\n";
+
+      setAppJson((prevForm: ModuleParam) => ({
+        ...prevForm,
+        console: {
+          ...prevForm.console,
+          log: consoleMessages,
+        },
+      }));
+
+      originalError.apply(console, args); // Chama o console.error original
+    };
+
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
@@ -39,31 +133,105 @@ export default function MyApp() {
         ...cssReader(),
       },
     }));
+
+    Object.keys(appJson.modules).forEach((moduleObject) => {
+      if (appJson.modules[moduleObject].stringFunctions) {
+        functionList(moduleObject);
+      }
+    });
   }, []);
 
-  useEffect(()=>{
-    console.log(appJson)
-    // storeData(appJson)
-    // console.log(getData())
-  },[appJson])
+  useEffect(() => {
+    // Carrega os dados do AsyncStorage na inicialização
+    initializeAppJson();
+  }, []);
 
-  async function storeData(value:any) {
-    try {
-      const jsonValue = JSON.stringify(value);
-      console.log(jsonValue)
-      // await AsyncStorage.setItem('myAppJson', jsonValue);
-    } catch (e) {
-      console.error(e)
+  useEffect(() => {
+    // Somente armazena o estado atualizado quando o appJson está pronto
+    if (isReady) {
+      storeData(appJson);
     }
-  };
+  }, [appJson, isReady]);
 
   async function getData(): Promise<ModuleParam> {
     try {
-      const jsonValue = await AsyncStorage.getItem('myAppJson');
+      const jsonValue = await AsyncStorage.getItem("myAppJson");
       return jsonValue != null ? JSON.parse(jsonValue) : modulesParamV2;
     } catch (e) {
-      console.error(e)
+      console.error(e);
       return modulesParamV2;
+    }
+  }
+
+  async function storeData(value: any) {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem("myAppJson", jsonValue);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function functionList(moduleObject: string) {
+    const itemsObj = await createStringFunc(moduleObject);
+    const functions: { [key: string]: any } = {};
+    itemsObj?.functions.forEach((functionArray: any) => {
+      const func = new Function(...functionArray[1], functionArray[2]);
+      functions[functionArray[0]] = (...args: any[]) => func(...args);
+    });
+    console.log("ln 25 moduleIndex.tsx:", functions);
+    setAppJson((prevForm: ModuleParam) => ({
+      ...prevForm,
+      modules: {
+        ...prevForm.modules,
+        [moduleObject]: {
+          ...prevForm.modules[moduleObject],
+          functions: functions,
+          variables: itemsObj?.variables,
+          varNames: itemsObj?.varNames,
+          funcNames: itemsObj?.funcNames,
+        },
+      },
+    }));
+  }
+
+  async function createStringFunc(moduleObject: string) {
+    let finalString = "";
+
+    // Verifica se o objeto e suas propriedades existem
+    if (
+      appJson.modules[moduleObject] &&
+      appJson.modules[moduleObject].stringFunctions
+    ) {
+      for (
+        let i = 0;
+        i < appJson.modules[moduleObject].stringFunctions.length;
+        i++
+      ) {
+        const stringFunc = appJson.modules[moduleObject].stringFunctions[i];
+
+        if (isValidUrl(stringFunc)) {
+          const result = await catchTextJs(stringFunc); // Aguarda o retorno do fetch
+          finalString += result; // Concatena o resultado da função teste
+        } else {
+          finalString += stringFunc + "\n";
+        }
+      }
+    } else {
+      console.error(
+        `Módulo ${moduleObject} ou stringFunctions não está definido`
+      );
+    }
+
+    return extractFunctions(finalString, moduleObject);
+  }
+
+  function isValidUrl(e: string) {
+    try {
+      new URL(e);
+      return true;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -602,7 +770,7 @@ export default function MyApp() {
 
   async function executeFunction(jsonImported: string, location: Location) {
     try {
-      appJson.modules[location.module].funcNames?.forEach((fnName:string) => {
+      appJson.modules[location.module].funcNames?.forEach((fnName: string) => {
         const regex = new RegExp(`\\b${fnName}\\((.*?)\\)`, "g");
         jsonImported = jsonImported.replace(regex, (_, group1) => {
           // Verifica se o primeiro grupo de captura (os parâmetros) está vazio
@@ -626,7 +794,7 @@ export default function MyApp() {
         }
       });
 
-      appJson.modules[location.module].varNames?.forEach((varName:string) => {
+      appJson.modules[location.module].varNames?.forEach((varName: string) => {
         const regex = new RegExp(`\\b${varName}\\b`, "g");
         if (jsonImported.match(regex)) {
           jsonImported = jsonImported.replace(
@@ -681,58 +849,9 @@ export default function MyApp() {
     }));
   }
 
-  const captureConsoleMessages = () => {
-    const originalLog = console.log;
-    const originalWarn = console.warn;
-    const originalError = console.error;
-
-    // Sobrescrevendo console.log
-    console.log = function (...args) {
-      consoleMessages += appJson.console.log + "[LOG] " + args.join(" ") + "\n";
-
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        console: {
-          ...prevForm.console,
-          log: consoleMessages,
-        },
-      }));
-
-      originalLog.apply(console, args); // Chama o console.log original
-    };
-
-    // Sobrescrevendo console.warn
-    console.warn = function (...args) {
-      consoleMessages +=
-        appJson.console.log + "[WARN] " + args.join(" ") + "\n";
-
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        console: {
-          ...prevForm.console,
-          log: consoleMessages,
-        },
-      }));
-
-      originalWarn.apply(console, args); // Chama o console.warn original
-    };
-
-    // Sobrescrevendo console.error
-    console.error = function (...args) {
-      consoleMessages +=
-        appJson.console.log + "[ERROR] " + args.join(" ") + "\n";
-
-      setAppJson((prevForm: ModuleParam) => ({
-        ...prevForm,
-        console: {
-          ...prevForm.console,
-          log: consoleMessages,
-        },
-      }));
-
-      originalError.apply(console, args); // Chama o console.error original
-    };
-  };
+  if (!isReady) {
+    return null; // Ou exibe uma tela de carregamento enquanto aguarda
+  }
 
   return (
     <Drawer.Navigator
@@ -740,7 +859,11 @@ export default function MyApp() {
       screenOptions={{
         drawerStyle: { borderColor: "red", borderWidth: 1 },
         drawerContentStyle: { borderColor: "blue", borderWidth: 1 },
-        drawerContentContainerStyle: { borderColor: "blue", borderWidth: 1, flex: 1 }
+        drawerContentContainerStyle: {
+          borderColor: "blue",
+          borderWidth: 1,
+          flex: 1,
+        },
       }}
     >
       {Object.keys(appJson.modules).map((moduleObject) => (
@@ -772,6 +895,7 @@ export default function MyApp() {
                 {(e) => (
                   <ModuleIndex
                     {...e}
+                    getData={getData()}
                     moduleName={appJson.modules[moduleObject].moduleName}
                     appJson={appJson}
                     moduleObject={moduleObject}
@@ -841,8 +965,13 @@ export default function MyApp() {
           headerShown: false,
           drawerActiveBackgroundColor: "green",
           drawerActiveTintColor: "white",
-          drawerLabelStyle: {color: "black"},
-          drawerItemStyle: { position: "absolute", bottom: 1, width: 250, alignSelf: "center"},
+          drawerLabelStyle: { color: "black" },
+          drawerItemStyle: {
+            position: "absolute",
+            bottom: 1,
+            width: 250,
+            alignSelf: "center",
+          },
         }}
       >
         {(e: any) => <Log {...e} logString={appJson.console.log} />}

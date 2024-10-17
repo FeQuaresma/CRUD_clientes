@@ -89,7 +89,6 @@ export async function extractFunctions(
       });
 
       varNames.forEach((varName) => {
-        console.log(varName)
         const regex = new RegExp(`\\b${varName}\\b`, "g");
         if (functionCode[2].match(regex)) {
           functionCode[2] = functionCode[2].replace(
@@ -108,7 +107,7 @@ export async function extractFunctions(
     // console.log("vars: ", varNames);
     // console.log("vars: ", varObj);
     // console.log("funcs: ", funcNames);
-    console.log("funcs: ", funcArray);
+    // console.log("funcs: ", funcArray);
     // console.log({ variables: varArray, functions: funcArray });
     return { variables: varObj, functions: funcArray, varNames, funcNames };
   } catch (e) {

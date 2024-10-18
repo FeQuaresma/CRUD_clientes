@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import {useEffect} from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import ModuleForm from "@/src/components/moduleForm";
-import { ModuleParam, modulesParamV2 } from "@/src/constants/moduleParamV2";
+import { ModuleParam} from "@/src/constants/moduleParamV2";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
 import * as cssjson from "cssjson";
@@ -11,8 +11,7 @@ import {
   catchTextJs,
   extractFunctions,
 } from "@/src/functions/extractFunctions";
-import { parse } from "date-fns";
-import modules from ".";
+
 
 export interface FunctionJson {
   functionCode: string;
@@ -27,48 +26,17 @@ export interface Location {
 
 const Drawer = createDrawerNavigator();
 
-export default function MyApp() {
-  const [appJson, setAppJson] = useState<ModuleParam>(modulesParamV2);
-  const [isReady, setIsReady] = useState(false);
+export default function MyApp({
+  appJson,
+  setAppJson,
+}: {
+  appJson: ModuleParam;
+  setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>;
+}) {
   let consoleMessages = "";
 
-  const initializeAppJson = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("myAppJson");
-      const storedAppJson = jsonValue ? JSON.parse(jsonValue) : modulesParamV2;
 
-      // Reintegra as funções personalizadas ao objeto restaurado
-      const reintegratedAppJson = reintegrateFunctions(storedAppJson);
 
-      setAppJson(reintegratedAppJson);
-    } catch (e) {
-      console.error(e);
-      setAppJson(modulesParamV2); // Em caso de erro, use o valor padrão
-    } finally {
-      setIsReady(true); // Marca como pronto
-    }
-  };
-
-  const reintegrateFunctions = (data: ModuleParam) => {
-    // Exemplo de reintegração de funções, depende do que precisa ser reintegrado
-    data.setField = setField;
-    data.getClassCss = getClassCss;
-    data.setClassCss = setClassCss;
-
-    // Itera sobre os módulos e reintegra funções se necessário
-    Object.keys(data.modules).forEach((moduleObject) => {
-      const module = data.modules[moduleObject];
-      if (module.funcNames) {
-        const functions: { [key: string]: any } = {}; // Suponha que você reconfigure as funções aqui
-        module.funcNames.forEach((fnName) => {
-          functions[fnName] = new Function("args", `${fnName}(args)`); // Exemplo de reintegração de função
-        });
-        module.functions = functions;
-      }
-    });
-    console.log(data.modules.cliente.funcNames)
-    return data;
-  };
 
   useEffect(() => {
     const originalLog = console.log;
@@ -141,27 +109,12 @@ export default function MyApp() {
     });
   }, []);
 
-  useEffect(() => {
-    // Carrega os dados do AsyncStorage na inicialização
-    initializeAppJson();
-  }, []);
+
 
   useEffect(() => {
-    // Somente armazena o estado atualizado quando o appJson está pronto
-    if (isReady) {
       storeData(appJson);
-    }
-  }, [appJson, isReady]);
+  }, [appJson]);
 
-  async function getData(): Promise<ModuleParam> {
-    try {
-      const jsonValue = await AsyncStorage.getItem("myAppJson");
-      return jsonValue != null ? JSON.parse(jsonValue) : modulesParamV2;
-    } catch (e) {
-      console.error(e);
-      return modulesParamV2;
-    }
-  }
 
   async function storeData(value: any) {
     try {
@@ -804,6 +757,8 @@ export default function MyApp() {
         }
       });
 
+      console.log(appJson.modules.cliente.functions.timeOutTeste);
+      console.log(jsonImported);
       const func = new Function("appJson", "location", jsonImported);
       func(appJson, location);
     } catch (e) {
@@ -839,19 +794,6 @@ export default function MyApp() {
     return dataObjectTemp;
   }
 
-  function openLog() {
-    setAppJson((prevForm: ModuleParam) => ({
-      ...prevForm,
-      console: {
-        ...prevForm.console,
-        isVisible: !prevForm.console.isVisible,
-      },
-    }));
-  }
-
-  if (!isReady) {
-    return null; // Ou exibe uma tela de carregamento enquanto aguarda
-  }
 
   return (
     <Drawer.Navigator
@@ -895,7 +837,6 @@ export default function MyApp() {
                 {(e) => (
                   <ModuleIndex
                     {...e}
-                    getData={getData()}
                     moduleName={appJson.modules[moduleObject].moduleName}
                     appJson={appJson}
                     moduleObject={moduleObject}
@@ -916,7 +857,7 @@ export default function MyApp() {
                   {(e) => (
                     <ModuleForm
                       {...e}
-                      openLog={openLog}
+
                       consoleRN={appJson.console}
                       pageSettings={
                         appJson.modules[moduleObject].pages[page].pageSettings

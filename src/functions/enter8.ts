@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
-import { Location } from "../app/(modules)/_layout";
 import { ModuleParam } from "../constants/moduleParamV2";
 import React from "react";
+import { Location } from "../app/modules/_layout";
 
 export const callAPI = async (link: any, value: any) => {
   let linkURL = `${link.paramBeginning}${value}${link.paramEnd}`;

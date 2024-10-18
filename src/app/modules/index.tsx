@@ -10,7 +10,7 @@ export default function Home({ onCallBack, appJson, setAppJson, navigation }: an
   return (
     <ScrollView contentContainerStyle={styles.containerScrollView}>
       <Text style={styles.inputLabel}>Home</Text>
-      <Pressable style={styles.button} onPress={() => console.log(appJson.modules.cliente.pages.cadastro)}>
+      <Pressable style={styles.button} onPress={() => navigation.goBack()}>
         <Text>Teste</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => setAppJson()}>

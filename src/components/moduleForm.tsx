@@ -6,7 +6,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Modal,
 } from "react-native";
 import {
   Date,
@@ -21,7 +20,7 @@ import {
   Image,
   Button,
   Text,
-  Video,
+  // Video,
   Sound,
 } from "./fields";
 import { styles } from "../constants/styles";
@@ -629,7 +628,6 @@ export default function ModuleForm({
                     urlParam={formParam[field].table.tableSettings.tableURL}
                     onValueChange={(e: any, whichTable: string) => {
                       callFatherTable(e, field, whichTable);
-                      // console.log(e,field, whichTable)
                     }}
                   />
                 )}
@@ -648,9 +646,9 @@ export default function ModuleForm({
                 {formParam[field].inputType === "text" && (
                   <Text field={formParam[field]} classes={classes} />
                 )}
-                {formParam[field].inputType === "video" && (
+                {/* {formParam[field].inputType === "video" && (
                   <Video field={formParam[field]} classes={classes} />
-                )}
+                )} */}
                 {formParam[field].inputType === "sound" && (
                   <Sound field={formParam[field]} classes={classes} />
                 )}

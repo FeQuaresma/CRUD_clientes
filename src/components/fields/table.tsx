@@ -16,20 +16,9 @@ import {
 } from "@/src/context/SyncedScrollViewContext";
 import { SyncedScrollView } from "../SyncedScrollView";
 import { isWithinInterval, parseISO } from "date-fns";
+import { DataRow, DataTable, SortedCol } from "@/src/types";
 
-export type DataRow = {
-  [key: string]: string;
-};
 
-type DataTable = {
-  formAtual: DataRow[];
-  [key: string]: any;
-};
-
-type SortedCol = {
-  name: string;
-  order: "asc" | "desc";
-};
 
 export default function TableComponent({
   // navigation,

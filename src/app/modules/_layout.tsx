@@ -1,7 +1,6 @@
 import {useEffect} from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import ModuleForm from "@/src/components/moduleForm";
-import { ModuleParam} from "@/src/constants/moduleParamV2";
 import ModuleIndex from "@/src/components/moduleIndex";
 import { enter8 } from "@/src/functions/enter8";
 import * as cssjson from "cssjson";
@@ -11,19 +10,10 @@ import {
   catchTextJs,
   extractFunctions,
 } from "@/src/functions/extractFunctions";
+import { Location } from "@/src/interfaces";
+import { ModuleParam } from "@/src/types";
 
-
-export interface FunctionJson {
-  functionCode: string;
-  importedFunc: { [key: string]: { import: string; from: string } };
-}
-
-export interface Location {
-  module: string;
-  page: string;
-  field: string;
-}
-
+// acessa o navegador em formato de gaveta, que é o principal
 const Drawer = createDrawerNavigator();
 
 export default function MyApp({
@@ -33,15 +23,15 @@ export default function MyApp({
   appJson: ModuleParam;
   setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>;
 }) {
-  let consoleMessages = "";
-
-
-
 
   useEffect(() => {
+
+    // ao iniciar a aplicação, transforma todos os tipos de console em string, para serem lidos dentro do aplicativo na aba LOG
+
     const originalLog = console.log;
     const originalWarn = console.warn;
     const originalError = console.error;
+    let consoleMessages = "";
 
     // Sobrescrevendo console.log
     console.log = function (...args) {
@@ -90,6 +80,7 @@ export default function MyApp({
       originalError.apply(console, args); // Chama o console.error original
     };
 
+    // esse setState, trás as funções que o desenvolvedor pode usar para criar a aplicação usando essas chamadas dentro do javascript
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
@@ -102,6 +93,7 @@ export default function MyApp({
       },
     }));
 
+    // Chama a função que gerencia as funções internas dos modulos
     Object.keys(appJson.modules).forEach((moduleObject) => {
       if (appJson.modules[moduleObject].stringFunctions) {
         functionList(moduleObject);
@@ -110,12 +102,13 @@ export default function MyApp({
   }, []);
 
 
-
+  // atualiza o aplicativo no armazenamento interno a cada alteração que acontece no appJson
   useEffect(() => {
       storeData(appJson);
   }, [appJson]);
 
 
+  // função que guarda o estado atual no armazenamento interno
   async function storeData(value: any) {
     try {
       const jsonValue = JSON.stringify(value);
@@ -125,6 +118,7 @@ export default function MyApp({
     }
   }
 
+
   async function functionList(moduleObject: string) {
     const itemsObj = await createStringFunc(moduleObject);
     const functions: { [key: string]: any } = {};
@@ -132,7 +126,6 @@ export default function MyApp({
       const func = new Function(...functionArray[1], functionArray[2]);
       functions[functionArray[0]] = (...args: any[]) => func(...args);
     });
-    console.log("ln 25 moduleIndex.tsx:", functions);
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       modules: {
@@ -284,7 +277,6 @@ export default function MyApp({
         let cleanClassName = className.substring(1);
         newCss[cleanClassName] = cssObj[className].attributes;
       });
-      // console.log(newCss);
       return newCss;
     } else {
       return {};
@@ -464,7 +456,6 @@ export default function MyApp({
         }));
         break;
       case "Remove":
-        console.log(value);
         let newArray: any =
           appJson.modules[moduleObject].pages[page].components[field].table
             ?.dataTable;
@@ -757,8 +748,6 @@ export default function MyApp({
         }
       });
 
-      console.log(appJson.modules.cliente.functions.timeOutTeste);
-      console.log(jsonImported);
       const func = new Function("appJson", "location", jsonImported);
       func(appJson, location);
     } catch (e) {

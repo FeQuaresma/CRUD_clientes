@@ -157,3 +157,5 @@ Além disso, é possível travar uma coluna para que a mesma não acompanhe o sc
           [/^(\d{2})(\d{4})(\d{4})$/, "($1)$2-$3", 10],
           [/^(\d{4})(\d{4})$/, "$1-$2", 8],
         ]
+
+# Funções Javascript

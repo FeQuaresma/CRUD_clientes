@@ -1,7 +1,9 @@
+// Primeira pagina acessada pelo aplicativo
+// A função é navegar para dentro do aplicativo
+
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ModuleParam } from "../constants/moduleParamV2";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect } from "react";
+import { ModuleParam } from "../types";
 
 export default function Index({
   appJson,
@@ -12,13 +14,8 @@ export default function Index({
   setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>;
   navigation: any;
 }) {
-  // useEffect(()=>{
-  //   getData().then((data)=>{
-  //     if(data !== null)
-  //       setAppJson(data)
-  //     })
-  // },[])
 
+  // função que acessa o link que resgata o json da internet, e transforma no appJson
   async function loadAppJson() {
     let linkURL = "https://www.caae.org.br/teste/app.json";
 
@@ -31,16 +28,7 @@ export default function Index({
     }
   }
 
-  // async function getData(): Promise<ModuleParam> {
-  //   try {
-  //     const jsonValue = await AsyncStorage.getItem("myAppJson");
-  //     return jsonValue != null ? JSON.parse(jsonValue) : appJson;
-  //   } catch (e) {
-  //     console.error(e);
-  //     return appJson;
-  //   }
-  // }
-
+  // Função que resgata os dados do armazenamento interno do celular em forma de json para recriar o último estado do appJson 
   async function getData(): Promise<any> {
     try {
       const jsonValue = await AsyncStorage.getItem("myAppJson");
@@ -51,6 +39,8 @@ export default function Index({
     }
   }
 
+
+  // Função que guarda o estado atual do appJson no armazenamento interno do celular
   async function storeData(value: any) {
     try {
       const jsonValue = JSON.stringify(value);
@@ -62,7 +52,7 @@ export default function Index({
 
   return (
     <View style={styles.containerScrollView}>
-      <Pressable style={styles.button} onPress={() => storeData(null)}>
+      {/* <Pressable style={styles.button} onPress={() => storeData(null)}>
         <Text style={styles.buttonText}>Reset Storage</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => storeData(appJson)}>
@@ -90,7 +80,7 @@ export default function Index({
       </Pressable>
       <Pressable style={styles.button} onPress={() => console.log(appJson)}>
         <Text style={styles.buttonText}>console.log(appJson)</Text>
-      </Pressable>
+      </Pressable> */}
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate("modules")}

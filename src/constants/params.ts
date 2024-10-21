@@ -1,11 +1,4 @@
-import { pageParam } from "./moduleParamV2";
-
-
-export type Param = {
-  [key: string]: pageParam;
-};
-
-export const params: Param = {
+export const params: any = {
   cnpjcpf: {
     label: "CNPJ/CPF",
     inputType: "input",

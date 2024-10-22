@@ -42,8 +42,8 @@ export const modulesParamV2: ModuleParam = {
     fontSize: 20;
   }
     .tinyLogo {
-    width: 100;
-    height: 100;
+    width: 200;
+    height: 200;
   }
       .containerView {
     flex: 1;
@@ -149,6 +149,15 @@ function timeOutTeste() {
           pageName: "Page Teste",
           pageSettings: { mainView: { class: "containerView" } },
           components: {
+              image: {
+              inputType: "image",
+              isEditable: true,
+              isRequired: false,
+              value: "",
+              class: "tinyLogo",
+              source:
+                "https://thumbs.dreamstime.com/b/etiqueta-do-exemplo-121022914.jpg",
+            },
             sound2: {
               inputType: "sound",
               isEditable: true,

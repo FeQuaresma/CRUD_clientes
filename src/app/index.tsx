@@ -5,6 +5,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ModuleParam } from "../types";
 
+import { useEffect, useState } from 'react';
+import * as FileSystem from 'expo-file-system';
+import log from "./modules/log";
+
 export default function Index({
   appJson,
   setAppJson,
@@ -14,14 +18,41 @@ export default function Index({
   setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>;
   navigation: any;
 }) {
+   const [fileContent, setFileContent] = useState('');
+  const fileUri = `${FileSystem.documentDirectory}example.txt`;
 
-  // função que acessa o link que resgata o json da internet, e transforma no appJson
+
+  // Função para salvar conteúdo no arquivo
+  const saveToFile = async () => {
+    try {
+      const content = 'Hello from Expo FileSystem!';
+      await FileSystem.writeAsStringAsync(fileUri, content);
+      console.log('File written successfully');
+    } catch (error) {
+      console.log('Error saving file:', error);
+    }
+  };
+
+  // Função para ler o conteúdo do arquivo
+    const readFromFile = async () => {
+    try {
+      const content = await FileSystem.readAsStringAsync(fileUri);
+      setFileContent(content);
+      console.log('File read successfully');
+    } catch (error) {
+      console.log('Error reading file:', error);
+    }
+  };
+
+  // função que acessa o link que resgata o json da internet, e transforma no appJsFFileSystem.ileSystem.on
   async function loadAppJson() {
-    let linkURL = "https://www.caae.org.br/teste/app.json";
+    let linkURL = "https://www.caaFileSystem.e.org.br/teste/app.json";
+    
 
     try {
       const response = await fetch(linkURL);
       const data = await response.json();
+  
       return data;
     } catch (error) {
       console.error(error);
@@ -36,17 +67,6 @@ export default function Index({
     } catch (e) {
       console.error(e);
       return appJson;
-    }
-  }
-
-
-  // Função que guarda o estado atual do appJson no armazenamento interno do celular
-  async function storeData(value: any) {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem("myAppJson", jsonValue);
-    } catch (e) {
-      console.error(e);
     }
   }
 
@@ -87,6 +107,23 @@ export default function Index({
       >
         <Text style={styles.buttonText}>Navigate</Text>
       </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={saveToFile}
+      >
+        <Text style={styles.buttonText}>Salvar no arquivo</Text>
+      </Pressable>
+
+      <Pressable
+        style={styles.button}
+        onPress={readFromFile}
+      >
+        <Text style={styles.buttonText}>Ler do Arquivo</Text>
+      </Pressable>
+
+        <Text style={styles.buttonText}>Conteúdo do Arquivo: {fileContent}</Text>
+
     </View>
   );
 }
@@ -116,10 +153,12 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
   },
 
-  buttonText: {},
+  buttonText: {color: "#ffffff"},
   buttonText2: {
     color: "red",
     fontSize: fontSizeDefault,
     fontWeight: "bold",
   },
 });
+
+

@@ -37,6 +37,7 @@ export default function ModuleForm({
   callFather,
   callFatherTable,
   callFatherButton,
+  setCrypto,
   setFormParam,
   formName,
   classes,
@@ -641,7 +642,7 @@ export default function ModuleForm({
                   />
                 )}
                 {formParam[field].inputType === "image" && (
-                  <Image field={formParam[field]} classes={classes} />
+                  <Image field={formParam[field]} classes={classes} setCrypto={(e:any) => setCrypto(e, field)}/>
                 )}
                 {formParam[field].inputType === "text" && (
                   <Text field={formParam[field]} classes={classes} />

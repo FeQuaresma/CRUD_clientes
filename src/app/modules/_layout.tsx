@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import ModuleForm from "@/src/components/moduleForm";
 import ModuleIndex from "@/src/components/moduleIndex";
@@ -13,9 +13,29 @@ import {
 import { Location } from "@/src/interfaces";
 import { ModuleParam } from "@/src/types";
 
-// acessa o navegador em formato de gaveta, que é o principal
+// Acessa o navegador em formato de gaveta, que é o principal
 const Drawer = createDrawerNavigator();
 
+/**
+ * Função que guarda o parâmetro recebido no armazenamento interno.
+ * @param {ModuleParam} value - O valor a ser salvo.
+ * @returns {Promise<void>} Retorna uma promessa que salva o estado no AsyncStorage.
+ */
+export async function storeData(value: ModuleParam) {
+  try {
+    const jsonValue = JSON.stringify(value);
+    await AsyncStorage.setItem("myAppJson", jsonValue);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+/**
+ * Componente principal da aplicação.
+ * @param {ModuleParam} appJson - O estado atual da aplicação, contendo os módulos e componentes.
+ * @param {React.Dispatch<React.SetStateAction<ModuleParam>>} setAppJson - Função para atualizar o estado da aplicação.
+ * @returns {JSX.Element} Retorna o componente da aplicação principal com o Drawer Navigator.
+ */
 export default function MyApp({
   appJson,
   setAppJson,
@@ -23,20 +43,18 @@ export default function MyApp({
   appJson: ModuleParam;
   setAppJson: React.Dispatch<React.SetStateAction<ModuleParam>>;
 }) {
-
+  // Efeito colateral para sobrescrever os consoles padrão (log, warn, error) ao iniciar o aplicativo
   useEffect(() => {
-
-    // ao iniciar a aplicação, transforma todos os tipos de console em string, para serem lidos dentro do aplicativo na aba LOG
-
     const originalLog = console.log;
     const originalWarn = console.warn;
     const originalError = console.error;
+
+    /** @type {string} */
     let consoleMessages = "";
 
     // Sobrescrevendo console.log
     console.log = function (...args) {
       consoleMessages += appJson.console.log + "[LOG] " + args.join(" ") + "\n";
-
       setAppJson((prevForm: ModuleParam) => ({
         ...prevForm,
         console: {
@@ -44,7 +62,6 @@ export default function MyApp({
           log: consoleMessages,
         },
       }));
-
       originalLog.apply(console, args); // Chama o console.log original
     };
 
@@ -52,7 +69,6 @@ export default function MyApp({
     console.warn = function (...args) {
       consoleMessages +=
         appJson.console.log + "[WARN] " + args.join(" ") + "\n";
-
       setAppJson((prevForm: ModuleParam) => ({
         ...prevForm,
         console: {
@@ -60,7 +76,6 @@ export default function MyApp({
           log: consoleMessages,
         },
       }));
-
       originalWarn.apply(console, args); // Chama o console.warn original
     };
 
@@ -68,7 +83,6 @@ export default function MyApp({
     console.error = function (...args) {
       consoleMessages +=
         appJson.console.log + "[ERROR] " + args.join(" ") + "\n";
-
       setAppJson((prevForm: ModuleParam) => ({
         ...prevForm,
         console: {
@@ -76,11 +90,10 @@ export default function MyApp({
           log: consoleMessages,
         },
       }));
-
       originalError.apply(console, args); // Chama o console.error original
     };
 
-    // esse setState, trás as funções que o desenvolvedor pode usar para criar a aplicação usando essas chamadas dentro do javascript
+    // Atualiza o appJson com funções adicionais e CSS processado
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       ...enter8,
@@ -93,7 +106,7 @@ export default function MyApp({
       },
     }));
 
-    // Chama a função que gerencia as funções internas dos modulos
+    // Chama a função que gerencia as funções internas dos módulos
     Object.keys(appJson.modules).forEach((moduleObject) => {
       if (appJson.modules[moduleObject].stringFunctions) {
         functionList(moduleObject);
@@ -101,24 +114,16 @@ export default function MyApp({
     });
   }, []);
 
-
-  // atualiza o aplicativo no armazenamento interno a cada alteração que acontece no appJson
+  // Atualiza o armazenamento interno a cada modificação no estado appJson
   useEffect(() => {
-      storeData(appJson);
+    storeData(appJson);
   }, [appJson]);
 
-
-  // função que guarda o estado atual no armazenamento interno
-  async function storeData(value: any) {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem("myAppJson", jsonValue);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-
+  /**
+   * Processa as funções de um módulo e adiciona ao estado da aplicação.
+   * @param {string} moduleObject - O nome do módulo a ser processado.
+   * @returns {Promise<void>} Retorna uma promessa que processa as funções do módulo.
+   */
   async function functionList(moduleObject: string) {
     const itemsObj = await createStringFunc(moduleObject);
     const functions: { [key: string]: any } = {};
@@ -378,6 +383,33 @@ export default function MyApp({
         console.error(`${modName} not found`);
       }
     });
+  }
+
+  function setCrypto(modName: any, pageName: any, fieldName: any, value: any) {
+    setAppJson((prevForm: ModuleParam) => ({
+      ...prevForm,
+      modules: {
+        ...prevForm.modules,
+        [modName]: {
+          ...prevForm.modules[modName],
+          pages: {
+            ...prevForm.modules[modName].pages,
+            [pageName]: {
+              ...prevForm.modules[modName].pages[pageName],
+              components: {
+                ...prevForm.modules[modName].pages[pageName].components,
+                [fieldName]: {
+                  ...prevForm.modules[modName].pages[pageName].components[
+                    fieldName
+                  ],
+                  crypto: value,
+                },
+              },
+            },
+          },
+        },
+      },
+    }));
   }
 
   function handleCallBackTable(
@@ -783,7 +815,6 @@ export default function MyApp({
     return dataObjectTemp;
   }
 
-
   return (
     <Drawer.Navigator
       backBehavior="history"
@@ -846,7 +877,6 @@ export default function MyApp({
                   {(e) => (
                     <ModuleForm
                       {...e}
-
                       consoleRN={appJson.console}
                       pageSettings={
                         appJson.modules[moduleObject].pages[page].pageSettings
@@ -862,6 +892,9 @@ export default function MyApp({
                       formMode="register"
                       callFather={(value: any, field: any) => {
                         handleCallBack(moduleObject, page, field, value);
+                      }}
+                      setCrypto={(value: any, field: any) => {
+                        setCrypto(moduleObject, page, field, value);
                       }}
                       callFatherTable={(
                         value: any,

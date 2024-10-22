@@ -19,6 +19,7 @@
     ]
   },
   "include": [
+    "src/**/*",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",

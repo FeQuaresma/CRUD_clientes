@@ -1,23 +1,19 @@
 import { sumClass } from "@/src/functions/sumClass";
 import { useEffect, useState } from "react";
-import { Image as ImageRN, Text, View } from "react-native";
+import { Image as ImageRN, Pressable, Text, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 import generateRandomAlphanumeric from "@/src/functions/generateRandomAlphanumeric";
 
-export default function Image({ field, classes, setCrypto }: any) {
+export default function Image({ field, classes, setToken }: any) {
   const [imageUri, setImageUri] = useState(null);
-  const fileUri: any = `${FileSystem.documentDirectory}${field.crypt}.jpg`;
+  const fileUri: any = `${FileSystem.documentDirectory}${field.token}.jpg`;
 
   useEffect(() => {
-    if (!field.crypt) {
-      setCrypto(generateRandomAlphanumeric(20));
-      setTimeout(()=>{
-        console.log("gerou a primeira vez",field.crypt)
-      },10000)
-    } else {
-      console.log("guardou",field.crypt)
+    console.log(field.token);
+    if (!field.token) {
+      setToken(generateRandomAlphanumeric(20));
     }
-    // checkIfFileExists();
+    checkIfFileExists();
   }, []);
 
   const downloadImage = async () => {

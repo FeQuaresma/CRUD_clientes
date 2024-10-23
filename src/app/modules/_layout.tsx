@@ -385,7 +385,7 @@ export default function MyApp({
     });
   }
 
-  function setCrypto(modName: any, pageName: any, fieldName: any, value: any) {
+  function setToken(modName: any, pageName: any, fieldName: any, value: any) {
     setAppJson((prevForm: ModuleParam) => ({
       ...prevForm,
       modules: {
@@ -402,7 +402,7 @@ export default function MyApp({
                   ...prevForm.modules[modName].pages[pageName].components[
                     fieldName
                   ],
-                  crypto: value,
+                  token: value,
                 },
               },
             },
@@ -893,8 +893,8 @@ export default function MyApp({
                       callFather={(value: any, field: any) => {
                         handleCallBack(moduleObject, page, field, value);
                       }}
-                      setCrypto={(value: any, field: any) => {
-                        setCrypto(moduleObject, page, field, value);
+                      setToken={(value: any, field: any) => {
+                        setToken(moduleObject, page, field, value);
                       }}
                       callFatherTable={(
                         value: any,

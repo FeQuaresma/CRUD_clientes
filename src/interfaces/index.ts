@@ -6,7 +6,7 @@ export interface Location {
   field: string;
 }
 export interface Param {
-  crypto?: string;
+  token?: string;
   label?: string;
   inputType:
     | "input"

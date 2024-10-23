@@ -7,6 +7,9 @@ import MyApp from "./modules/_layout";
 import { useState } from "react";
 import { modulesParamV2 } from "../constants/moduleParamV2";
 import { ModuleParam } from "../types";
+import ModCamera from "./camera";
+import ModLocation from "./location";
+import ModNotifications from "./notifications";
 
 // Cria o stack navigation, um tipo de navegador parecido com o de navegadores
 const Stack = createNativeStackNavigator();
@@ -42,6 +45,9 @@ export default function App() {
       <Stack.Screen name="modules">
         {(e) => <MyApp appJson={appJson} setAppJson={setAppJson} />}
       </Stack.Screen>
+      <Stack.Screen name="camera">{(e) => <ModCamera {...e} />}</Stack.Screen>
+      <Stack.Screen name="location">{(e) => <ModLocation {...e}/>}</Stack.Screen>
+      <Stack.Screen name="notifications">{(e) => <ModNotifications {...e}/>}</Stack.Screen>
     </Stack.Navigator>
   );
 }

@@ -149,24 +149,24 @@ function timeOutTeste() {
           pageName: "Page Teste",
           pageSettings: { mainView: { class: "containerView" } },
           components: {
-              image: {
-              inputType: "image",
-              isEditable: true,
-              isRequired: false,
-              value: "",
-              class: "tinyLogo",
-              source:
-                "https://thumbs.dreamstime.com/b/etiqueta-do-exemplo-121022914.jpg",
-            },
-            sound2: {
-              inputType: "sound",
-              isEditable: true,
-              isRequired: false,
-              value: "",
-              class: "button red",
-              source:
-                "https://www.myinstants.com/media/sounds/eu-finjo-que-nao-percebo-mas-tudo-esta-sendo-obs.mp3",
-            },
+            //   image: {
+            //   inputType: "image",
+            //   isEditable: true,
+            //   isRequired: false,
+            //   value: "",
+            //   class: "tinyLogo",
+            //   source:
+            //     "https://thumbs.dreamstime.com/b/etiqueta-do-exemplo-121022914.jpg",
+            // },
+            // sound2: {
+            //   inputType: "sound",
+            //   isEditable: true,
+            //   isRequired: false,
+            //   value: "",
+            //   class: "button red",
+            //   source:
+            //     "https://www.myinstants.com/media/sounds/eu-finjo-que-nao-percebo-mas-tudo-esta-sendo-obs.mp3",
+            // },
             input1: {
               label: "input 1",
               inputType: "input",

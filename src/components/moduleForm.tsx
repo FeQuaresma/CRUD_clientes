@@ -626,7 +626,7 @@ export default function ModuleForm({
                   <Table
                     moduleParam={formParam[field].table}
                     classes={classes}
-                    urlParam={formParam[field].table.tableSettings.tableURL}
+                    urlParam={formParam[field].table.tableSettings?.tableURL}
                     onValueChange={(e: any, whichTable: string) => {
                       callFatherTable(e, field, whichTable);
                     }}

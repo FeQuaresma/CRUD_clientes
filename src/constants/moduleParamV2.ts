@@ -64,23 +64,66 @@ export const modulesParamV2: ModuleParam = {
     cliente: {
       stringFunctions: [
         `
-        let contador = 0;
+  let contador = 0;
 
-function timeOutTeste() {
-  if(contador < 120){
-    contador++;
-    appJson.setField({cliente:{pageTeste:{botao2:{value:contador}}}});
-    console.log(contador);
-    setTimeout(() => timeOutTeste(), 1000);
+  function timeOutTeste() {
+    if (contador < 120) {
+      contador++;
+      appJson.setField({ cliente: { pageTeste: { botao2: { value: contador } } } });
+      console.log(contador);
+      setTimeout(() => timeOutTeste(), 1000);
+    }
   }
-}
-
 
   function testeteste(param) {
-  console.log(param);
-  console.log(appJson);
-  };
-  `,
+    console.log(param);
+    console.log(appJson);
+  }
+
+  function receberDados() {
+    fetch("https://www.caae.org.br/backend/receber_dados.php")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dados recebidos:", data);
+        appJson.updateTable("cliente.pageCad.data", data);
+      })
+      .catch((error) => console.error("Erro ao receber dados:", error));
+  }
+
+  function enviarDados(nome, valor) {
+
+      fetch("https://www.caae.org.br/backend/enviar_dados.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nome: nome,
+          valor: valor
+        })
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data.mensagem);
+      })
+      .catch((error) => console.error("Erro ao enviar dados:", error));
+
+  }
+
+  function deletarDados() {
+    fetch("https://www.caae.org.br/backend/deletar_dados.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data.mensagem || data.erro);
+    })
+    .catch(error => console.error("Erro ao deletar dados:", error));
+}
+`,
         // ,
         // `
 
@@ -145,6 +188,107 @@ function timeOutTeste() {
         navBarText: { classCss: "navBarText" },
       },
       pages: {
+        pageCad: {
+          pageName: "SQL CAD",
+          pageSettings: { mainView: { class: "containerView" } },
+          components: {
+            labelNome: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "Nome",
+              style: {color: "white", width: 250, fontSize: 16}
+            },
+            nome: {
+              label: "Nome",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+            },
+            labelValor: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "Valor",
+              style: {color: "white", width: 250, fontSize: 16}
+            },           
+            valor: {
+              label: "Valor",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+            },
+            enviardados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Enviar dados",
+              class: "button",
+              function: `enviarDados(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "nome"}),appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "valor"}));appJson.setField({cliente:{pageCad:{nome:{value:""},valor:{value:""}}}});`,
+            },
+            receberdados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Receber dados",
+              class: "button",
+              function: `receberDados();`,
+            },
+            deletardados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Deletar dados",
+              class: "button",
+              function: `deletarDados();receberDados();`,
+            },
+            data: {
+              value: "",
+              inputType: "table",
+              isRequired: false,
+              isEditable: false,
+              table: {
+                dataTable: [],
+                dataOrigin: [],
+                tableSettings: { hasSearchBar: false },
+                tableParam: {
+                  id: {
+                    label: "ID",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 6,
+                    inputMode: "numeric",
+                    isNumber: true,
+                    isVisible: true,
+                    tableWidth: 50,
+                  },
+                  nome: {
+                    label: "Nome",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 30,
+                    inputMode: "text",
+                    isVisible: true,
+                    tableWidth: 130,
+                  },
+                  valor: {
+                    label: "Valor",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 30,
+                    inputMode: "text",
+                    isVisible: true,
+                    tableWidth:130,
+                  },
+                },
+              },
+            },    
+          },
+        },
         pageTeste: {
           pageName: "Page Teste",
           pageSettings: { mainView: { class: "containerView" } },

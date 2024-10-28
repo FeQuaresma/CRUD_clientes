@@ -1,7 +1,40 @@
+// import { Pressable, Text, View } from "react-native";
+
+// export default function Index() {
+//   function myFunc() {
+//     const func = new Function(`
+//           fetch("https://www.caae.org.br/backend/receber_dados.php")
+//       .then((response) => response.json())
+//       .then((data) => {
+//         console.log("Dados recebidos:", data);
+//       })
+//       .catch((error) => console.error("Erro ao receber dados:", error));`)
+//     func()
+//   }
+//   return (
+//     <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
+//       <Text>Olá Mundo</Text>
+//       <Pressable
+//         onPress={myFunc}
+//         style={{
+//           backgroundColor: "blue",
+//           height: 30,
+//           width: 150,
+//           borderRadius: 10,
+//           justifyContent: "center",
+//           alignItems: "center",
+//         }}
+//       >
+//         <Text style={{ color: "white" }}>Press me!</Text>
+//       </Pressable>
+//     </View>
+//   );
+// }
+
 // Primeira pagina acessada pelo aplicativo
 // A função é navegar para dentro do aplicativo
 
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ModuleParam } from "../types";
 
@@ -19,6 +52,8 @@ export default function Index({
   navigation: any;
 }) {
   const [fileContent, setFileContent] = useState("");
+  const [nome, setNome] = useState("");
+  const [valor, setValor] = useState("");
   const fileUri = `${FileSystem.documentDirectory}example.txt`;
 
   // Função para salvar conteúdo no arquivo
@@ -68,15 +103,55 @@ export default function Index({
     }
   }
 
+  function receberDados() {
+    fetch("https://www.caae.org.br/backend/receber_dados.php")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Dados recebidos:", data);
+      })
+      .catch((error) => console.error("Erro ao receber dados:", error));
+  }
+
+  function enviarDados() {
+    if (nome.length < 3 && valor.length < 3) {
+      console.log("Tamanho menor que 3");
+    }
+    {
+      fetch("https://www.caae.org.br/backend/enviar_dados.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nome: nome,
+          valor: valor,
+        }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data.mensagem);
+        })
+        .catch((error) => console.error("Erro ao enviar dados:", error));
+      setNome("");
+      setValor("");
+    }
+  }
+
   return (
     <View style={styles.containerScrollView}>
+      <Pressable
+        style={styles.button}
+        onPress={() => navigation.navigate("modules")}
+      >
+        <Text style={styles.buttonText}>Navigate</Text>
+      </Pressable>
       {/* <Pressable style={styles.button} onPress={() => storeData(null)}>
         <Text style={styles.buttonText}>Reset Storage</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => storeData(appJson)}>
         <Text style={styles.buttonText}>Set New Storage</Text>
       </Pressable>
- 
+
       <Pressable
         style={styles.button}
         onPress={() =>
@@ -94,18 +169,13 @@ export default function Index({
       <Pressable style={styles.button} onPress={() => console.log(appJson)}>
         <Text style={styles.buttonText}>console.log(appJson)</Text>
       </Pressable> */}
-      <Pressable
+      {/* <Pressable
         style={styles.button}
         onPress={() => getData().then((data: ModuleParam) => setAppJson(data))}
       >
-        <Text style={styles.buttonText}>setAppJson(Get data)</Text>
+        <Text style={{...styles.buttonText}}>setAppJson(Get data)</Text>
       </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => navigation.navigate("modules")}
-      >
-        <Text style={styles.buttonText}>Navigate</Text>
-      </Pressable>
+
       <Pressable
         style={{...styles.button, backgroundColor: "green"}}
         onPress={() => navigation.navigate("camera")}
@@ -134,6 +204,27 @@ export default function Index({
       </Pressable>
 
       <Text style={styles.buttonText}>Conteúdo do Arquivo: {fileContent}</Text>
+      <Text style={{color: "white"}}>Nome</Text>
+      <TextInput
+        value={nome}
+        onChangeText={setNome}
+        style={{ backgroundColor: "white", width: 200, height: 30, margin: 5 }}
+      />
+      <Text style={{color: "white"}}>Valor</Text>
+
+      <TextInput
+        value={valor}
+        onChangeText={setValor}
+        style={{ backgroundColor: "white", width: 200, height: 30, margin: 5 }}
+      />
+
+      <Pressable style={styles.button} onPress={enviarDados}>
+        <Text style={styles.buttonText}>Enviar Dados</Text>
+      </Pressable>*/}
+
+      <Pressable style={styles.button} onPress={receberDados}>
+        <Text style={styles.buttonText}>Receber Dados</Text>
+      </Pressable>
     </View>
   );
 }

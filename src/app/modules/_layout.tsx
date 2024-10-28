@@ -100,6 +100,7 @@ export default function MyApp({
       setField,
       getClassCss,
       setClassCss,
+      updateTable,
       class: {
         ...prevForm.class,
         ...cssReader(),
@@ -118,6 +119,40 @@ export default function MyApp({
   useEffect(() => {
     storeData(appJson);
   }, [appJson]);
+
+  function updateTable(idString: string, data: any) {
+    let idArray = idString.split(".");
+    setAppJson((prevForm: any) => ({
+      ...prevForm,
+      modules: {
+        ...prevForm.modules,
+        [idArray[0]]: {
+          ...prevForm.modules[idArray[0]],
+          pages: {
+            ...prevForm.modules[idArray[0]].pages,
+            [idArray[1]]: {
+              ...prevForm.modules[idArray[0]].pages[idArray[1]],
+              components: {
+                ...prevForm.modules[idArray[0]].pages[idArray[1]].components,
+                [idArray[2]]: {
+                  ...prevForm.modules[idArray[0]].pages[idArray[1]].components[
+                    idArray[2]
+                  ],
+                  table: {
+                    ...prevForm.modules[idArray[0]].pages[idArray[1]].components[
+                      idArray[2]
+                    ].table,
+                    dataOrigin: data,
+                    dataTable: data,
+                  }
+                },
+              },
+            },
+          },
+        },
+      },
+    }));
+  }
 
   /**
    * Processa as funções de um módulo e adiciona ao estado da aplicação.

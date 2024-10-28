@@ -51,13 +51,19 @@ export async function extractFunctions(
       }
     }
 
-    const commentRegex = /\/\*[\s\S]*?\*\/|\/\/.*/g;
-    stringArray = stringArray.replace(commentRegex, "");
+  
 
+    // const commentRegex = /\/\*[\s\S]*?\*\/|\/\/.*/g;
+    // stringArray = stringArray.replace(commentRegex, "");
+
+    console.log("59")
     // let acorn = require("acorn");
+    console.log(stringArray)
     const acornObject = acorn.parse(stringArray, {
       ecmaVersion: "latest",
     }).body;
+    console.log("63")
+
 
     for (let i = 0; i < acornObject.length; i++) {
       switch (acornObject[i].type) {
@@ -102,6 +108,7 @@ export async function extractFunctions(
       if (!functionCode[1].includes("appJson")) {
         functionCode[1].push("appJson");
       }
+
     });
 
     // console.log("vars: ", varNames);

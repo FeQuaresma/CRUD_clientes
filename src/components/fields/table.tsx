@@ -18,8 +18,6 @@ import { SyncedScrollView } from "../SyncedScrollView";
 import { isWithinInterval, parseISO } from "date-fns";
 import { DataRow, DataTable, SortedCol } from "@/src/types";
 
-
-
 export default function TableComponent({
   // navigation,
   // route,
@@ -52,7 +50,7 @@ export default function TableComponent({
   useEffect(() => {
     urlParam &&
       loadData().then((dataOnline: DataTable) => {
-        dataOnline.formAtual.forEach((dataRow: DataRow) => {
+        dataOnline.forEach((dataRow: DataRow) => {
           Object.keys(dataRow).forEach((key: string) => {
             if (dataOnline[key]) {
               dataRow[key] = dataOnline[key][dataRow[key]];
@@ -62,8 +60,8 @@ export default function TableComponent({
           });
         });
 
-        onValueChange(dataOnline.formAtual, "Table");
-        onValueChange(dataOnline.formAtual, "Origin");
+        onValueChange(dataOnline, "Table");
+        // onValueChange(dataOnline, "Origin");
       });
 
     const dataSet: Set<string> = new Set(
@@ -150,7 +148,9 @@ export default function TableComponent({
   }, [sortedCol]);
 
   function loadData() {
-    return fetch(urlParam)
+    let link = urlParam;
+    console.log(link);
+    return fetch(link, { cache: 'no-store' })
       .then((response) => response.json())
       .catch((error) => console.error(error));
   }
@@ -215,8 +215,8 @@ export default function TableComponent({
       const mask = params[colKey].cellMasks
         ? params[colKey].cellMasks
         : params[colKey].masks
-        ? params[colKey].masks
-        : false;
+          ? params[colKey].masks
+          : false;
 
       if (mask && value !== undefined) {
         const cleanValue = value.replace(/\D/g, "");
@@ -691,7 +691,9 @@ export default function TableComponent({
                           (colKey, colIndex) => (
                             <Pressable
                               key={colIndex}
-                              onLongPress={() => onValueChange(rowIndex,"Remove")}
+                              onLongPress={() =>
+                                onValueChange(rowIndex, "Remove")
+                              }
                             >
                               <Cell
                                 key={colIndex}

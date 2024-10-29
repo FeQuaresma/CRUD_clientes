@@ -81,7 +81,8 @@ export const modulesParamV2: ModuleParam = {
   }
 
   function receberDados() {
-    fetch("https://www.caae.org.br/backend/receber_dados.php")
+  let link = "https://www.caae.org.br/backend/receber_dados.php";
+    fetch(link, { cache: 'no-store' })
       .then((response) => response.json())
       .then((data) => {
         console.log("Dados recebidos:", data);
@@ -90,25 +91,26 @@ export const modulesParamV2: ModuleParam = {
       .catch((error) => console.error("Erro ao receber dados:", error));
   }
 
-  function enviarDados(nome, valor) {
+function enviarDados(nome, valor, id) {
 
-      fetch("https://www.caae.org.br/backend/enviar_dados.php", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          nome: nome,
-          valor: valor
-        })
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data.mensagem);
-      })
-      .catch((error) => console.error("Erro ao enviar dados:", error));
+  fetch("https://www.caae.org.br/backend/enviar_dados.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      id: id,
+      nome: nome,
+      valor: valor
+    })
+  })
+  .then((response) => response.json())
+  .then((data) => {
+    console.log(data.mensagem);
+  })
+  .catch((error) => console.error("Erro ao enviar dados:", error));
 
-  }
+}
 
   function deletarDados() {
     fetch("https://www.caae.org.br/backend/deletar_dados.php", {
@@ -192,12 +194,28 @@ export const modulesParamV2: ModuleParam = {
           pageName: "SQL CAD",
           pageSettings: { mainView: { class: "containerView" } },
           components: {
+            labelId: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "ID",
+              style: { color: "white", width: 250, fontSize: 16 },
+            },
+            id: {
+              label: "ID",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+              inputMode: "numeric"
+            },
             labelNome: {
               inputType: "text",
               isEditable: true,
               isRequired: true,
               value: "Nome",
-              style: {color: "white", width: 250, fontSize: 16}
+              style: { color: "white", width: 250, fontSize: 16 },
             },
             nome: {
               label: "Nome",
@@ -212,8 +230,8 @@ export const modulesParamV2: ModuleParam = {
               isEditable: true,
               isRequired: true,
               value: "Valor",
-              style: {color: "white", width: 250, fontSize: 16}
-            },           
+              style: { color: "white", width: 250, fontSize: 16 },
+            },
             valor: {
               label: "Valor",
               inputType: "input",
@@ -228,7 +246,7 @@ export const modulesParamV2: ModuleParam = {
               isRequired: true,
               value: "Enviar dados",
               class: "button",
-              function: `enviarDados(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "nome"}),appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "valor"}));appJson.setField({cliente:{pageCad:{nome:{value:""},valor:{value:""}}}});`,
+              function: `enviarDados(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "nome"}),appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "valor"}), Number(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "id"})));receberDados();`,
             },
             receberdados: {
               inputType: "button",
@@ -246,6 +264,14 @@ export const modulesParamV2: ModuleParam = {
               class: "button",
               function: `deletarDados();receberDados();`,
             },
+            limparForm: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Limpar Form",
+              class: "button",
+              function: `appJson.setField({cliente:{pageCad:{nome:{value:""},valor:{value:""},id:{value:""}}}});`,
+            },
             data: {
               value: "",
               inputType: "table",
@@ -254,7 +280,10 @@ export const modulesParamV2: ModuleParam = {
               table: {
                 dataTable: [],
                 dataOrigin: [],
-                tableSettings: { hasSearchBar: false },
+                tableSettings: {
+                  hasSearchBar: false,
+                  tableURL: "https://www.caae.org.br/backend/receber_dados.php",
+                },
                 tableParam: {
                   id: {
                     label: "ID",
@@ -282,11 +311,11 @@ export const modulesParamV2: ModuleParam = {
                     maxLength: 30,
                     inputMode: "text",
                     isVisible: true,
-                    tableWidth:130,
+                    tableWidth: 130,
                   },
                 },
               },
-            },    
+            },
           },
         },
         pageTeste: {

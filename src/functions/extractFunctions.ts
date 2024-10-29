@@ -56,13 +56,10 @@ export async function extractFunctions(
     // const commentRegex = /\/\*[\s\S]*?\*\/|\/\/.*/g;
     // stringArray = stringArray.replace(commentRegex, "");
 
-    console.log("59")
     // let acorn = require("acorn");
-    console.log(stringArray)
     const acornObject = acorn.parse(stringArray, {
       ecmaVersion: "latest",
     }).body;
-    console.log("63")
 
 
     for (let i = 0; i < acornObject.length; i++) {

@@ -694,7 +694,7 @@ export default function ModuleForm({
         </View>
       </ScrollView>
       <View style={{ width: "100%", alignItems: "center" }}>
-        {formMode === "register" && (
+        {/* {formMode === "register" && (
           <Pressable
             style={styles.button}
             onPress={() => {
@@ -703,7 +703,7 @@ export default function ModuleForm({
           >
             <TextRN style={styles.buttonText}>Enviar Formulário</TextRN>
           </Pressable>
-        )}
+        )} */}
 
         {formMode === "filter" && (
           <View style={{ flexDirection: "row", alignItems: "center" }}>

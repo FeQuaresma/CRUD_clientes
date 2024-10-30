@@ -1,32 +1,74 @@
-import { Pressable, ScrollView, Text } from "react-native";
-import { styles } from "../constants/styles";
+import * as React from "react";
+import { Button, Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-export default function ModuleIndex({ moduleName, appJson, getData, navigation }: any) {
-
-
-
+function DetailsScreen() {
   return (
-    <ScrollView contentContainerStyle={styles.containerScrollView}>
-      <Text style={styles.inputLabel}>Menu {moduleName}</Text>
-      <Pressable style={styles.button} onPress={() => navigation.goBack()}>
-        <Text style={styles.buttonText}>Go Back</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() =>
-          getData.then((data: any) =>
-            console.log(data.modules.cliente.functions)
-          )
-        }
-      >
-        <Text style={styles.buttonText}>Get Data</Text>
-      </Pressable>
-      <Pressable
-        style={styles.button}
-        onPress={() => console.log(appJson.modules.cliente.functions)}
-      >
-        <Text style={styles.buttonText}>appJson</Text>
-      </Pressable>
-    </ScrollView>
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Details!</Text>
+    </View>
+  );
+}
+
+function SettingsScreen({ navigation }: any) {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Settings screen</Text>
+      <Button
+        title="Go to Details"
+        onPress={() => navigation.navigate("Details")}
+      />
+    </View>
+  );
+}
+
+const HomeStack = createNativeStackNavigator();
+
+
+const SettingsStack = createNativeStackNavigator();
+
+function SettingsStackScreen() {
+  return (
+    <SettingsStack.Navigator>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen name="Details" component={DetailsScreen} />
+    </SettingsStack.Navigator>
+  );
+}
+
+const Tab = createBottomTabNavigator();
+
+export default function ModuleIndex({
+  moduleName,
+  appJson,
+  getData,
+  navigation,
+}: any) {
+  return (
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen name="HomeStack">
+        {(e) => (<HomeStack.Navigator>
+      <HomeStack.Screen name="Home">
+        {(e) => (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Text>Home screen</Text>
+            <Button
+              title="Go to Details"
+              onPress={() => e.navigation.navigate("Details")}
+            />
+          </View>
+        )}
+      </HomeStack.Screen>
+      <HomeStack.Screen name="Details" component={DetailsScreen} />
+    </HomeStack.Navigator>)}
+        </Tab.Screen>
+        <Tab.Screen name="SettingsStack" component={SettingsStackScreen} />
+      </Tab.Navigator>
+    </View>
   );
 }

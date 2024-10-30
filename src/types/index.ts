@@ -35,6 +35,7 @@ export type Module = {
     navBar?: { classCss?: string; styles?: {} };
     navBarText?: { classCss?: string; styles?: {} };
   };
+
   pages: {
     [key: string]: {
       pageName: string;
@@ -42,4 +43,5 @@ export type Module = {
       components: { [key: string]: pageParam };
     };
   };
+  
 };

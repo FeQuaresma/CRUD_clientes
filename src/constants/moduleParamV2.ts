@@ -190,6 +190,145 @@ function enviarDados(nome, valor, id) {
         navBarText: { classCss: "navBarText" },
       },
       pages: {
+        tabTeste: {
+          pageName: "Tab Teste",
+          pageSettings: { mainView: { class: "containerView" } },
+          components: {
+            labelId: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "ID",
+              style: { color: "white", width: 250, fontSize: 16 },
+              group: {name: "Cad", position: 0}
+            },
+            id: {
+              label: "ID",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+              inputMode: "numeric",
+              group: {name: "Cad", position: 1}
+            },
+            labelNome: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "Nome",
+              style: { color: "white", width: 250, fontSize: 16 },
+              group: {name: "Cad", position: 2}
+            },
+            nome: {
+              label: "Nome",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+              group: {name: "Cad", position: 3}
+            },
+            labelValor: {
+              inputType: "text",
+              isEditable: true,
+              isRequired: true,
+              value: "Valor",
+              style: { color: "white", width: 250, fontSize: 16 },
+              group: {name: "Cad", position: 4}
+            },
+            valor: {
+              label: "Valor",
+              inputType: "input",
+              isEditable: true,
+              isRequired: true,
+              value: "",
+              class: "input",
+              group: {name: "Cad", position: 5}
+            },
+            enviardados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Enviar dados",
+              class: "button",
+              function: `enviarDados(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "nome"}),appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "valor"}), Number(appJson.getValue(appJson, {module: "cliente",page: "pageCad",field: "id"})));receberDados();`,
+              group: {name: "Buttons", position: 0}
+            },
+            receberdados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Receber dados",
+              class: "button",
+              function: `receberDados();`,
+              group: {name: "Buttons", position: 1}
+            },
+            deletardados: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Deletar dados",
+              class: "button",
+              function: `deletarDados();receberDados();`,
+              group: {name: "Buttons", position: 2}
+            },
+            limparForm: {
+              inputType: "button",
+              isEditable: false,
+              isRequired: true,
+              value: "Limpar Form",
+              class: "button",
+              function: `appJson.setField({cliente:{pageCad:{nome:{value:""},valor:{value:""},id:{value:""}}}});`,
+              group: {name: "Buttons", position: 3}
+            },
+            data: {
+              value: "",
+              inputType: "table",
+              isRequired: false,
+              isEditable: false,
+              table: {
+                dataTable: [],
+                dataOrigin: [],
+                tableSettings: {
+                  hasSearchBar: false,
+                  tableURL: "https://www.caae.org.br/backend/receber_dados.php",
+                },
+                tableParam: {
+                  id: {
+                    label: "ID",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 6,
+                    inputMode: "numeric",
+                    isNumber: true,
+                    isVisible: true,
+                    tableWidth: 50,
+                  },
+                  nome: {
+                    label: "Nome",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 30,
+                    inputMode: "text",
+                    isVisible: true,
+                    tableWidth: 130,
+                  },
+                  valor: {
+                    label: "Valor",
+                    inputType: "input",
+                    value: "",
+                    maxLength: 30,
+                    inputMode: "text",
+                    isVisible: true,
+                    tableWidth: 130,
+                  },
+                },
+              },
+              group: {name: "Data", position: 0}
+            },
+          },
+        },
         pageCad: {
           pageName: "SQL CAD",
           pageSettings: { mainView: { class: "containerView" } },

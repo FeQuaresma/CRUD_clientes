@@ -53,6 +53,7 @@ export interface pageParam extends Param {
   table?: TableInterface;
   errorMsg?: string;
   class?: string;
+  group?: {name: string, position: number}
 }
 
 export interface TableInterface {

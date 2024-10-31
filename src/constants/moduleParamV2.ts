@@ -292,7 +292,6 @@ function enviarDados(nome, valor, id) {
                 dataOrigin: [],
                 tableSettings: {
                   hasSearchBar: false,
-                  tableURL: "https://www.caae.org.br/backend/receber_dados.php",
                 },
                 tableParam: {
                   id: {

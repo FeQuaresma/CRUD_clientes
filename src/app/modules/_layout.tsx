@@ -14,7 +14,7 @@ import { Location } from "@/src/interfaces";
 import { ModuleParam } from "@/src/types";
 
 // Acessa o navegador em formato de gaveta, que é o principal
-const Drawer = createDrawerNavigator();
+export const Drawer = createDrawerNavigator();
 
 /**
  * Função que guarda o parâmetro recebido no armazenamento interno.

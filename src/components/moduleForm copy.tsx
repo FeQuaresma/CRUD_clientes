@@ -504,72 +504,13 @@ export default function ModuleForm({
             <View
               key={field}
               style={{
+                backgroundColor: "black",
                 margin: 6,
                 borderWidth: 1,
                 borderColor: "blue",
                 alignItems: "center",
               }}
             >
-              {/* {formParam[field].label && (
-<View
-style={{
-margin: 2,
-flexDirection: "row",
-justifyContent: "space-between",
-alignItems: "center",
-width: "100%",
-borderWidth: 1,
-borderColor: "grey",
-}}
->
-<TextRN style={styles.inputLabel}>
-{formParam[field].label}
-{formParam[field].isRequired && "*"}
-</TextRN>
-{formMode === "filter" && (
-<View style={{ flexDirection: "row" }}>
-  {formParam[field].isVisible && (
-    <Pressable
-      style={{
-        height: 22,
-        width: 22,
-        backgroundColor: "green",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 6,
-      }}
-      onPress={() => {
-        handleVisibilityChange(field);
-      }}
-    >
-      <Ionicons name="eye" size={15} color="white" />
-    </Pressable>
-  )}
-  {!formParam[field].isVisible && (
-    <Pressable
-      style={{
-        height: 22,
-        width: 22,
-        backgroundColor: "red",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 6,
-      }}
-      onPress={() => {
-        handleVisibilityChange(field);
-      }}
-    >
-      <Ionicons name="eye-off" size={15} color="white" />
-    </Pressable>
-  )}
-</View>
-)}
-</View>
-)} */}
-
-              {formParam[field].errorMsg && (
-                <Text style={styles.errorMsg}>{formParam[field].errorMsg}</Text>
-              )}
               <View style={{ flexDirection: "row" }}>
                 {formParam[field].inputType === "input" && (
                   <Input

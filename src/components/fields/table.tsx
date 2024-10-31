@@ -47,105 +47,107 @@ export default function TableComponent({
   //   }
   // }, [route.params]);
 
-  useEffect(() => {
-    urlParam &&
-      loadData().then((dataOnline: DataTable) => {
-        dataOnline.forEach((dataRow: DataRow) => {
-          Object.keys(dataRow).forEach((key: string) => {
-            if (dataOnline[key]) {
-              dataRow[key] = dataOnline[key][dataRow[key]];
-            } else if (dataRow[key] === "&nbsp;") {
-              dataRow[key] = "";
-            }
-          });
-        });
+  // useEffect(() => {
+  //   urlParam &&
+  //     loadData().then((dataOnline: DataTable) => {
+  //       dataOnline.forEach((dataRow: DataRow) => {
+  //         Object.keys(dataRow).forEach((key: string) => {
+  //           if (dataOnline[key]) {
+  //             dataRow[key] = dataOnline[key][dataRow[key]];
+  //           } else if (dataRow[key] === "&nbsp;") {
+  //             dataRow[key] = "";
+  //           }
+  //         });
+  //       });
 
-        onValueChange(dataOnline, "Table");
-        // onValueChange(dataOnline, "Origin");
-      });
+  //       onValueChange(dataOnline, "Table");
+  //       // onValueChange(dataOnline, "Origin");
+  //     });
 
-    const dataSet: Set<string> = new Set(
-      Object.keys(params).map((colKey) => colKey)
-    );
-    setColTableOrigin(dataSet);
-    console.log("Data loaded!");
+  //   const dataSet: Set<string> = new Set(
+  //     Object.keys(params).map((colKey) => colKey)
+  //   );
+  //   setColTableOrigin(dataSet);
 
-    const colVisArray: string[] = [];
+  //   const colVisArray: string[] = [];
 
-    Object.keys(params).forEach((colKey) => {
-      !params[colKey].isVisible && colVisArray.push(colKey);
-    });
+  //   Object.keys(params).forEach((colKey) => {
+  //     !params[colKey].isVisible && colVisArray.push(colKey);
+  //   });
+  //   console.log("Data loaded!");
 
-    setColVisibility(colVisArray);
-  }, []);
+  //   setColVisibility(colVisArray);
+  // }, []);
 
-  useEffect(() => {
-    const colData: string[] = [];
-    const colVisibilityTemp = new Set(colVisibility);
-    const lockedColTableTemp = lockedColTable;
 
-    Object.keys(params).forEach((colKey) => {
-      if (colVisibilityTemp.has(colKey)) {
-        lockedColTableTemp.delete(colKey);
-      } else {
-        if (!lockedColTableTemp.has(colKey)) {
-          colData.push(colKey);
-        }
-      }
-    });
 
-    setColTable(new Set(colData));
-    setLockedColTable(lockedColTableTemp);
-  }, [colVisibility]);
+  // useEffect(() => {
+  //   const colData: string[] = [];
+  //   const colVisibilityTemp = new Set(colVisibility);
+  //   const lockedColTableTemp = lockedColTable;
 
-  useEffect(() => {
-    handleFilterSearch(routeParams);
-  }, [routeParams]);
+  //   Object.keys(params).forEach((colKey) => {
+  //     if (colVisibilityTemp.has(colKey)) {
+  //       lockedColTableTemp.delete(colKey);
+  //     } else {
+  //       if (!lockedColTableTemp.has(colKey)) {
+  //         colData.push(colKey);
+  //       }
+  //     }
+  //   });
 
-  useEffect(() => {
-    Object.keys(params).forEach((key) => {
-      if (!footer && params[key].footerLabel) {
-        setFooter(true);
-      }
-      switch (params[key].footerLabel?.function) {
-        case "sumTotal":
-          let sumTotal = 0;
+  //   setColTable(new Set(colData));
+  //   setLockedColTable(lockedColTableTemp);
+  // }, [colVisibility]);
 
-          moduleParam.dataTable.forEach((row: any) => {
-            sumTotal += Number(row[key]);
-          });
-          setParams((prevParam: any) => ({
-            ...prevParam,
-            [key]: {
-              ...prevParam[key],
-              footerLabel: {
-                function: "sumTotal",
-                value: String(sumTotal.toFixed(2)),
-              },
-            },
-          }));
-          break;
-        case "sumEntries":
-          setParams((prevParam: any) => ({
-            ...prevParam,
-            [key]: {
-              ...prevParam[key],
-              footerLabel: {
-                function: "sumEntries",
-                value: String(moduleParam.dataTable.length),
-              },
-            },
-          }));
-          break;
-        default:
-          break;
-      }
-    });
-  }, [moduleParam.dataTable]);
+  // useEffect(() => {
+  //   handleFilterSearch(routeParams);
+  // }, [routeParams]);
 
-  useEffect(() => {
-    sortTable(sortedCol);
-  }, [sortedCol]);
+  // useEffect(() => {
+  //   Object.keys(params).forEach((key) => {
+  //     if (!footer && params[key].footerLabel) {
+  //       setFooter(true);
+  //     }
+  //     switch (params[key].footerLabel?.function) {
+  //       case "sumTotal":
+  //         let sumTotal = 0;
+
+  //         moduleParam.dataTable.forEach((row: any) => {
+  //           sumTotal += Number(row[key]);
+  //         });
+  //         setParams((prevParam: any) => ({
+  //           ...prevParam,
+  //           [key]: {
+  //             ...prevParam[key],
+  //             footerLabel: {
+  //               function: "sumTotal",
+  //               value: String(sumTotal.toFixed(2)),
+  //             },
+  //           },
+  //         }));
+  //         break;
+  //       case "sumEntries":
+  //         setParams((prevParam: any) => ({
+  //           ...prevParam,
+  //           [key]: {
+  //             ...prevParam[key],
+  //             footerLabel: {
+  //               function: "sumEntries",
+  //               value: String(moduleParam.dataTable.length),
+  //             },
+  //           },
+  //         }));
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   });
+  // }, [moduleParam.dataTable]);
+
+  // useEffect(() => {
+  //   sortTable(sortedCol);
+  // }, [sortedCol]);
 
   function loadData() {
     let link = urlParam;

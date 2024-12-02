@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 import { Animated, ScrollView, ScrollViewProps } from "react-native"
-import { SyncedScrollViewContext } from "../context/SyncedScrollViewContext" 
+import { SyncedScrollViewContext } from "./SyncedScrollViewContext" 
 
 interface SyncedScrollViewProps extends ScrollViewProps {
   scrollViewId: number

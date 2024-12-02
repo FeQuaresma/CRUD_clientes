@@ -29,7 +29,6 @@ export default function App() {
 
   return (
     <Stack.Navigator
-      initialRouteName="teste"
       screenOptions={{
         headerShown: false,
         orientation: "all",
@@ -45,9 +44,9 @@ export default function App() {
       <Stack.Screen name="modules">
         {(e) => <MyApp appJson={appJson} setAppJson={setAppJson} />}
       </Stack.Screen>
-      <Stack.Screen name="camera">{(e) => <ModCamera {...e} />}</Stack.Screen>
+      {/* <Stack.Screen name="camera">{(e) => <ModCamera {...e} />}</Stack.Screen>
       <Stack.Screen name="location">{(e) => <ModLocation {...e}/>}</Stack.Screen>
-      <Stack.Screen name="notifications">{(e) => <ModNotifications {...e}/>}</Stack.Screen>
+      <Stack.Screen name="notifications">{(e) => <ModNotifications {...e}/>}</Stack.Screen> */}
     </Stack.Navigator>
   );
 }

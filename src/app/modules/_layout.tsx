@@ -154,11 +154,6 @@ export default function MyApp({
     }));
   }
 
-  /**
-   * Processa as funções de um módulo e adiciona ao estado da aplicação.
-   * @param {string} moduleObject - O nome do módulo a ser processado.
-   * @returns {Promise<void>} Retorna uma promessa que processa as funções do módulo.
-   */
   async function functionList(moduleObject: string) {
     const itemsObj = await createStringFunc(moduleObject);
     const functions: { [key: string]: any } = {};

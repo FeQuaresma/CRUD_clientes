@@ -5,6 +5,7 @@ export interface Location {
   page: string;
   field: string;
 }
+
 export interface Param {
   token?: string;
   label?: string;
@@ -36,24 +37,22 @@ export interface Param {
   isCurrency?: boolean;
   class?: string;
   source?: string;
+  quebraDeLinha?: boolean;
 }
 
 export interface pageParam extends Param {
   isRequired: boolean;
   isEditable: boolean;
-  isLocked?: boolean;
   function?: any;
-  link?: {
-    paramBeginning: string;
-    paramSize: number;
-    paramEnd: string;
-    type: "fillform" | "errorMsg" | null;
-  };
-  quebraDeLinha?: boolean;
+  // link?: {
+  //   paramBeginning: string;
+  //   paramSize: number;
+  //   paramEnd: string;
+  //   type: "fillform" | "errorMsg" | null;
+  // };
   table?: TableInterface;
   errorMsg?: string;
-  class?: string;
-  group?: {name: string, position: number}
+  group?: { name: string; position: number };
 }
 
 export interface TableInterface {

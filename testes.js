@@ -194,3 +194,28 @@
 //     </View>
 //   </View>
 // ))}
+
+/**
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit = function(prices) {
+  let max_profit = 0;
+  let i = 0;
+  let j = 1;
+
+  while(j < prices.length){
+    let profit = prices[j] - prices[i]
+    if(profit <= 0) {
+      i = j
+      j++
+    } else {
+      j++
+    }
+    max_profit = Math.max(profit, max_profit)
+  }
+  
+  return max_profit;
+};
+
+console.log(maxProfit([1,2,4,2,5,7,2,4,9,0,9]));

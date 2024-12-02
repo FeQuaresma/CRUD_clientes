@@ -28,7 +28,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { sumClass } from "../functions/sumClass";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Drawer } from "../app/modules/_layout";
 
 const Tab = createMaterialTopTabNavigator();
@@ -609,6 +609,265 @@ export default function ModuleForm({
       <View style={{ justifyContent: "center", alignItems: "center", flex: 1 }}>
         <Text>Loading...</Text>
       </View>
+    );
+  }
+
+  if(Array.from(tabSet).length === 0){
+    return (
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
+        style={
+          pageSettings &&
+          pageSettings.mainView && {
+            ...sumClass(pageSettings.mainView.class, classes),
+            ...pageSettings.mainView.styles,
+          }
+        }
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <Pressable
+            style={{ width: 30 }}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          >
+            <Ionicons name="arrow-back-outline" size={30} color="white" />
+          </Pressable>
+          {formMode === "filter" && (
+            <Text
+              style={{ ...styles.inputLabel, flex: 1, textAlign: "center" }}
+            >
+              Filtro
+            </Text>
+          )}
+          {formMode === "register" && (
+            <Text
+              style={{
+                ...styles.inputLabel,
+                flex: 1,
+                textAlign: "center",
+                color: "red",
+              }}
+            >
+              {formName}
+            </Text>
+          )}
+          <View style={{ width: 30 }} />
+        </View>
+  
+        <ScrollView
+          contentContainerStyle={{
+            ...styles.containerScrollView,
+          }}
+          nestedScrollEnabled={true}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              borderWidth: 1,
+              borderColor: "yellow",
+            }}
+          >
+            {Object.keys(formParam).map((field) => (
+              <View
+                key={field}
+                style={{
+                  backgroundColor: "black",
+                  margin: 6,
+                  borderWidth: 1,
+                  borderColor: "blue",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  {formParam[field].inputType === "input" && (
+                    <Input
+                      field={formParam[field]}
+                      onValueChange={(e: any, fillForm: any, errorMsg: any) =>
+                        callFather(e, field)
+                      }
+                      classes={classes}
+                    />
+                  )}
+                  {formParam[field].inputType === "select" && (
+                    <Select
+                      field={formParam[field]}
+                      classes={classes}
+                      onValueChange={(e: any) => callFather(e, field)}
+                    />
+                  )}
+                  {formParam[field].inputType === "multiSelect" && (
+                    <MultiSelect
+                      classes={classes}
+                      field={formParam[field]}
+                      onValueChange={(e: any) => callFather(e, field)}
+                    />
+                  )}
+                  {formParam[field].inputType === "boolean" && (
+                    <Boolean
+                      classes={classes}
+                      field={formParam[field]}
+                      onValueChange={(e: any) => callFather(e, field)}
+                    />
+                  )}
+                  {formParam[field].inputType === "textBox" && (
+                    <TextBox
+                      field={formParam[field]}
+                      classes={classes}
+                      onValueChange={(e: any) => callFather(e, field)}
+                    />
+                  )}
+                  {formParam[field].inputType === "date" && dateInput(field)}
+                  {formParam[field].inputType === "file" && (
+                    <File
+                      field={formParam[field]}
+                      onValueChange={(e: any) => callFather(e, field)}
+                      classes={classes}
+                    />
+                  )}
+                  {formParam[field].inputType === "grid" && (
+                    <Grid
+                      field={formParam[field]}
+                      onValueChange={(e: any) => callFather(e, field)}
+                      classes={classes}
+                    />
+                  )}
+                  {formParam[field].inputType === "table" && (
+                    <Table
+                      moduleParam={formParam[field].table}
+                      classes={classes}
+                      urlParam={formParam[field].table.tableSettings?.tableURL}
+                      onValueChange={(e: any, whichTable: string) => {
+                        callFatherTable(e, field, whichTable);
+                      }}
+                    />
+                  )}
+                  {formParam[field].inputType === "button" && (
+                    <Button
+                      field={formParam[field]}
+                      classes={classes}
+                      onPress={() => {
+                        callFatherButton(field);
+                      }}
+                    />
+                  )}
+                  {formParam[field].inputType === "image" && (
+                    <Image
+                      field={formParam[field]}
+                      classes={classes}
+                      setToken={(e: any) => setToken(e, field)}
+                    />
+                  )}
+                  {formParam[field].inputType === "text" && (
+                    <TextPortal8 field={formParam[field]} classes={classes} />
+                  )}
+                  {/* {formParam[field].inputType === "video" && (
+  <Video field={formParam[field]} classes={classes} />
+  )} */}
+                  {formParam[field].inputType === "sound" && (
+                    <Sound field={formParam[field]} classes={classes} />
+                  )}
+  
+                  {formParam[field].searchSign && (
+                    <Pressable
+                      style={{
+                        height: 30,
+                        width: 30,
+                        backgroundColor: "red",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      onPress={() => onChangeSign(field)}
+                    >
+                      <FontAwesome5
+                        name={formParam[field].searchSign}
+                        size={18}
+                        color="white"
+                      />
+                    </Pressable>
+                  )}
+  
+                  {formParam[field].function &&
+                    formParam[field].inputType !== "button" && (
+                      <Pressable
+                        style={{
+                          height: 30,
+                          width: 30,
+                          backgroundColor: "red",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        onPress={() => callFatherButton(field)}
+                      >
+                        <FontAwesome5 name="circle" size={18} color="white" />
+                      </Pressable>
+                    )}
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+        <View style={{ width: "100%", alignItems: "center" }}>
+          {/* {formMode === "register" && (
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                console.log(formParam.text1);
+              }}
+            >
+              <TextRN style={styles.buttonText}>Enviar Formulário</TextRN>
+            </Pressable>
+          )} */}
+  
+          {formMode === "filter" && (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Pressable
+                style={styles.button}
+                onPress={() => handleFilterNavigation()}
+              >
+                <Text style={styles.buttonText}>Filtrar</Text>
+              </Pressable>
+              <Pressable
+                style={{
+                  backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 5,
+                  marginTop: 10,
+                  marginLeft: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => handleResetFormParam()}
+              >
+                <MaterialCommunityIcons name="broom" size={26} color="white" />
+              </Pressable>
+              <Pressable
+                style={{
+                  backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 5,
+                  marginTop: 10,
+                  marginLeft: 10,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                onPress={() => console.log(formParam.total)}
+              >
+                <MaterialCommunityIcons name="circle" size={26} color="white" />
+              </Pressable>
+            </View>
+          )}
+        </View>
+      </KeyboardAvoidingView>
     );
   }
 

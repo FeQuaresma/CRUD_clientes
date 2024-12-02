@@ -137,6 +137,19 @@ export default function Index({
     }
   }
 
+  function loopTime(limit: number = 0) {
+    if (limit > 120) {
+      return;
+    }
+    limit++;
+    setTimeout(() => {
+      console.log(nome,limit);
+      loopTime(limit);
+    }, 3000);
+  }
+
+  useEffect(() => {loopTime()}, []);
+
   return (
     <View style={styles.containerScrollView}>
       <Pressable
@@ -222,7 +235,11 @@ export default function Index({
         <Text style={styles.buttonText}>Enviar Dados</Text>
       </Pressable>*/}
 
-      <Pressable style={styles.button} onPress={receberDados}>
+      {/* <Pressable style={styles.button} onPress={receberDados}>
+        <Text style={styles.buttonText}>Receber Dados</Text>
+      </Pressable> */}
+      <TextInput style={{backgroundColor: "white", width: 100, padding: 5}} value={nome} onChangeText={setNome}/>
+      <Pressable style={styles.button} onPress={() => console.log(nome)}>
         <Text style={styles.buttonText}>Receber Dados</Text>
       </Pressable>
     </View>

@@ -15,7 +15,7 @@ export type SortedCol = {
 };
 
 export type ModuleParam = {
-  temp?: boolean,
+  temp?: boolean;
   style?: { [key: string]: any };
   modules: { [key: string]: Module };
   console: { log: string};
@@ -35,7 +35,6 @@ export type Module = {
     navBar?: { classCss?: string; styles?: {} };
     navBarText?: { classCss?: string; styles?: {} };
   };
-
   pages: {
     [key: string]: {
       pageName: string;
@@ -43,5 +42,4 @@ export type Module = {
       components: { [key: string]: pageParam };
     };
   };
-  
 };

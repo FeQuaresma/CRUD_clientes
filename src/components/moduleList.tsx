@@ -13,7 +13,7 @@ import { Cell, Table, TableWrapper } from "react-native-reanimated-table";
 import {
   SyncedScrollViewContext,
   syncedScrollViewState,
-} from "../context/SyncedScrollViewContext";
+} from "./SyncedScrollViewContext";
 import { SyncedScrollView } from "../components/SyncedScrollView";
 import { isWithinInterval, parseISO } from "date-fns";
 import { DataRow, DataTable, SortedCol } from "../types";

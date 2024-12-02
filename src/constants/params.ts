@@ -527,7 +527,6 @@ export const params: any = {
     isRequired: true,
     isEditable: true,
     value: "",
-    isLocked: true,
   },
   descricaoProduto: {
     label: "Descrição",
@@ -536,6 +535,5 @@ export const params: any = {
     isRequired: true,
     isEditable: true,
     value: "",
-    isLocked: true,
   },
 };
